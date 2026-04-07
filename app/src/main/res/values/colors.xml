@@ -2,4 +2,12 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="pastel_indigo">#5A4CB7</color>
+    <color name="screen_bg">#F8F6FC</color>
+    <color name="text_primary">#1F1F2D</color>
+    <color name="text_secondary">#7B7696</color>
+    <color name="card_stroke">#E8E2F3</color>
+    <color name="danger">#FF3B30</color>
+    <color name="warning">#FFB200</color>
+    <color name="success">#44B556</color>
 </resources>

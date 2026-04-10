@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#F1F3F4" /> <!-- Màu xám nhạt của thanh search -->
+    <corners android:radius="12dp" /> <!-- Độ bo góc -->
+    <stroke
+        android:width="1dp"
+        android:color="#E0E0E0" /> <!-- Viền mờ -->
+</shape>

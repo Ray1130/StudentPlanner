@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:orientation="vertical"
+    android:gravity="top|start"
+    android:padding="4dp"
+    android:background="@drawable/bg_cell_border"> <!-- Tạo thêm 1 drawable viền xám nhẹ -->
+
+    <TextView
+        android:id="@+id/tvDayOfMonth"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:gravity="center"
+        android:text="1"
+        android:textColor="#3F3379"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvTaskNote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Training"
+        android:textColor="#E9C46A"
+        android:textSize="10sp"
+        android:visibility="gone" /> <!-- Mặc định ẩn, hiện khi có task -->
+
+</LinearLayout>

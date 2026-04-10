@@ -13,7 +13,8 @@
         android:theme="@style/Theme.Planner">
         <activity
             android:name=".ui.main.MainActivity"
-            />
+            android:exported="false" />
+
         <activity
             android:name=".ui.main.LoginActivity"
             android:exported="true">
@@ -22,5 +23,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:exported="false" />
     </application>
 </manifest>

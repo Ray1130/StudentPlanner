@@ -11,6 +11,8 @@ public class Task {
     public int subjectId;
     public boolean isCompleted; // Trạng thái: Đã làm xong chưa?
 
+    public long timestamp; // Thời gian thực hiện
+    public String category; // Để phân biệt màu sắc hoặc loại
     public Task(String title, long dueDate, int subjectId) {
         this.title = title;
         this.dueDate = dueDate;

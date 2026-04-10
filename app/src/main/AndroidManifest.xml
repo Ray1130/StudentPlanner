@@ -13,13 +13,14 @@
         android:theme="@style/Theme.Planner">
         <activity
             android:name=".ui.main.MainActivity"
+            />
+        <activity
+            android:name=".ui.main.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

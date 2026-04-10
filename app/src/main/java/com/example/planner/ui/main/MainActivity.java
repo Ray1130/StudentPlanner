@@ -1,10 +1,14 @@
 package com.example.planner.ui.main;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,7 +28,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.android.material.navigation.NavigationView;
+
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private MainViewModel viewModel;
     private MainTaskAdapter todayAdapter;
@@ -57,6 +64,10 @@ public class MainActivity extends AppCompatActivity {
         setupViewModel();
         bindStaticData();
         observeUi();
+
+        NavigationView navigationView = findViewById(R.id.navigationView);
+
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
     private void initViews() {
@@ -141,5 +152,27 @@ public class MainActivity extends AppCompatActivity {
     private String capitalizeFirstLetter(String input) {
         if (input == null || input.isEmpty()) return "";
         return input.substring(0, 1).toUpperCase(new Locale("vi", "VN")) + input.substring(1);
+    }
+
+    // Xử lý sự kiện logout khi bấm Đăng xuất từ giao diện trang chủ
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        if (item.getItemId() == R.id.nav_logout) {
+
+            SharedPreferences preferences = getSharedPreferences("USER_FILE", MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.clear();
+            editor.apply();
+
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+            startActivity(intent);
+            finish();
+
+            return true;
+        }
+
+        return false;
     }
 }

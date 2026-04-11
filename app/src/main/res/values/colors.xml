@@ -10,4 +10,10 @@
     <color name="danger">#FF3B30</color>
     <color name="warning">#FFB200</color>
     <color name="success">#44B556</color>
+    <!-- Task UI Colors -->
+    <color name="primary_purple">#7C69CA</color>
+    <color name="secondary_purple">#C5BAE6</color>
+    <color name="table_header_bg">#D7D7D7</color>
+    <color name="table_row_bg">#E2E2E2</color>
+    <color name="input_border">#E0E0E0</color>
 </resources>

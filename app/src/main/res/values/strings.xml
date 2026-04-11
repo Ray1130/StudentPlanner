@@ -31,4 +31,16 @@
     <string name="menu_organize">Sắp xếp</string>
     <string name="menu_reminder">Nhắc nhở</string>
     <string name="menu_logout">Đăng xuất</string>
+
+    <!-- Task UI Strings -->
+    <string name="task_count_format">%1$d công việc hiện tại</string>
+    <string name="action_create_new">+ Tạo mới</string>
+    <string name="hint_search_task">Tìm kiếm công việc...</string>
+    <string name="action_sort_course">Sắp xếp theo khóa học</string>
+    <string name="action_data_table">Bảng dữ liệu</string>
+    <string name="table_col_task_name">Tên bài tập</string>
+    <string name="table_col_deadline">Hạn chót</string>
+    <string name="table_col_note">Ghi chú</string>
+    <string name="action_new_page">+ Trang mới</string>
+    <string name="action_new_group">+ Nhóm mới</string>
 </resources>

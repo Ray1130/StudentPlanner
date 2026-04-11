@@ -11,6 +11,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Planner">
+
+        <activity
+            android:name=".ui.task.TaskActivity"
+            android:exported="false" />
+
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="false" />
@@ -24,8 +29,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".ui.main.MainActivity"
-            android:exported="false" />
     </application>
+
 </manifest>

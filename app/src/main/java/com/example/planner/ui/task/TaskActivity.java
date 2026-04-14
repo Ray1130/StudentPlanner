@@ -10,46 +10,66 @@ import com.example.planner.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.widget.Toast;
+import com.example.planner.data.ApiService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class TaskActivity extends AppCompatActivity {
+
+    private RecyclerView rvTasks;
+    private List<TaskUiModel> taskList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
 
-        // 1. Gán số lượng biến chữ cho Title
         TextView tvCount = findViewById(R.id.tv_task_count);
-        if (tvCount != null) {
-            tvCount.setText(getString(R.string.task_count_format, 10));
-        }
-
-        // 2. Thiết lập dữ liệu Fake (Dummy Data)
-        List<TaskUiModel> dummyData = new ArrayList<>();
-        
-        // --- Môn Mobile ---
-        dummyData.add(new TaskUiModel(TaskUiModel.TYPE_HEADER, "Môn Mobile", "", "", false));
-        dummyData.add(new TaskUiModel(TaskUiModel.TYPE_TABLE_HEADER, "", "", "", false));
-        dummyData.add(new TaskUiModel(TaskUiModel.TYPE_TABLE_ROW, "Giới thiệu bài toán", "10/3/2026", "", true));
-        dummyData.add(new TaskUiModel(TaskUiModel.TYPE_TABLE_ROW, "Phác thảo figma", "20/3/2026", "", true));
-        dummyData.add(new TaskUiModel(TaskUiModel.TYPE_TABLE_ROW, "Code front-end", "10/4/2026", "", false));
-        dummyData.add(new TaskUiModel(TaskUiModel.TYPE_TABLE_ROW, "Code back-end", "20/4/2026", "", false));
-        dummyData.add(new TaskUiModel(TaskUiModel.TYPE_ACTION_NEW_PAGE, "", "", "", false));
-        
-        // --- Môn CSDL Phân tán ---
-        dummyData.add(new TaskUiModel(TaskUiModel.TYPE_HEADER, "Môn CSDL phân tán", "", "", false));
-        dummyData.add(new TaskUiModel(TaskUiModel.TYPE_TABLE_HEADER, "", "", "", false));
-        dummyData.add(new TaskUiModel(TaskUiModel.TYPE_TABLE_ROW, "Giới thiệu bài toán", "10/3/2026", "", true));
-        dummyData.add(new TaskUiModel(TaskUiModel.TYPE_TABLE_ROW, "Phác thảo figma", "20/3/2026", "", true));
-        dummyData.add(new TaskUiModel(TaskUiModel.TYPE_TABLE_ROW, "Code front-end", "10/4/2026", "", false));
-        dummyData.add(new TaskUiModel(TaskUiModel.TYPE_TABLE_ROW, "Code back-end", "20/4/2026", "", false));
-        dummyData.add(new TaskUiModel(TaskUiModel.TYPE_ACTION_NEW_PAGE, "", "", "", false));
-        
-        // --- Nút thêm nhóm cuối cùng ---
-        dummyData.add(new TaskUiModel(TaskUiModel.TYPE_ACTION_NEW_GROUP, "", "", "", false));
-
-        // 3. Set Adapter
-        RecyclerView rvTasks = findViewById(R.id.rv_tasks);
+        rvTasks = findViewById(R.id.rv_tasks);
         rvTasks.setLayoutManager(new LinearLayoutManager(this));
-        rvTasks.setAdapter(new TaskSectionAdapter(dummyData));
+
+        // Gọi API lấy dữ liệu từ Spring Boot
+        fetchTasksFromServer();
+    }
+
+    private void fetchTasksFromServer() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.0.2.2:8080/") // IP máy tính khi dùng emulator
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ApiService apiService = retrofit.create(ApiService.class);
+        apiService.getAllTasks().enqueue(new Callback<List<TaskUiModel>>() {
+            @Override
+            public void onResponse(Call<List<TaskUiModel>> call, Response<List<TaskUiModel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    taskList = response.body();
+                    rvTasks.setAdapter(new TaskSectionAdapter(taskList, new TaskSectionAdapter.OnTaskActionListener() {
+                        @Override
+                        public void onAddNewTask() {}
+
+                        @Override
+                        public void onAddNewGroup() {}
+
+                        @Override
+                        public void onTaskStatusChanged(TaskUiModel task) {}
+                    }));
+                    
+                    TextView tvCount = findViewById(R.id.tv_task_count);
+                    if (tvCount != null) {
+                        tvCount.setText(getString(R.string.task_count_format, taskList.size()));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<TaskUiModel>> call, Throwable t) {
+                Toast.makeText(TaskActivity.this, "Lỗi kết nối Server: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

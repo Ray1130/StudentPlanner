@@ -11,19 +11,19 @@ public class TaskUiModel {
     private String title; // Dùng cho Header, Button, Task name
     private String deadline;
     private String note;
-    private boolean isChecked;
+    private boolean checked;
 
-    public TaskUiModel(int viewType, String title, String deadline, String note, boolean isChecked) {
+    public TaskUiModel(int viewType, String title, String deadline, String note, boolean checked) {
         this.viewType = viewType;
         this.title = title;
         this.deadline = deadline;
         this.note = note;
-        this.isChecked = isChecked;
+        this.checked = checked;
     }
 
     public int getViewType() { return viewType; }
     public String getTitle() { return title; }
     public String getDeadline() { return deadline; }
     public String getNote() { return note; }
-    public boolean isChecked() { return isChecked; }
+    public boolean isChecked() { return checked; }
 }

@@ -12,10 +12,18 @@ import java.util.List;
 
 public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<TaskUiModel> items;
+    public interface OnTaskActionListener {
+        void onAddNewTask();
+        void onAddNewGroup();
+        void onTaskStatusChanged(TaskUiModel task);
+    }
 
-    public TaskSectionAdapter(List<TaskUiModel> items) {
+    private List<TaskUiModel> items;
+    private OnTaskActionListener listener;
+
+    public TaskSectionAdapter(List<TaskUiModel> items, OnTaskActionListener listener) {
         this.items = items;
+        this.listener = listener;
     }
 
     @Override
@@ -27,17 +35,21 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        if (viewType == TaskUiModel.TYPE_HEADER) {
-            return new HeaderViewHolder(inflater.inflate(R.layout.item_task_group_header, parent, false));
-        } else if (viewType == TaskUiModel.TYPE_TABLE_HEADER) {
-            return new TableHeaderViewHolder(inflater.inflate(R.layout.item_task_table_header, parent, false));
-        } else if (viewType == TaskUiModel.TYPE_TABLE_ROW) {
-            return new TableRowViewHolder(inflater.inflate(R.layout.item_task_table_row, parent, false));
-        } else {
-            return new ActionButtonViewHolder(inflater.inflate(R.layout.item_task_action_button, parent, false));
+        switch (viewType) {
+            case TaskUiModel.TYPE_HEADER:
+                return new HeaderViewHolder(inflater.inflate(R.layout.item_task_group_header, parent, false));
+            case TaskUiModel.TYPE_TABLE_HEADER:
+                return new TableHeaderViewHolder(inflater.inflate(R.layout.item_task_table_header, parent, false));
+            case TaskUiModel.TYPE_TABLE_ROW:
+                return new TableRowViewHolder(inflater.inflate(R.layout.item_task_table_row, parent, false));
+            case TaskUiModel.TYPE_ACTION_NEW_PAGE:
+            case TaskUiModel.TYPE_ACTION_NEW_GROUP:
+            default:
+                return new ActionButtonViewHolder(inflater.inflate(R.layout.item_task_action_button, parent, false));
         }
     }
 
+    // ... trong onBindViewHolder ...
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         TaskUiModel item = items.get(position);
@@ -48,13 +60,23 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             rowHolder.tvName.setText(item.getTitle());
             rowHolder.tvDeadline.setText(item.getDeadline());
             rowHolder.tvNote.setText(item.getNote());
+            rowHolder.checkBox.setOnCheckedChangeListener(null); // Tránh loop
             rowHolder.checkBox.setChecked(item.isChecked());
+            rowHolder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (listener != null) listener.onTaskStatusChanged(item);
+            });
         } else if (holder instanceof ActionButtonViewHolder) {
             ActionButtonViewHolder actionHolder = (ActionButtonViewHolder) holder;
             if (item.getViewType() == TaskUiModel.TYPE_ACTION_NEW_PAGE) {
                 actionHolder.tvAction.setText(R.string.action_new_page);
+                actionHolder.itemView.setOnClickListener(v -> {
+                    if (listener != null) listener.onAddNewTask();
+                });
             } else {
                 actionHolder.tvAction.setText(R.string.action_new_group);
+                actionHolder.itemView.setOnClickListener(v -> {
+                    if (listener != null) listener.onAddNewGroup();
+                });
             }
         }
     }

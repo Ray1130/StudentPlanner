@@ -36,7 +36,7 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (viewType) {
-            case TaskUiModel.TYPE_HEADER:
+            case TaskUiModel.TYPE_GROUP_HEADER:
                 return new HeaderViewHolder(inflater.inflate(R.layout.item_task_group_header, parent, false));
             case TaskUiModel.TYPE_TABLE_HEADER:
                 return new TableHeaderViewHolder(inflater.inflate(R.layout.item_task_table_header, parent, false));

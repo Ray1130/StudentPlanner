@@ -1,7 +1,7 @@
 package com.example.planner.ui.task;
 
 public class TaskUiModel {
-    public static final int TYPE_HEADER = 0;
+    public static final int TYPE_GROUP_HEADER = 0;
     public static final int TYPE_TABLE_HEADER = 1;
     public static final int TYPE_TABLE_ROW = 2;
     public static final int TYPE_ACTION_NEW_PAGE = 3;

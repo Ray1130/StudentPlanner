@@ -1,26 +1,36 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingHorizontal="16dp"
+    android:gravity="center_vertical"
     android:paddingTop="16dp"
-    android:paddingBottom="8dp"
-    android:gravity="center_vertical">
+    android:paddingBottom="12dp"
+    android:layout_marginBottom="4dp">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_arrow_drop_down_24"
-        android:contentDescription="Mở rộng" />
+        android:id="@+id/ivDynamicArrow"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/ic_arrow_down" />
 
     <TextView
-        android:id="@+id/tv_group_name"
+        android:id="@+id/tvHeaderName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        tools:text="Môn Mobile"
         android:textColor="@color/black"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:text="Tên môn học" />
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/ivHeaderAdd"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="12dp"
+        android:src="@drawable/ic_add_black" />
+
 </LinearLayout>

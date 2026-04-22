@@ -38,7 +38,7 @@ public class TaskActivity extends AppCompatActivity {
         rvTasks.setLayoutManager(new LinearLayoutManager(this));
 
         // Gán sự kiện cho nút "Tạo mới" ở trên cùng
-        findViewById(R.id.btn_create_task).setOnClickListener(v -> {
+        findViewById(R.id.fabAddTask).setOnClickListener(v -> {
             TaskCreateSheetFragment sheet = new TaskCreateSheetFragment();
             sheet.show(getSupportFragmentManager(), "TaskCreateSheet");
         });
@@ -106,27 +106,23 @@ public class TaskActivity extends AppCompatActivity {
             // Luôn thêm Header tên môn học
             taskList.add(new TaskUiModel(TaskUiModel.TYPE_GROUP_HEADER, subject.name, "", "", false));
             
-            // Header của bảng bài tập
-            taskList.add(new TaskUiModel(TaskUiModel.TYPE_TABLE_HEADER, "Tên bài tập", "Hạn chót", "Ghi chú", false));
-
             List<Task> subjectTasks = groupedTasks.get(subject.id);
             if (subjectTasks != null) {
-                // Danh sách bài tập trong môn này
+                // Danh sách bài tập trong môn này - Sử dụng Card Layout
                 for (Task task : subjectTasks) {
                     taskList.add(new TaskUiModel(
                             TaskUiModel.TYPE_TABLE_ROW,
                             task.title,
                             DateUtils.timestampToString(task.dueDate),
-                            task.category,
+                            subject.name, // Truyền tên môn học vào note/subtitle
                             task.isCompleted
                     ));
                 }
             }
         }
 
-        // Thêm các nút chức năng ở cuối danh sách
-        taskList.add(new TaskUiModel(TaskUiModel.TYPE_ACTION_NEW_PAGE, "", "", "", false));
-        taskList.add(new TaskUiModel(TaskUiModel.TYPE_ACTION_NEW_GROUP, "", "", "", false));
+        // Không thêm các nút "Trang mới/Nhóm mới" kiểu cũ vì đã có FAB và Header
+
 
         rvTasks.setAdapter(new TaskSectionAdapter(taskList, new TaskSectionAdapter.OnTaskActionListener() {
             @Override

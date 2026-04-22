@@ -26,4 +26,5 @@ public class TaskUiModel {
     public String getDeadline() { return deadline; }
     public String getNote() { return note; }
     public boolean isChecked() { return checked; }
+    public void setChecked(boolean checked) { this.checked = checked; }
 }

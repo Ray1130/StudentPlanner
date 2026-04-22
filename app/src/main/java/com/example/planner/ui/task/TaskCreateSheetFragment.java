@@ -31,12 +31,14 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     private EditText etTaskTitle;
     private TextView tvDeadlineValue;
     private TextView tvSubjectValue;
+    private TextView tvPriorityValue;
     private CheckBox cbCompleted;
 
     private TaskViewModel viewModel;
     private Calendar calendar = Calendar.getInstance();
     private Subject selectedSubject;
     private List<Subject> subjects;
+    private String selectedPriority = "low";
 
     @Nullable
     @Override
@@ -53,10 +55,12 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         etTaskTitle = view.findViewById(R.id.et_task_title);
         tvDeadlineValue = view.findViewById(R.id.tv_deadline_value);
         tvSubjectValue = view.findViewById(R.id.tv_subject_value);
+        tvPriorityValue = view.findViewById(R.id.tv_priority_value);
         cbCompleted = view.findViewById(R.id.cb_completed);
 
         view.findViewById(R.id.row_deadline).setOnClickListener(v -> showDatePicker());
         view.findViewById(R.id.row_subject).setOnClickListener(v -> showSubjectPicker());
+        view.findViewById(R.id.row_priority).setOnClickListener(v -> showPriorityPicker());
         view.findViewById(R.id.btn_save_task).setOnClickListener(v -> {
             Log.d("TaskCreateSheet", "Nút Lưu Task được nhấn");
             saveTask();
@@ -144,6 +148,19 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
             .show();
     }
 
+    private void showPriorityPicker() {
+        String[] priorities = {"Thấp", "Trung bình", "Cao"};
+        String[] priorityValues = {"low", "medium", "high"};
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Chọn mức độ ưu tiên")
+                .setItems(priorities, (dialog, which) -> {
+                    selectedPriority = priorityValues[which];
+                    tvPriorityValue.setText(priorities[which]);
+                    Log.d("TaskCreateSheet", "Đã chọn mức độ: " + selectedPriority);
+                }).show();
+    }
+
     private void saveTask() {
         String title = etTaskTitle.getText().toString().trim();
         if (title.isEmpty()) {
@@ -153,7 +170,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         }
 
         int subjectId = selectedSubject != null ? selectedSubject.id : 0;
-        Log.d("TaskCreateSheet", "Bắt đầu lưu Task: " + title + " | SubjectID: " + subjectId);
+        Log.d("TaskCreateSheet", "Bắt đầu lưu Task: " + title + " | SubjectID: " + subjectId + " | Priority: " + selectedPriority);
 
         com.example.planner.data.model.Task newTask = new com.example.planner.data.model.Task(
             title,
@@ -161,6 +178,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
             subjectId
         );
         newTask.isCompleted = cbCompleted.isChecked();
+        newTask.priority = selectedPriority;
         
         viewModel.saveTask(newTask, () -> {
             if (getActivity() != null) {

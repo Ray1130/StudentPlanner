@@ -104,7 +104,7 @@ public class TaskActivity extends AppCompatActivity {
         // Duyệt qua từng môn học để tạo Header và Table
         for (Subject subject : subjects) {
             // Luôn thêm Header tên môn học
-            taskList.add(new TaskUiModel(TaskUiModel.TYPE_GROUP_HEADER, subject.name, "", "", false));
+            taskList.add(new TaskUiModel(TaskUiModel.TYPE_GROUP_HEADER, subject.name, "", "", false, "low"));
             
             List<Task> subjectTasks = groupedTasks.get(subject.id);
             if (subjectTasks != null) {
@@ -115,7 +115,8 @@ public class TaskActivity extends AppCompatActivity {
                             task.title,
                             DateUtils.timestampToString(task.dueDate),
                             subject.name, // Truyền tên môn học vào note/subtitle
-                            task.isCompleted
+                            task.isCompleted,
+                            task.priority != null ? task.priority : "low"
                     ));
                 }
             }

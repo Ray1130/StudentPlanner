@@ -12,13 +12,15 @@ public class TaskUiModel {
     private String deadline;
     private String note;
     private boolean checked;
+    private String priority; // low, medium, high
 
-    public TaskUiModel(int viewType, String title, String deadline, String note, boolean checked) {
+    public TaskUiModel(int viewType, String title, String deadline, String note, boolean checked, String priority) {
         this.viewType = viewType;
         this.title = title;
         this.deadline = deadline;
         this.note = note;
         this.checked = checked;
+        this.priority = priority;
     }
 
     public int getViewType() { return viewType; }
@@ -27,4 +29,6 @@ public class TaskUiModel {
     public String getNote() { return note; }
     public boolean isChecked() { return checked; }
     public void setChecked(boolean checked) { this.checked = checked; }
+    public String getPriority() { return priority; }
+    public void setPriority(String priority) { this.priority = priority; }
 }

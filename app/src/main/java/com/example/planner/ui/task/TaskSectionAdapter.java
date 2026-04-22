@@ -73,7 +73,24 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 if (listener != null) listener.onTaskStatusChanged(item);
             });
             
-            // Hiển thị màu ưu tiên nếu cần (tạm thời để mặc định hoặc logic của bạn)
+            // Hiển thị màu ưu tiên
+            int color;
+            switch (item.getPriority() != null ? item.getPriority() : "low") {
+                case "high":
+                    color = holder.itemView.getContext().getResources().getColor(android.R.color.holo_red_light);
+                    break;
+                case "medium":
+                    color = holder.itemView.getContext().getResources().getColor(android.R.color.holo_orange_light);
+                    break;
+                case "low":
+                default:
+                    color = holder.itemView.getContext().getResources().getColor(android.R.color.holo_green_light);
+                    break;
+            }
+            cardHolder.viewPriorityStrip.setBackgroundColor(color);
+            if (cardHolder.viewPriorityDot != null) {
+                cardHolder.viewPriorityDot.setBackgroundColor(color);
+            }
             cardHolder.viewPriorityStrip.setVisibility(View.VISIBLE);
         }
     }

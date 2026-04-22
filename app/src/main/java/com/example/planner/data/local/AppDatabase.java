@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase;
 
 import com.example.planner.data.model.Subject;
 import com.example.planner.data.model.Task;
-@Database(entities = {Subject.class, Task.class}, version = 1, exportSchema = false)
+@Database(entities = {Subject.class, Task.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract SubjectDao subjectDao();
     public abstract TaskDao taskDao();
@@ -19,6 +19,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                                     AppDatabase.class, "student_planner_database")
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }

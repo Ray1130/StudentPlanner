@@ -105,6 +105,11 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return items != null ? items.size() : 0;
     }
 
+    public void updateData(List<TaskUiModel> newItems) {
+        this.items = newItems;
+        notifyDataSetChanged();
+    }
+
     // --- Các ViewHolders ---
     static class HeaderViewHolder extends RecyclerView.ViewHolder {
         TextView tvGroupName;

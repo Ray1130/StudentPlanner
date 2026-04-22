@@ -3,88 +3,84 @@ package com.example.planner.ui.task;
 import android.os.Bundle;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.planner.R;
+import com.example.planner.data.model.Subject;
+import com.example.planner.data.model.Task;
+import com.example.planner.utils.DateUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.widget.Toast;
-import com.example.planner.data.ApiService;
-import com.example.planner.data.model.Subject;
-import com.example.planner.data.model.Task;
-import com.example.planner.utils.DateUtils;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
 public class TaskActivity extends AppCompatActivity {
 
     private RecyclerView rvTasks;
     private List<TaskUiModel> taskList = new ArrayList<>();
+    private TaskViewModel viewModel;
+    private TaskSectionAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
 
-        findViewById(R.id.tv_task_count);
+        viewModel = new ViewModelProvider(this).get(TaskViewModel.class);
+
         rvTasks = findViewById(R.id.rv_tasks);
         rvTasks.setLayoutManager(new LinearLayoutManager(this));
-
-        // Gán sự kiện cho nút "Tạo mới" ở trên cùng
-        findViewById(R.id.fabAddTask).setOnClickListener(v -> {
-            TaskCreateSheetFragment sheet = new TaskCreateSheetFragment();
-            sheet.show(getSupportFragmentManager(), "TaskCreateSheet");
+        
+        // Khởi tạo adapter với listener
+        adapter = new TaskSectionAdapter(new ArrayList<>(), new TaskSectionAdapter.OnTaskActionListener() {
+            @Override
+            public void onAddNewTask() { showCreateSheet(); }
+            @Override
+            public void onAddNewGroup() { showCreateSheet(); }
+            @Override
+            public void onTaskStatusChanged(TaskUiModel task) {
+                // Xử lý cập nhật trạng thái nếu cần
+            }
         });
+        rvTasks.setAdapter(adapter);
 
-        // Gọi API lấy dữ liệu từ Spring Boot
-        fetchTasksFromServer();
+        findViewById(R.id.fabAddTask).setOnClickListener(v -> showCreateSheet());
+
+        // Quan sát dữ liệu - Đây là phần quan trọng nhất để sửa lỗi không hiện task
+        observeData();
+        
+        // Load dữ liệu ban đầu từ server
+        viewModel.loadSubjects();
     }
 
-    public void fetchTasksFromServer() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8080/") // IP máy tính khi dùng emulator
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+    private void showCreateSheet() {
+        TaskCreateSheetFragment sheet = new TaskCreateSheetFragment();
+        sheet.show(getSupportFragmentManager(), "TaskCreateSheet");
+    }
 
-        ApiService apiService = retrofit.create(ApiService.class);
-
-        // 1. Lấy danh sách Môn học trước
-        apiService.getAllSubjects().enqueue(new Callback<List<Subject>>() {
-            @Override
-            public void onResponse(Call<List<Subject>> call, Response<List<Subject>> responseSubjects) {
-                if (responseSubjects.isSuccessful() && responseSubjects.body() != null) {
-                    List<Subject> subjects = responseSubjects.body();
-
-                    // 2. Sau đó lấy danh sách Task
-                    apiService.getAllTasks().enqueue(new Callback<List<Task>>() {
-                        @Override
-                        public void onResponse(Call<List<Task>> call, Response<List<Task>> responseTasks) {
-                            if (responseTasks.isSuccessful() && responseTasks.body() != null) {
-                                List<Task> tasks = responseTasks.body();
-                                processAndDisplayTasks(subjects, tasks);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<List<Task>> call, Throwable t) {
-                            Toast.makeText(TaskActivity.this, "Lỗi lấy Task: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Subject>> call, Throwable t) {
-                Toast.makeText(TaskActivity.this, "Lỗi lấy Môn học: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+    private void observeData() {
+        // Tự động cập nhật khi có môn học hoặc task mới
+        viewModel.getAllSubjects().observe(this, subjects -> {
+            List<Task> tasks = viewModel.getAllTasks().getValue();
+            if (subjects != null && tasks != null) {
+                processAndDisplayTasks(subjects, tasks);
             }
         });
+
+        viewModel.getAllTasks().observe(this, tasks -> {
+            List<Subject> subjects = viewModel.getAllSubjects().getValue();
+            if (subjects != null && tasks != null) {
+                processAndDisplayTasks(subjects, tasks);
+            }
+        });
+    }
+
+    // Được gọi từ TaskCreateSheetFragment sau khi lưu thành công
+    public void fetchTasksFromServer() {
+        viewModel.loadSubjects();
     }
 
     private void processAndDisplayTasks(List<Subject> subjects, List<Task> tasks) {
@@ -101,20 +97,22 @@ public class TaskActivity extends AppCompatActivity {
             group.add(task);
         }
 
-        // Duyệt qua từng môn học để tạo Header và Table
+        // Duyệt qua từng môn học để tạo Header và danh sách Card
         for (Subject subject : subjects) {
-            // Luôn thêm Header tên môn học
-            taskList.add(new TaskUiModel(TaskUiModel.TYPE_GROUP_HEADER, subject.name, "", "", false, "low"));
-            
             List<Task> subjectTasks = groupedTasks.get(subject.id);
-            if (subjectTasks != null) {
-                // Danh sách bài tập trong môn này - Sử dụng Card Layout
+            
+            // Chỉ hiện môn học nếu có task hoặc bạn muốn hiện môn trống thì bỏ điều kiện if này
+            if (subjectTasks != null && !subjectTasks.isEmpty()) {
+                // 1. Thêm Header tên môn học
+                taskList.add(new TaskUiModel(TaskUiModel.TYPE_GROUP_HEADER, subject.name, "", "", false, "low"));
+                
+                // 2. Thêm các Task (Dạng Card)
                 for (Task task : subjectTasks) {
                     taskList.add(new TaskUiModel(
-                            TaskUiModel.TYPE_TABLE_ROW,
+                            TaskUiModel.TYPE_TABLE_ROW, // Map với giao diện Card trong Adapter
                             task.title,
                             DateUtils.timestampToString(task.dueDate),
-                            subject.name, // Truyền tên môn học vào note/subtitle
+                            "", 
                             task.isCompleted,
                             task.priority != null ? task.priority : "low"
                     ));
@@ -122,28 +120,7 @@ public class TaskActivity extends AppCompatActivity {
             }
         }
 
-        // Không thêm các nút "Trang mới/Nhóm mới" kiểu cũ vì đã có FAB và Header
-
-
-        rvTasks.setAdapter(new TaskSectionAdapter(taskList, new TaskSectionAdapter.OnTaskActionListener() {
-            @Override
-            public void onAddNewTask() {
-                TaskCreateSheetFragment sheet = new TaskCreateSheetFragment();
-                sheet.show(getSupportFragmentManager(), "TaskCreateSheet");
-            }
-
-            @Override
-            public void onAddNewGroup() {
-                // Có thể mở dialog tạo môn học nhanh ở đây hoặc dùng chung Sheet
-                TaskCreateSheetFragment sheet = new TaskCreateSheetFragment();
-                sheet.show(getSupportFragmentManager(), "TaskCreateSheet");
-            }
-
-            @Override
-            public void onTaskStatusChanged(TaskUiModel task) {
-                // Xử lý khi checkbox thay đổi (nếu cần)
-            }
-        }));
+        adapter.updateData(taskList);
 
         TextView tvCount = findViewById(R.id.tv_task_count);
         if (tvCount != null) {

@@ -91,7 +91,7 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         TextView tvGroupName;
         HeaderViewHolder(@NonNull View itemView) { 
             super(itemView); 
-            tvGroupName = itemView.findViewById(R.id.tv_group_name); 
+            tvGroupName = itemView.findViewById(R.id.tvHeaderName);
         }
     }
 

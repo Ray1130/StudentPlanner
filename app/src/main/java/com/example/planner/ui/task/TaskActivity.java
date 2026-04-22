@@ -28,7 +28,7 @@ public class TaskActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
 
-        TextView tvCount = findViewById(R.id.tv_task_count);
+        findViewById(R.id.tv_task_count);
         rvTasks = findViewById(R.id.rv_tasks);
         rvTasks.setLayoutManager(new LinearLayoutManager(this));
 

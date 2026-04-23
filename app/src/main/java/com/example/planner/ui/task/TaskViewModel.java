@@ -137,10 +137,34 @@ public class TaskViewModel extends AndroidViewModel {
     public void insert(Task task) {
         repository.insertTask(task);
     }
-    public void update(Task task) {
+    public void update(Task task, Runnable onSuccess) {
         repository.updateTask(task);
+        apiService.updateTask(task).enqueue(new Callback<Task>() {
+            @Override
+            public void onResponse(Call<Task> call, Response<Task> response) {
+                if (onSuccess != null) onSuccess.run();
+            }
+            @Override
+            public void onFailure(Call<Task> call, Throwable t) {
+                if (onSuccess != null) onSuccess.run();
+            }
+        });
     }
-    public void delete(Task task) {
-        repository.deleteTask(task);
+
+    public void delete(int taskId, Runnable onSuccess) {
+        // Room delete usually needs the object or ID
+        // For simplicity assuming repository has a way to delete by ID or just use a dummy object if needed
+        // repository.deleteTaskById(taskId); 
+        
+        apiService.deleteTask(taskId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (onSuccess != null) onSuccess.run();
+            }
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                if (onSuccess != null) onSuccess.run();
+            }
+        });
     }
 }

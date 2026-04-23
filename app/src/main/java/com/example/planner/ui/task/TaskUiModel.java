@@ -7,6 +7,7 @@ public class TaskUiModel {
     public static final int TYPE_ACTION_NEW_PAGE = 3;
     public static final int TYPE_ACTION_NEW_GROUP = 4;
 
+    private int id;
     private int viewType;
     private String title; // Dùng cho Header, Button, Task name
     private String deadline;
@@ -22,6 +23,19 @@ public class TaskUiModel {
         this.checked = checked;
         this.priority = priority;
     }
+
+    public TaskUiModel(int id, int viewType, String title, String deadline, String note, boolean checked, String priority) {
+        this.id = id;
+        this.viewType = viewType;
+        this.title = title;
+        this.deadline = deadline;
+        this.note = note;
+        this.checked = checked;
+        this.priority = priority;
+    }
+
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
     public int getViewType() { return viewType; }
     public String getTitle() { return title; }

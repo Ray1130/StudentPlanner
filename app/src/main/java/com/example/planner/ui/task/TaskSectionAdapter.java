@@ -16,6 +16,7 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void onAddNewTask();
         void onAddNewGroup();
         void onTaskStatusChanged(TaskUiModel task);
+        void onTaskLongClick(TaskUiModel task);
     }
 
     private List<TaskUiModel> items;
@@ -71,6 +72,13 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 item.setChecked(!item.isChecked());
                 updateCheckIcon(cardHolder.ivCheck, item.isChecked());
                 if (listener != null) listener.onTaskStatusChanged(item);
+            });
+
+            cardHolder.itemView.setOnLongClickListener(v -> {
+                if (listener != null) {
+                    listener.onTaskLongClick(item);
+                }
+                return true;
             });
             
             // Hiển thị màu ưu tiên

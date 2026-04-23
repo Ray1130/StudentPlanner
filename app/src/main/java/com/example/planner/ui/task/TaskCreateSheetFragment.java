@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,15 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     private List<Subject> subjects;
     private String selectedPriority = "low";
 
+    private TaskUiModel editingTask;
+    private ImageView btnDelete;
+
+    public static TaskCreateSheetFragment newInstance(TaskUiModel task) {
+        TaskCreateSheetFragment fragment = new TaskCreateSheetFragment();
+        fragment.editingTask = task;
+        return fragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -57,6 +67,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         tvSubjectValue = view.findViewById(R.id.tv_subject_value);
         tvPriorityValue = view.findViewById(R.id.tv_priority_value);
         cbCompleted = view.findViewById(R.id.cb_completed);
+        btnDelete = view.findViewById(R.id.btn_delete_task);
 
         view.findViewById(R.id.row_deadline).setOnClickListener(v -> showDatePicker());
         view.findViewById(R.id.row_subject).setOnClickListener(v -> showSubjectPicker());
@@ -65,6 +76,10 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
             Log.d("TaskCreateSheet", "Nút Lưu Task được nhấn");
             saveTask();
         });
+
+        if (editingTask != null) {
+            setupEditMode();
+        }
 
         // Nạp dữ liệu môn học ngay khi view được tạo
         viewModel.getAllSubjects().observe(getViewLifecycleOwner(), subjectsList -> {
@@ -75,6 +90,54 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
                 Log.w("TaskCreateSheet", "Danh sách môn học nhận được là null");
             }
         });
+    }
+
+    private void setupEditMode() {
+        etTaskTitle.setText(editingTask.getTitle());
+        tvDeadlineValue.setText(editingTask.getDeadline());
+        cbCompleted.setChecked(editingTask.isChecked());
+        
+        selectedPriority = editingTask.getPriority();
+        updatePriorityText(selectedPriority);
+        
+        btnDelete.setVisibility(View.VISIBLE);
+        btnDelete.setOnClickListener(v -> deleteTask());
+
+        // Parse deadline string to calendar
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            calendar.setTime(sdf.parse(editingTask.getDeadline()));
+        } catch (Exception e) {
+            Log.e("TaskCreateSheet", "Error parsing deadline", e);
+        }
+    }
+
+    private void updatePriorityText(String priority) {
+        switch (priority) {
+            case "high": tvPriorityValue.setText("Cao"); break;
+            case "medium": tvPriorityValue.setText("Trung bình"); break;
+            case "low": default: tvPriorityValue.setText("Thấp"); break;
+        }
+    }
+
+    private void deleteTask() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Xóa task")
+                .setMessage("Bạn có chắc chắn muốn xóa task này?")
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    viewModel.delete(editingTask.getId(), () -> {
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(() -> {
+                                dismiss();
+                                if (getActivity() instanceof TaskActivity) {
+                                    ((TaskActivity) getActivity()).fetchTasksFromServer();
+                                }
+                            });
+                        }
+                    });
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     private void showDatePicker() {
@@ -170,29 +233,54 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         }
 
         int subjectId = selectedSubject != null ? selectedSubject.id : 0;
-        Log.d("TaskCreateSheet", "Bắt đầu lưu Task: " + title + " | SubjectID: " + subjectId + " | Priority: " + selectedPriority);
-
-        com.example.planner.data.model.Task newTask = new com.example.planner.data.model.Task(
-            title,
-            calendar.getTimeInMillis(),
-            subjectId
-        );
-        newTask.isCompleted = cbCompleted.isChecked();
-        newTask.priority = selectedPriority;
         
-        viewModel.saveTask(newTask, () -> {
-            if (getActivity() != null) {
-                getActivity().runOnUiThread(() -> {
-                    Log.d("TaskCreateSheet", "Callback thành công: Đóng Side Sheet và cập nhật UI");
-                    dismiss();
-                    Toast.makeText(getContext(), "Đã lưu task và đồng bộ server", Toast.LENGTH_SHORT).show();
-                    if (getActivity() instanceof TaskActivity) {
-                        ((TaskActivity) getActivity()).fetchTasksFromServer();
-                    }
-                });
-            } else {
-                Log.e("TaskCreateSheet", "Callback thành công nhưng Activity đã bị hủy");
-            }
-        });
+        if (editingTask != null) {
+            // Update mode
+            com.example.planner.data.model.Task task = new com.example.planner.data.model.Task(
+                    title,
+                    calendar.getTimeInMillis(),
+                    subjectId
+            );
+            task.id = editingTask.getId();
+            task.isCompleted = cbCompleted.isChecked();
+            task.priority = selectedPriority;
+
+            viewModel.update(task, () -> {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        dismiss();
+                        if (getActivity() instanceof TaskActivity) {
+                            ((TaskActivity) getActivity()).fetchTasksFromServer();
+                        }
+                    });
+                }
+            });
+        } else {
+            // Create mode
+            Log.d("TaskCreateSheet", "Bắt đầu lưu Task: " + title + " | SubjectID: " + subjectId + " | Priority: " + selectedPriority);
+
+            com.example.planner.data.model.Task newTask = new com.example.planner.data.model.Task(
+                title,
+                calendar.getTimeInMillis(),
+                subjectId
+            );
+            newTask.isCompleted = cbCompleted.isChecked();
+            newTask.priority = selectedPriority;
+            
+            viewModel.saveTask(newTask, () -> {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        Log.d("TaskCreateSheet", "Callback thành công: Đóng Side Sheet và cập nhật UI");
+                        dismiss();
+                        Toast.makeText(getContext(), "Đã lưu task và đồng bộ server", Toast.LENGTH_SHORT).show();
+                        if (getActivity() instanceof TaskActivity) {
+                            ((TaskActivity) getActivity()).fetchTasksFromServer();
+                        }
+                    });
+                } else {
+                    Log.e("TaskCreateSheet", "Callback thành công nhưng Activity đã bị hủy");
+                }
+            });
+        }
     }
 }

@@ -42,7 +42,11 @@ public class TaskActivity extends AppCompatActivity {
             public void onAddNewGroup() { showCreateSheet(); }
             @Override
             public void onTaskStatusChanged(TaskUiModel task) {
-                // Xử lý cập nhật trạng thái nếu cần
+                // Xử lý cập nhật trạng thái
+            }
+            @Override
+            public void onTaskLongClick(TaskUiModel task) {
+                showEditSheet(task);
             }
         });
         rvTasks.setAdapter(adapter);
@@ -59,6 +63,11 @@ public class TaskActivity extends AppCompatActivity {
     private void showCreateSheet() {
         TaskCreateSheetFragment sheet = new TaskCreateSheetFragment();
         sheet.show(getSupportFragmentManager(), "TaskCreateSheet");
+    }
+
+    private void showEditSheet(TaskUiModel task) {
+        TaskCreateSheetFragment sheet = TaskCreateSheetFragment.newInstance(task);
+        sheet.show(getSupportFragmentManager(), "TaskEditSheet");
     }
 
     private void observeData() {
@@ -109,6 +118,7 @@ public class TaskActivity extends AppCompatActivity {
                 // 2. Thêm các Task (Dạng Card)
                 for (Task task : subjectTasks) {
                     taskList.add(new TaskUiModel(
+                            task.id != null ? task.id : 0,
                             TaskUiModel.TYPE_TABLE_ROW, // Map với giao diện Card trong Adapter
                             task.title,
                             DateUtils.timestampToString(task.dueDate),

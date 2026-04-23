@@ -124,7 +124,8 @@ public class TaskActivity extends AppCompatActivity {
                             DateUtils.timestampToString(task.dueDate),
                             "", 
                             task.isCompleted,
-                            task.priority != null ? task.priority : "low"
+                            task.priority != null ? task.priority : "low",
+                            task.subjectId
                     ));
                 }
             }

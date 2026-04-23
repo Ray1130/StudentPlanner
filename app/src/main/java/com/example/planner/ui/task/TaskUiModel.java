@@ -14,6 +14,7 @@ public class TaskUiModel {
     private String note;
     private boolean checked;
     private String priority; // low, medium, high
+    private int subjectId;
 
     public TaskUiModel(int viewType, String title, String deadline, String note, boolean checked, String priority) {
         this.viewType = viewType;
@@ -24,7 +25,7 @@ public class TaskUiModel {
         this.priority = priority;
     }
 
-    public TaskUiModel(int id, int viewType, String title, String deadline, String note, boolean checked, String priority) {
+    public TaskUiModel(int id, int viewType, String title, String deadline, String note, boolean checked, String priority, int subjectId) {
         this.id = id;
         this.viewType = viewType;
         this.title = title;
@@ -32,10 +33,14 @@ public class TaskUiModel {
         this.note = note;
         this.checked = checked;
         this.priority = priority;
+        this.subjectId = subjectId;
     }
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
+
+    public int getSubjectId() { return subjectId; }
+    public void setSubjectId(int subjectId) { this.subjectId = subjectId; }
 
     public int getViewType() { return viewType; }
     public String getTitle() { return title; }

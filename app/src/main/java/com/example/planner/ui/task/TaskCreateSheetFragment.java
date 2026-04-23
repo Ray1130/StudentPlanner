@@ -86,10 +86,25 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
             if (subjectsList != null) {
                 Log.d("TaskCreateSheet", "Đã nhận danh sách môn học: " + subjectsList.size() + " môn");
                 this.subjects = subjectsList;
+                if (editingTask != null) {
+                    updateSelectedSubjectInEditMode();
+                }
             } else {
                 Log.w("TaskCreateSheet", "Danh sách môn học nhận được là null");
             }
         });
+    }
+
+    private void updateSelectedSubjectInEditMode() {
+        if (subjects != null && editingTask != null) {
+            for (Subject s : subjects) {
+                if (s.id == editingTask.getSubjectId()) {
+                    selectedSubject = s;
+                    tvSubjectValue.setText(s.name);
+                    break;
+                }
+            }
+        }
     }
 
     private void setupEditMode() {

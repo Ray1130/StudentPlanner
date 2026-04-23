@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "subjects")
 public class Subject {
     @PrimaryKey(autoGenerate = true)
-    public int id;
+    public Integer id;
     
     public String code; // mã môn
     public String name;
@@ -14,5 +14,6 @@ public class Subject {
     public Subject(String code, String name) {
         this.code = code;
         this.name = name;
+        this.id = null;
     }
 }

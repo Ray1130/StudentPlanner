@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase;
 
 import com.example.planner.data.model.Subject;
 import com.example.planner.data.model.Task;
-@Database(entities = {Subject.class, Task.class}, version = 2, exportSchema = false)
+@Database(entities = {Subject.class, Task.class}, version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract SubjectDao subjectDao();
     public abstract TaskDao taskDao();

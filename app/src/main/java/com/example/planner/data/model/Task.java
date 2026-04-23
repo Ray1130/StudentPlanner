@@ -4,7 +4,7 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "tasks")
 public class Task {
     @PrimaryKey(autoGenerate = true)
-    public int id;
+    public Integer id;
 
     public String title;
     public long dueDate;
@@ -21,5 +21,6 @@ public class Task {
         this.subjectId = subjectId;
         this.isCompleted = false; // Mặc định tạo mới là chưa hoàn thành
         this.priority = "low"; // Mặc định là low
+        this.id = null;
     }
 }

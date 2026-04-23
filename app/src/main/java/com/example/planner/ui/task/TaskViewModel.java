@@ -152,9 +152,16 @@ public class TaskViewModel extends AndroidViewModel {
     }
 
     public void delete(int taskId, Runnable onSuccess) {
-        // Room delete usually needs the object or ID
-        // For simplicity assuming repository has a way to delete by ID or just use a dummy object if needed
-        // repository.deleteTaskById(taskId); 
+        // Tìm và xóa trong Room trước
+        List<Task> currentTasks = allTasks.getValue();
+        if (currentTasks != null) {
+            for (Task t : currentTasks) {
+                if (t.id != null && t.id == taskId) {
+                    repository.deleteTask(t);
+                    break;
+                }
+            }
+        }
         
         apiService.deleteTask(taskId).enqueue(new Callback<Void>() {
             @Override

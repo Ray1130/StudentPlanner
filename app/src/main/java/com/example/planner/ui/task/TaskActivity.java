@@ -74,15 +74,15 @@ public class TaskActivity extends AppCompatActivity {
         // Tự động cập nhật khi có môn học hoặc task mới
         viewModel.getAllSubjects().observe(this, subjects -> {
             List<Task> tasks = viewModel.getAllTasks().getValue();
-            if (subjects != null && tasks != null) {
-                processAndDisplayTasks(subjects, tasks);
+            if (tasks != null) {
+                processAndDisplayTasks(subjects != null ? subjects : new ArrayList<>(), tasks);
             }
         });
 
         viewModel.getAllTasks().observe(this, tasks -> {
-            List<Subject> subjects = viewModel.getAllSubjects().getValue();
-            if (subjects != null && tasks != null) {
-                processAndDisplayTasks(subjects, tasks);
+            if (tasks != null) {
+                List<Subject> subjects = viewModel.getAllSubjects().getValue();
+                processAndDisplayTasks(subjects != null ? subjects : new ArrayList<>(), tasks);
             }
         });
     }
@@ -97,37 +97,43 @@ public class TaskActivity extends AppCompatActivity {
 
         // Nhóm task theo subjectId
         Map<Integer, List<Task>> groupedTasks = new HashMap<>();
+        List<Task> orphanTasks = new ArrayList<>();
+
         for (Task task : tasks) {
-            List<Task> group = groupedTasks.get(task.subjectId);
-            if (group == null) {
-                group = new ArrayList<>();
-                groupedTasks.put(task.subjectId, group);
+            boolean found = false;
+            for (Subject s : subjects) {
+                if (s.id != null && s.id.equals(task.subjectId)) {
+                    List<Task> group = groupedTasks.get(task.subjectId);
+                    if (group == null) {
+                        group = new ArrayList<>();
+                        groupedTasks.put(task.subjectId, group);
+                    }
+                    group.add(task);
+                    found = true;
+                    break;
+                }
             }
-            group.add(task);
+            if (!found) {
+                orphanTasks.add(task);
+            }
         }
 
-        // Duyệt qua từng môn học để tạo Header và danh sách Card
+        // 1. Duyệt qua từng môn học để tạo Header và danh sách Card
         for (Subject subject : subjects) {
             List<Task> subjectTasks = groupedTasks.get(subject.id);
-            
-            // Chỉ hiện môn học nếu có task hoặc bạn muốn hiện môn trống thì bỏ điều kiện if này
             if (subjectTasks != null && !subjectTasks.isEmpty()) {
-                // 1. Thêm Header tên môn học
                 taskList.add(new TaskUiModel(TaskUiModel.TYPE_GROUP_HEADER, subject.name, "", "", false, "low"));
-                
-                // 2. Thêm các Task (Dạng Card)
                 for (Task task : subjectTasks) {
-                    taskList.add(new TaskUiModel(
-                            task.id != null ? task.id : 0,
-                            TaskUiModel.TYPE_TABLE_ROW, // Map với giao diện Card trong Adapter
-                            task.title,
-                            DateUtils.timestampToString(task.dueDate),
-                            "", 
-                            task.isCompleted,
-                            task.priority != null ? task.priority : "low",
-                            task.subjectId
-                    ));
+                    addTaskToUiList(task);
                 }
+            }
+        }
+
+        // 2. Thêm các công việc không thuộc môn học nào (hoặc môn học chưa load kịp)
+        if (!orphanTasks.isEmpty()) {
+            taskList.add(new TaskUiModel(TaskUiModel.TYPE_GROUP_HEADER, "Chưa phân loại / Đang tải...", "", "", false, "low"));
+            for (Task task : orphanTasks) {
+                addTaskToUiList(task);
             }
         }
 
@@ -137,5 +143,18 @@ public class TaskActivity extends AppCompatActivity {
         if (tvCount != null) {
             tvCount.setText(getString(R.string.task_count_format, tasks.size()));
         }
+    }
+
+    private void addTaskToUiList(Task task) {
+        taskList.add(new TaskUiModel(
+                task.id != null ? task.id : 0,
+                TaskUiModel.TYPE_TABLE_ROW,
+                task.title,
+                DateUtils.timestampToString(task.dueDate),
+                "",
+                task.isCompleted,
+                task.priority != null ? task.priority : "low",
+                task.subjectId
+        ));
     }
 }

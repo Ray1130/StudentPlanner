@@ -28,10 +28,12 @@ public class TaskViewModel extends AndroidViewModel {
     private LiveData<List<Task>> pendingTasks;
     private MutableLiveData<List<Subject>> allSubjects = new MutableLiveData<>();
     private ApiService apiService;
+    private AppDatabase database;
 
     public TaskViewModel(@NonNull Application application) {
         super(application);
         repository = new TaskRepository(application);
+        database = AppDatabase.getDatabase(application);
         allTasks = repository.getAllTasks();
         pendingTasks = repository.getPendingTasks();
 
@@ -45,18 +47,43 @@ public class TaskViewModel extends AndroidViewModel {
     }
 
     public void loadSubjects() {
+        // 1. Thử load từ Local DB trước để UI có dữ liệu ngay
+        new Thread(() -> {
+            List<Subject> localSubjects = database.subjectDao().getAllSubjects();
+            if (localSubjects != null && !localSubjects.isEmpty()) {
+                allSubjects.postValue(localSubjects);
+            }
+        }).start();
+
+        // 2. Load từ Server để cập nhật mới nhất
         apiService.getAllSubjects().enqueue(new Callback<List<Subject>>() {
             @Override
             public void onResponse(Call<List<Subject>> call, Response<List<Subject>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    allSubjects.postValue(response.body());
+                    List<Subject> serverSubjects = response.body();
+                    allSubjects.postValue(serverSubjects);
+                    
+                    // Cập nhật lại cache local
+                    new Thread(() -> {
+                        for (Subject s : serverSubjects) {
+                            database.subjectDao().insert(s); // Có thể dùng @Insert(onConflict = OnConflictStrategy.REPLACE)
+                        }
+                    }).start();
                 } else {
                     Log.e("TaskViewModel", "Lỗi tải môn học từ Server code: " + response.code());
+                    // Đảm bảo không bị null để không hiện "đang tải" mãi
+                    if (allSubjects.getValue() == null) {
+                        allSubjects.postValue(new java.util.ArrayList<>());
+                    }
                 }
             }
             @Override
             public void onFailure(Call<List<Subject>> call, Throwable t) {
                 Log.e("TaskViewModel", "Lỗi mạng khi tải môn học: " + t.getMessage());
+                // Đảm bảo không bị null
+                if (allSubjects.getValue() == null) {
+                    allSubjects.postValue(new java.util.ArrayList<>());
+                }
             }
         });
     }

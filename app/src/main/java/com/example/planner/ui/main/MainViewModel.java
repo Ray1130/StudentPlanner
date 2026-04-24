@@ -1,42 +1,94 @@
 package com.example.planner.ui.main;
 
+import android.app.Application;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.MediatorLiveData;
+
+import com.example.planner.data.local.AppDatabase;
+import com.example.planner.data.model.Task;
+import com.example.planner.utils.DateUtils;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
-public class MainViewModel extends ViewModel {
+public class MainViewModel extends AndroidViewModel {
 
-    private final MutableLiveData<DashboardUiState> dashboardUiState = new MutableLiveData<>();
+    private final MediatorLiveData<DashboardUiState> dashboardUiState = new MediatorLiveData<>();
+    private final AppDatabase database;
 
-    public MainViewModel() {
-        loadFakeData();
+    public MainViewModel(@NonNull Application application) {
+        super(application);
+        database = AppDatabase.getDatabase(application);
+
+        // Theo dõi dữ liệu từ Room Database
+        LiveData<List<Task>> tasksFromDb = database.taskDao().getAllTasks();
+        
+        dashboardUiState.addSource(tasksFromDb, tasks -> {
+            if (tasks != null) {
+                processTasks(tasks);
+            }
+        });
     }
 
     public LiveData<DashboardUiState> getDashboardUiState() {
         return dashboardUiState;
     }
 
-    private void loadFakeData() {
+    private void processTasks(List<Task> tasks) {
         List<MainTaskItem> todayTasks = new ArrayList<>();
-        todayTasks.add(new MainTaskItem("Train model KTDL", "KTDL • Quá hạn", MainTaskItem.PRIORITY_HIGH, false));
-
         List<MainTaskItem> upcomingTasks = new ArrayList<>();
-        upcomingTasks.add(new MainTaskItem("Train model KTDL", "KTDL • 31/3", MainTaskItem.PRIORITY_MEDIUM, false));
-        upcomingTasks.add(new MainTaskItem("Train model KTDL", "KTDL • 31/3", MainTaskItem.PRIORITY_HIGH, false));
-        upcomingTasks.add(new MainTaskItem("Train model KTDL", "KTDL • 31/3", MainTaskItem.PRIORITY_MEDIUM, false));
 
-        DashboardUiState state = new DashboardUiState(
-                0,
-                0,
-                0,
-                0,
-                todayTasks,
-                upcomingTasks
-        );
-        dashboardUiState.setValue(state);
+        int todayCount = 0;
+        int overdueCount = 0;
+        int completedCount = 0;
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        long startOfToday = cal.getTimeInMillis();
+        long endOfToday = startOfToday + (24 * 60 * 60 * 1000);
+
+        for (Task task : tasks) {
+            if (task.isCompleted) completedCount++;
+
+            long dueDate = task.dueDate;
+
+            boolean isToday = dueDate >= startOfToday && dueDate < endOfToday;
+            boolean isOverdue = dueDate < startOfToday && dueDate > 0;
+
+            int priorityLevel = MainTaskItem.PRIORITY_MEDIUM;
+            if (isOverdue) {
+                overdueCount++;
+                priorityLevel = MainTaskItem.PRIORITY_HIGH;
+            }
+            if (isToday) todayCount++;
+
+            String dateStr = DateUtils.timestampToString(task.dueDate);
+            String meta = dateStr; // Task class doesn't have note field
+            
+            int uiPriority = MainTaskItem.PRIORITY_MEDIUM;
+            if ("high".equalsIgnoreCase(task.priority)) {
+                uiPriority = MainTaskItem.PRIORITY_HIGH;
+            } else if ("low".equalsIgnoreCase(task.priority)) {
+                uiPriority = MainTaskItem.PRIORITY_LOW;
+            }
+
+            MainTaskItem item = new MainTaskItem(task.title, meta, uiPriority, task.isCompleted);
+
+            if (isToday || isOverdue) todayTasks.add(item);
+            else upcomingTasks.add(item);
+        }
+
+        dashboardUiState.setValue(new DashboardUiState(
+                todayCount, overdueCount, 0, completedCount, todayTasks, upcomingTasks
+        ));
     }
 
     public static class DashboardUiState {
@@ -47,11 +99,8 @@ public class MainViewModel extends ViewModel {
         private final List<MainTaskItem> todayTasks;
         private final List<MainTaskItem> upcomingTasks;
 
-        public DashboardUiState(int todayCount,
-                                int overdueCount,
-                                int highPriorityCount,
-                                int completedCount,
-                                List<MainTaskItem> todayTasks,
+        public DashboardUiState(int todayCount, int overdueCount, int highPriorityCount,
+                                int completedCount, List<MainTaskItem> todayTasks,
                                 List<MainTaskItem> upcomingTasks) {
             this.todayCount = todayCount;
             this.overdueCount = overdueCount;
@@ -61,28 +110,11 @@ public class MainViewModel extends ViewModel {
             this.upcomingTasks = upcomingTasks;
         }
 
-        public int getTodayCount() {
-            return todayCount;
-        }
-
-        public int getOverdueCount() {
-            return overdueCount;
-        }
-
-        public int getHighPriorityCount() {
-            return highPriorityCount;
-        }
-
-        public int getCompletedCount() {
-            return completedCount;
-        }
-
-        public List<MainTaskItem> getTodayTasks() {
-            return todayTasks;
-        }
-
-        public List<MainTaskItem> getUpcomingTasks() {
-            return upcomingTasks;
-        }
+        public int getTodayCount() { return todayCount; }
+        public int getOverdueCount() { return overdueCount; }
+        public int getHighPriorityCount() { return highPriorityCount; }
+        public int getCompletedCount() { return completedCount; }
+        public List<MainTaskItem> getTodayTasks() { return todayTasks; }
+        public List<MainTaskItem> getUpcomingTasks() { return upcomingTasks; }
     }
 }

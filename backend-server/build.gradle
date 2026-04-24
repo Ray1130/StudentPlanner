@@ -18,11 +18,21 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    
+    // Thêm MySQL Connector
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    
+    // Có thể giữ lại H2 để test nhanh nếu cần, nhưng hiện tại ta dùng MySQL
     runtimeOnly 'com.h2database:h2'
+    
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-// Thêm dòng này để chỉ định file Main nếu Android Studio không tự tìm thấy
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
 bootJar {
     mainClass = 'com.example.demo.DemoApplication'
 }

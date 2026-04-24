@@ -9,6 +9,18 @@ public class DateUtils {
         return formatter.format(new Date(timestamp));
     }
 
+    public static long stringToTimestamp(String dateString) {
+        try {
+            if (dateString == null || dateString.isEmpty() || dateString.equals("Chưa có hạn")) return 0;
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+            Date date = formatter.parse(dateString);
+            return date != null ? date.getTime() : 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
     //  Tính xem còn bao nhiêu ngày nữa là tới deadline
     public static int getDaysRemaining(long dueDateTimestamp) {
         long currentTimestamp = System.currentTimeMillis();

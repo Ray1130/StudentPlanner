@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.planner.R;
 import com.example.planner.ui.main.MainActivity;
+import com.example.planner.ui.pomodoro.PomodoroActivity;
 import com.example.planner.ui.task.TaskActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -40,6 +41,10 @@ public abstract class BaseActivity extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.nav_calendar) {
                     startActivity(new Intent(this, ScheduleActivity.class));
+                    finish();
+                    return true;
+                } else if (itemId == R.id.nav_pomodoro) {
+                    startActivity(new Intent(this, PomodoroActivity.class));
                     finish();
                     return true;
                 }

@@ -102,13 +102,6 @@ public class MainActivity extends BaseActivity
         );
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-
-        if (navigationView != null) {
-            navigationView.setNavigationItemSelectedListener(item -> {
-                drawerLayout.closeDrawers();
-                return true;
-            });
-        }
     }
 
     private void setupRecyclerView() {
@@ -160,9 +153,8 @@ public class MainActivity extends BaseActivity
 
     // Xử lý sự kiện logout khi bấm Đăng xuất từ giao diện trang chủ
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-        if (item.getItemId() == R.id.nav_logout) {
-
+        int id = item.getItemId();
+        if (id == R.id.nav_logout) {
             SharedPreferences preferences = getSharedPreferences("USER_FILE", MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
             editor.clear();
@@ -170,13 +162,14 @@ public class MainActivity extends BaseActivity
 
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
             startActivity(intent);
             finish();
-
+            return true;
+        } else if (id == R.id.nav_pomodoro) {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.pomodoro.PomodoroActivity.class));
+            drawerLayout.closeDrawers();
             return true;
         }
-
         return false;
     }
 }

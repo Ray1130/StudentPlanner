@@ -17,6 +17,10 @@
         android:icon="@drawable/ic_notification_nav"
         android:title="Thông báo" />
     <item
+        android:id="@+id/nav_pomodoro"
+        android:icon="@drawable/ic_pomodoro"
+        android:title="Pomodoro" />
+    <item
         android:id="@+id/nav_profile"
         android:icon="@drawable/ic_profile_nav"
         android:title="Tôi" />

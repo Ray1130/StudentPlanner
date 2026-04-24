@@ -1,4 +1,5 @@
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -6,250 +7,108 @@
     android:background="#F8F9FA"
     android:fillViewport="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:padding="20dp">
 
-        <!-- 1. Menu Icon -->
-        <ImageButton
-            android:id="@+id/btnMenu"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_menu_24"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="#7E69D4" />
-
-        <!-- 2. Tiêu đề "Công việc" -->
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Công việc"
-            android:textColor="#000000"
-            android:textSize="26sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnMenu" />
-
-        <!-- 3. Số lượng công việc (Dưới tiêu đề) -->
         <TextView
             android:id="@+id/tvTaskCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="10 công việc hiện tại"
             android:textColor="#757575"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+            android:textSize="18sp" />
 
-        <!-- 4. Nút Tạo mới (Căn theo Title và Count) -->
-        <Button
-            android:id="@+id/btnCreate"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:backgroundTint="#7E69D4"
-            android:paddingHorizontal="16dp"
-            android:text="+ Tạo mới"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textSize="13sp"
-            app:cornerRadius="8dp"
-            app:layout_constraintBottom_toBottomOf="@id/tvTaskCount"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- 5. Thanh Tìm kiếm (Dưới số lượng công việc) -->
-        <EditText
-            android:id="@+id/edtSearch"
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/bg_search_bar"
-            android:drawableStart="@drawable/ic_search"
-            android:drawablePadding="10dp"
-            android:hint="Tìm kiếm công việc..."
-            android:paddingHorizontal="12dp"
-            android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/tvTaskCount" />
-
-        <!-- 6. 3 Nút Filter (Chia đều 3 phần, bằng chiều cao, không in hoa) -->
-
-        <!-- 7. Header Lịch: Tháng + Điều hướng + Toggles -->
         <LinearLayout
             android:id="@+id/layoutFilters"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:orientation="horizontal"
-            android:weightSum="3"
-            app:layout_constraintTop_toBottomOf="@id/edtSearch"
-            tools:layout_editor_absoluteX="-5dp">
-
-            <Button
-                style="@style/MyFilterButtonStyle"
-                android:layout_width="106dp"
-                android:text="Sắp xếp theo khóa học" />
-
-            <Button
-                style="@style/MyFilterButtonStyle"
-                android:layout_marginHorizontal="6dp"
-                android:backgroundTint="#7E69D4"
-                android:text="Lịch"
-                android:textColor="@android:color/white" />
-
-            <Button
-                style="@style/MyFilterButtonStyle"
-                android:text="Bảng dữ liệu" />
+            android:weightSum="3">
         </LinearLayout>
 
-        <!-- HEADER LỊCH -->
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <RelativeLayout
             android:id="@+id/calendarHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:layout_constraintTop_toBottomOf="@id/layoutFilters">
-
-            <!-- 1. Định nghĩa cụm Toggle TRƯỚC để có ID layoutToggle -->
-            <LinearLayout
-                android:id="@+id/layoutToggle"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <Button
-                    android:id="@+id/btnWeek"
-                    style="@style/MyToggleButtonStyle"
-                    android:background="@drawable/bg_toggle_left"
-                    android:text="Tuần"
-                    android:textColor="#7E69D3" />
-
-                <Button
-                    android:id="@+id/btnMonth"
-                    style="@style/MyToggleButtonStyle"
-                    android:background="@drawable/bg_toggle_right"
-                    android:text="Tháng"
-                    android:textColor="@android:color/white" />
-            </LinearLayout>
-
-            <!-- 2. Nút Hôm nay căn theo layoutToggle -->
-
-            <!-- 3. Tên tháng ở bên trái -->
-
-            <Button
-                android:id="@+id/btnToday"
-                style="@style/MyToggleButtonStyle"
-                android:layout_width="57dp"
-                android:layout_height="37dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_toggle_group"
-                android:text="Hôm nay"
-                android:textColor="#FFFFFF"
-                app:layout_constraintBottom_toBottomOf="@id/layoutToggle"
-                app:layout_constraintEnd_toStartOf="@id/layoutToggle"
-                app:layout_constraintTop_toTopOf="@id/layoutToggle"
-                app:layout_constraintVertical_bias="0.0" />
+            android:layout_marginTop="16dp">
 
             <TextView
                 android:id="@+id/tvCurrentMonth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="125dp"
                 android:text="Tháng 4, 2026"
                 android:textColor="#000000"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/layoutToggle"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/layoutToggle" />
+                android:textStyle="bold" />
 
-            <!-- 4. Cụm Mũi tên ĐẶT DƯỚI layoutToggle (Lúc này ID đã tồn tại nên sẽ hết lỗi) -->
             <LinearLayout
-                android:id="@+id/layoutArrowNav"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutToggle">
-
-                <ImageButton
-                    android:id="@+id/btnPrevMonth"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_chevron_left"
-                    app:tint="#444444" />
+                android:layout_alignParentEnd="true">
 
                 <ImageButton
                     android:id="@+id/btnNextMonth"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:layout_marginStart="8dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_chevron_right"
-                    app:tint="#444444" />
+                    android:src="@drawable/ic_chevron_right" />
             </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-        <!-- 8. Khung Lịch: Thứ + RecyclerView -->
+            <ImageButton
+                android:id="@+id/btnPrevMonth"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_chevron_left" />
+        </RelativeLayout>
+
         <LinearLayout
+            android:id="@+id/calendarGrid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@drawable/bg_calendar_border"
-            android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@id/calendarHeader">
-
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingVertical="10dp">
-
-                <TextView
-                    style="@style/DayHeaderStyle"
-                    android:text="T2" />
-
-                <TextView
-                    style="@style/DayHeaderStyle"
-                    android:text="T3" />
-
-                <TextView
-                    style="@style/DayHeaderStyle"
-                    android:text="T4" />
-
-                <TextView
-                    style="@style/DayHeaderStyle"
-                    android:text="T5" />
-
-                <TextView
-                    style="@style/DayHeaderStyle"
-                    android:text="T6" />
-
-                <TextView
-                    style="@style/DayHeaderStyle"
-                    android:text="T7" />
-
-                <TextView
-                    style="@style/DayHeaderStyle"
-                    android:text="CN" />
+                <TextView style="@style/DayHeaderStyle" android:layout_weight="1" android:text="T2" android:gravity="center"/>
+                <TextView style="@style/DayHeaderStyle" android:layout_weight="1" android:text="T3" android:gravity="center"/>
+                <TextView style="@style/DayHeaderStyle" android:layout_weight="1" android:text="T4" android:gravity="center"/>
+                <TextView style="@style/DayHeaderStyle" android:layout_weight="1" android:text="T5" android:gravity="center"/>
+                <TextView style="@style/DayHeaderStyle" android:layout_weight="1" android:text="T6" android:gravity="center"/>
+                <TextView style="@style/DayHeaderStyle" android:layout_weight="1" android:text="T7" android:gravity="center"/>
+                <TextView style="@style/DayHeaderStyle" android:layout_weight="1" android:text="CN" android:gravity="center"/>
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvCalendar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:overScrollMode="never" />
+                android:nestedScrollingEnabled="false" />
         </LinearLayout>
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_tasks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:clipToPadding="false"
+            android:paddingBottom="100dp"
+            android:layout_marginTop="20dp"
+            tools:listitem="@layout/item_task_card"/>
+
+    </LinearLayout>
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.core.widget.NestedScrollView>

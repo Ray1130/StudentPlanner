@@ -32,6 +32,14 @@
             android:name=".ui.main.MainActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.schedule.ScheduleActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.pomodoro.PomodoroActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

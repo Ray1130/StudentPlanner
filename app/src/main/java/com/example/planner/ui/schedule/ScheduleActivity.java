@@ -3,7 +3,6 @@ package com.example.planner.ui.schedule;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,7 +12,9 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-public class ScheduleActivity extends AppCompatActivity {
+import com.example.planner.ui.BaseActivity;
+
+public class ScheduleActivity extends BaseActivity {
 
     private TextView tvCurrentMonth;
     private RecyclerView rvCalendar;
@@ -26,7 +27,7 @@ public class ScheduleActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // 1. Nạp giao diện XML vào Activity
-        setContentView(R.layout.fragment_schedule);
+        setContentView(R.layout.activity_schedule);
 
         // 2. Khởi tạo dữ liệu
         selectedDate = LocalDate.now();
@@ -44,6 +45,8 @@ public class ScheduleActivity extends AppCompatActivity {
             selectedDate = selectedDate.plusMonths(1);
             setMonthView();
         });
+
+        setupBottomNavigation(R.id.nav_calendar);
     }
 
     private void initWidgets() {

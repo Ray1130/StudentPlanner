@@ -4,11 +4,12 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
+import androidx.room.OnConflictStrategy;
 import java.util.List;
 import com.example.planner.data.model.Subject;
 @Dao
 public interface SubjectDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Subject subject); // Lệnh thêm môn học mới
 
     @Update

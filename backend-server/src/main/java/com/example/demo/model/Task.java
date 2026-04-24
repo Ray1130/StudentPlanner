@@ -1,7 +1,6 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "tasks")
@@ -10,43 +9,35 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "view_type")
-    @JsonProperty("viewType")
-    private int viewType;
-
     private String title;
-    private String deadline;
-    private String note;
+    private Long dueDate; // Sử dụng Long để lưu timestamp
+    private Integer subjectId;
+    private boolean isCompleted;
+    private String priority;
 
-    @Column(name = "is_checked")
-    @JsonProperty("checked")
-    private boolean checked;
-
+    // Default constructor
     public Task() {}
 
-    public Task(int viewType, String title, String deadline, String note, boolean checked) {
-        this.viewType = viewType;
+    // Constructor matching DemoApplication usage
+    public Task(String title, Long dueDate, Integer subjectId) {
         this.title = title;
-        this.deadline = deadline;
-        this.note = note;
-        this.checked = checked;
+        this.dueDate = dueDate;
+        this.subjectId = subjectId;
+        this.isCompleted = false;
+        this.priority = "low";
     }
 
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
-    public int getViewType() { return viewType; }
-    public void setViewType(int viewType) { this.viewType = viewType; }
-
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
-
-    public String getDeadline() { return deadline; }
-    public void setDeadline(String deadline) { this.deadline = deadline; }
-
-    public String getNote() { return note; }
-    public void setNote(String note) { this.note = note; }
-
-    public boolean isChecked() { return checked; }
-    public void setChecked(boolean checked) { this.checked = checked; }
+    public Long getDueDate() { return dueDate; }
+    public void setDueDate(Long dueDate) { this.dueDate = dueDate; }
+    public Integer getSubjectId() { return subjectId; }
+    public void setSubjectId(Integer subjectId) { this.subjectId = subjectId; }
+    public boolean isCompleted() { return isCompleted; }
+    public void setCompleted(boolean completed) { isCompleted = completed; }
+    public String getPriority() { return priority; }
+    public void setPriority(String priority) { this.priority = priority; }
 }

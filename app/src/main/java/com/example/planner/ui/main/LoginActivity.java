@@ -30,8 +30,8 @@ public class LoginActivity extends AppCompatActivity {
 
         // 🔥 Check nếu đã login rồi → vào thẳng Main
         SharedPreferences preferences = getSharedPreferences("USER_FILE", MODE_PRIVATE);
-        // Reset trạng thái login
-        preferences.edit().clear().apply();
+        // Bỏ clear để giữ session
+        // preferences.edit().clear().apply();
         boolean isLoggedIn = preferences.getBoolean("isLoggedIn", false);
 
 

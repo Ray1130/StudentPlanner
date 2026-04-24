@@ -22,7 +22,9 @@ public class MainTaskAdapter extends RecyclerView.Adapter<MainTaskAdapter.TaskVi
 
     public void submitList(List<MainTaskItem> newItems) {
         items.clear();
-        if (newItems != null) items.addAll(newItems);
+        if (newItems != null) {
+            items.addAll(newItems);
+        }
         notifyDataSetChanged();
     }
 
@@ -61,13 +63,13 @@ public class MainTaskAdapter extends RecyclerView.Adapter<MainTaskAdapter.TaskVi
             tvTaskTitle.setText(item.getTitle());
             tvTaskMeta.setText(item.getMeta());
 
-            // Xử lý icon trạng thái hoàn thành (Xanh lá / Xám)
+            // Icon trạng thái
             int statusIcon = item.isCompleted() ? R.drawable.ic_check_circle_24 : R.drawable.ic_circle_outline_24;
             int statusTint = item.isCompleted() ? R.color.success : R.color.text_secondary;
             imgStatus.setImageResource(statusIcon);
             imgStatus.setColorFilter(ContextCompat.getColor(itemView.getContext(), statusTint));
 
-            // Xử lý màu sắc dấu chấm ưu tiên (Đỏ - Cam - Xanh lá)
+            // Dấu chấm ưu tiên
             int priorityDrawable;
             if (item.getPriority() == MainTaskItem.PRIORITY_HIGH) {
                 priorityDrawable = R.drawable.bg_priority_dot_red;
@@ -76,7 +78,7 @@ public class MainTaskAdapter extends RecyclerView.Adapter<MainTaskAdapter.TaskVi
             } else {
                 priorityDrawable = R.drawable.bg_priority_dot_green;
             }
-            
+
             Drawable background = ContextCompat.getDrawable(itemView.getContext(), priorityDrawable);
             if (viewPriorityDot != null) {
                 viewPriorityDot.setBackground(background);

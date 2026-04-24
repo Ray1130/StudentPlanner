@@ -1,69 +1,45 @@
 package com.example.planner.ui.main;
 
+import android.app.Application;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.MediatorLiveData;
 
-import com.example.planner.data.ApiService;
-import com.example.planner.ui.task.TaskUiModel;
+import com.example.planner.data.local.AppDatabase;
+import com.example.planner.data.model.Task;
+import com.example.planner.utils.DateUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+public class MainViewModel extends AndroidViewModel {
 
-public class MainViewModel extends ViewModel {
+    private final MediatorLiveData<DashboardUiState> dashboardUiState = new MediatorLiveData<>();
+    private final AppDatabase database;
 
-    private final MutableLiveData<DashboardUiState> dashboardUiState = new MutableLiveData<>();
-    private final ApiService apiService;
-    private final SimpleDateFormat apiDateFormat = new SimpleDateFormat("dd/MM/yyyy", new Locale("vi", "VN"));
+    public MainViewModel(@NonNull Application application) {
+        super(application);
+        database = AppDatabase.getDatabase(application);
 
-    public MainViewModel() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8080/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        apiService = retrofit.create(ApiService.class);
-        refreshData();
+        // Theo dõi dữ liệu từ Room Database
+        LiveData<List<Task>> tasksFromDb = database.taskDao().getAllTasks();
+        
+        dashboardUiState.addSource(tasksFromDb, tasks -> {
+            if (tasks != null) {
+                processTasks(tasks);
+            }
+        });
     }
 
     public LiveData<DashboardUiState> getDashboardUiState() {
         return dashboardUiState;
     }
 
-    public void refreshData() {
-        apiService.getAllTasks().enqueue(new Callback<List<TaskUiModel>>() {
-            @Override
-            public void onResponse(Call<List<TaskUiModel>> call, Response<List<TaskUiModel>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Log.d("MainViewModel", "Nhận được " + response.body().size() + " tasks từ server");
-                    processTasks(response.body());
-                } else {
-                    Log.e("MainViewModel", "Lỗi phản hồi API: " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<TaskUiModel>> call, Throwable t) {
-                Log.e("MainViewModel", "Lỗi kết nối API: " + t.getMessage());
-                dashboardUiState.postValue(new DashboardUiState(0, 0, 0, 0, new ArrayList<>(), new ArrayList<>()));
-            }
-        });
-    }
-
-    private void processTasks(List<TaskUiModel> tasks) {
+    private void processTasks(List<Task> tasks) {
         List<MainTaskItem> todayTasks = new ArrayList<>();
         List<MainTaskItem> upcomingTasks = new ArrayList<>();
 
@@ -79,68 +55,39 @@ public class MainViewModel extends ViewModel {
         long startOfToday = cal.getTimeInMillis();
         long endOfToday = startOfToday + (24 * 60 * 60 * 1000);
 
-        for (TaskUiModel task : tasks) {
-            // Log thông tin task để debug
-            Log.d("MainViewModel", "Processing task: " + task.getTitle() + " | Deadline: " + task.getDeadline());
+        for (Task task : tasks) {
+            if (task.isCompleted) completedCount++;
 
-            if (task.isChecked()) {
-                completedCount++;
-            }
-
-            long dueDate = 0;
-            if (task.getDeadline() != null && !task.getDeadline().isEmpty()) {
-                try {
-                    Date date = apiDateFormat.parse(task.getDeadline());
-                    if (date != null) dueDate = date.getTime();
-                } catch (ParseException e) {
-                    // Thử parse format khác nếu format chuẩn bị lỗi (vd: yyyy-MM-dd)
-                    try {
-                        SimpleDateFormat altFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-                        Date date = altFormat.parse(task.getDeadline());
-                        if (date != null) dueDate = date.getTime();
-                    } catch (ParseException e2) {
-                        Log.e("MainViewModel", "Không thể parse ngày: " + task.getDeadline());
-                    }
-                }
-            }
+            long dueDate = task.dueDate;
 
             boolean isToday = dueDate >= startOfToday && dueDate < endOfToday;
             boolean isOverdue = dueDate < startOfToday && dueDate > 0;
 
-            int priority = MainTaskItem.PRIORITY_MEDIUM;
+            int priorityLevel = MainTaskItem.PRIORITY_MEDIUM;
             if (isOverdue) {
                 overdueCount++;
-                priority = MainTaskItem.PRIORITY_HIGH;
+                priorityLevel = MainTaskItem.PRIORITY_HIGH;
             }
             if (isToday) todayCount++;
 
-            String meta = (task.getNote() != null ? task.getNote() : "");
-            if (task.getDeadline() != null) {
-                meta += (meta.isEmpty() ? "" : " • ") + task.getDeadline();
+            String dateStr = DateUtils.timestampToString(task.dueDate);
+            String meta = dateStr; // Task class doesn't have note field
+            
+            int uiPriority = MainTaskItem.PRIORITY_MEDIUM;
+            if ("high".equalsIgnoreCase(task.priority)) {
+                uiPriority = MainTaskItem.PRIORITY_HIGH;
+            } else if ("low".equalsIgnoreCase(task.priority)) {
+                uiPriority = MainTaskItem.PRIORITY_LOW;
             }
-            if (isOverdue) meta += " • Quá hạn";
 
-            MainTaskItem item = new MainTaskItem(
-                    task.getTitle() != null ? task.getTitle() : "Không tiêu đề",
-                    meta,
-                    priority,
-                    task.isChecked()
-            );
+            MainTaskItem item = new MainTaskItem(task.title, meta, uiPriority, task.isCompleted);
 
-            if (isToday || isOverdue) {
-                todayTasks.add(item);
-            } else {
-                upcomingTasks.add(item);
-            }
+            if (isToday || isOverdue) todayTasks.add(item);
+            else upcomingTasks.add(item);
         }
 
-        dashboardUiState.postValue(new DashboardUiState(
-                todayCount,
-                overdueCount,
-                0,
-                completedCount,
-                todayTasks,
-                upcomingTasks
+        dashboardUiState.setValue(new DashboardUiState(
+                todayCount, overdueCount, 0, completedCount, todayTasks, upcomingTasks
         ));
     }
 

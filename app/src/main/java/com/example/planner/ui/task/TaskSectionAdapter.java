@@ -15,6 +15,7 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public interface OnTaskActionListener {
         void onAddNewTask();
         void onAddNewGroup();
+        void onTaskClick(TaskUiModel task);
         void onTaskStatusChanged(TaskUiModel task);
         void onTaskLongClick(TaskUiModel task);
     }
@@ -41,11 +42,7 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 return new HeaderViewHolder(inflater.inflate(R.layout.item_task_group_header, parent, false));
             case TaskUiModel.TYPE_TABLE_ROW:
                 return new TaskCardViewHolder(inflater.inflate(R.layout.item_task_card, parent, false));
-            case TaskUiModel.TYPE_TABLE_HEADER:
-            case TaskUiModel.TYPE_ACTION_NEW_PAGE:
-            case TaskUiModel.TYPE_ACTION_NEW_GROUP:
             default:
-                // Trả về một View trống cho các loại không còn sử dụng để tránh lỗi
                 return new EmptyViewHolder(new View(parent.getContext()));
         }
     }
@@ -59,14 +56,12 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             TaskCardViewHolder cardHolder = (TaskCardViewHolder) holder;
             cardHolder.tvTitle.setText(item.getTitle());
             
-            // Subtitle kết hợp Deadline và Note (ví dụ: Mobile - 5/5)
             String subtitle = item.getDeadline();
             if (item.getNote() != null && !item.getNote().isEmpty()) {
                 subtitle = item.getNote() + " - " + subtitle;
             }
             cardHolder.tvSubtitle.setText(subtitle);
 
-            // Cập nhật icon check
             updateCheckIcon(cardHolder.ivCheck, item.isChecked());
             cardHolder.ivCheck.setOnClickListener(v -> {
                 item.setChecked(!item.isChecked());
@@ -74,14 +69,15 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 if (listener != null) listener.onTaskStatusChanged(item);
             });
 
+            cardHolder.itemView.setOnClickListener(v -> {
+                if (listener != null) listener.onTaskClick(item);
+            });
+
             cardHolder.itemView.setOnLongClickListener(v -> {
-                if (listener != null) {
-                    listener.onTaskLongClick(item);
-                }
+                if (listener != null) listener.onTaskLongClick(item);
                 return true;
             });
             
-            // Hiển thị màu ưu tiên
             int color;
             switch (item.getPriority() != null ? item.getPriority() : "low") {
                 case "high":
@@ -96,9 +92,6 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     break;
             }
             cardHolder.viewPriorityStrip.setBackgroundColor(color);
-            if (cardHolder.viewPriorityDot != null) {
-                cardHolder.viewPriorityDot.setBackgroundColor(color);
-            }
             cardHolder.viewPriorityStrip.setVisibility(View.VISIBLE);
         }
     }
@@ -118,7 +111,6 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         notifyDataSetChanged();
     }
 
-    // --- Các ViewHolders ---
     static class HeaderViewHolder extends RecyclerView.ViewHolder {
         TextView tvGroupName;
         HeaderViewHolder(@NonNull View itemView) { 
@@ -130,14 +122,13 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     static class TaskCardViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvSubtitle;
         ImageView ivCheck;
-        View viewPriorityStrip, viewPriorityDot;
+        View viewPriorityStrip;
         TaskCardViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTaskTitle);
             tvSubtitle = itemView.findViewById(R.id.tvTaskSubtitle);
             ivCheck = itemView.findViewById(R.id.ivCheck);
             viewPriorityStrip = itemView.findViewById(R.id.viewPriorityStrip);
-            viewPriorityDot = itemView.findViewById(R.id.viewPriorityDot);
         }
     }
 

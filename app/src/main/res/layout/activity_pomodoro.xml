@@ -4,41 +4,133 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/screen_bg">
+    android:background="@color/screen_bg"
+    tools:context=".ui.pomodoro.PomodoroActivity">
 
+    <!-- Header -->
     <LinearLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <ImageView
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:src="@drawable/ic_pomodoro"
-            app:tint="@color/pastel_indigo" />
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="20dp"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="POMODORO"
+            android:textColor="@color/text_primary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.1" />
+
+        <ImageView
+            android:id="@+id/ivSettings"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_settings_24"
+            app:tint="@color/text_secondary" />
+    </LinearLayout>
+
+    <!-- Chế độ Highlight (Tabs) -->
+    <LinearLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_mode_toggle"
+        android:padding="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header">
+
+        <TextView
+            android:id="@+id/btnModePomodoro"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="25:00"
-            android:textColor="@color/text_primary"
-            android:textSize="64sp"
+            android:background="@drawable/bg_mode_selected"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="Pomodoro"
+            android:textColor="@android:color/white"
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/btnModeShortBreak"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Pomodoro Timer"
-            android:textColor="@color/text_secondary"
-            android:textSize="18sp" />
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="Short Break"
+            android:textColor="@color/text_secondary" />
 
+        <TextView
+            android:id="@+id/btnModeLongBreak"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="Long Break"
+            android:textColor="@color/text_secondary" />
     </LinearLayout>
 
+    <!-- Timer Circle & Progress -->
+    <FrameLayout
+        android:id="@+id/timerLayout"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="60dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout">
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/timerProgress"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:progress="100"
+            app:indicatorColor="@color/pastel_indigo"
+            app:indicatorSize="280dp"
+            app:trackColor="#E1DFF5"
+            app:trackThickness="12dp"
+            app:trackCornerRadius="10dp"
+            android:layout_gravity="center" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="25:00"
+                android:textColor="@color/text_primary"
+                android:textSize="64sp"
+                android:textStyle="bold" />
+
+            <!-- Nút tích hợp Start/Pause ngay trong đồng hồ -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAction"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="START"
+                android:textColor="@color/pastel_indigo"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.2"/>
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- Bottom Navigation -->
     <include
-        android:id="@+id/bottomNavigation"
         layout="@layout/layout_bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

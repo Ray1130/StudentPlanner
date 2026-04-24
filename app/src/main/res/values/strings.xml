@@ -31,6 +31,7 @@
     <string name="menu_organize">Sắp xếp</string>
     <string name="menu_reminder">Nhắc nhở</string>
     <string name="menu_logout">Đăng xuất</string>
+    <string name="menu_pomodoro">Pomodoro</string>
 
     <!-- Task UI Strings -->
     <string name="task_count_format">%1$d công việc hiện tại</string>

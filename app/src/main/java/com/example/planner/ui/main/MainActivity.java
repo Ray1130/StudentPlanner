@@ -11,7 +11,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
@@ -22,15 +21,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.planner.R;
+import com.example.planner.ui.BaseActivity;
 import com.google.android.material.navigation.NavigationView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import com.google.android.material.navigation.NavigationView;
-
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private MainViewModel viewModel;
@@ -64,6 +62,7 @@ public class MainActivity extends AppCompatActivity
         setupViewModel();
         bindStaticData();
         observeUi();
+        setupBottomNavigation(R.id.nav_home);
 
         NavigationView navigationView = findViewById(R.id.navigationView);
 
@@ -103,13 +102,6 @@ public class MainActivity extends AppCompatActivity
         );
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-
-        if (navigationView != null) {
-            navigationView.setNavigationItemSelectedListener(item -> {
-                drawerLayout.closeDrawers();
-                return true;
-            });
-        }
     }
 
     private void setupRecyclerView() {
@@ -161,9 +153,8 @@ public class MainActivity extends AppCompatActivity
 
     // Xử lý sự kiện logout khi bấm Đăng xuất từ giao diện trang chủ
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-        if (item.getItemId() == R.id.nav_logout) {
-
+        int id = item.getItemId();
+        if (id == R.id.nav_logout) {
             SharedPreferences preferences = getSharedPreferences("USER_FILE", MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
             editor.clear();
@@ -171,13 +162,14 @@ public class MainActivity extends AppCompatActivity
 
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
             startActivity(intent);
             finish();
-
+            return true;
+        } else if (id == R.id.nav_pomodoro) {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.pomodoro.PomodoroActivity.class));
+            drawerLayout.closeDrawers();
             return true;
         }
-
         return false;
     }
 }

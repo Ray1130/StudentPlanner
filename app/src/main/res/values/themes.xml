@@ -17,4 +17,9 @@
         <item name="chipBackgroundColor">@color/pastel_indigo</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
+
+    <style name="WhiteNumberPicker">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textSize">18sp</item>
+    </style>
 </resources>

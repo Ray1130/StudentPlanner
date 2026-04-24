@@ -11,7 +11,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
@@ -22,15 +21,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.planner.R;
+import com.example.planner.ui.BaseActivity;
 import com.google.android.material.navigation.NavigationView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import com.google.android.material.navigation.NavigationView;
-
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private MainViewModel viewModel;
@@ -64,6 +62,7 @@ public class MainActivity extends AppCompatActivity
         setupViewModel();
         bindStaticData();
         observeUi();
+        setupBottomNavigation(R.id.nav_home);
 
         NavigationView navigationView = findViewById(R.id.navigationView);
 

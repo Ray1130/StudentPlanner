@@ -2,7 +2,6 @@ package com.example.planner.ui.task;
 
 import android.os.Bundle;
 import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,7 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TaskActivity extends AppCompatActivity {
+import com.example.planner.ui.BaseActivity;
+
+public class TaskActivity extends BaseActivity {
 
     private RecyclerView rvTasks;
     private List<TaskUiModel> taskList = new ArrayList<>();
@@ -58,6 +59,8 @@ public class TaskActivity extends AppCompatActivity {
         
         // Load dữ liệu ban đầu từ server
         viewModel.loadSubjects();
+
+        setupBottomNavigation(R.id.nav_tasks);
     }
 
     private void showCreateSheet() {

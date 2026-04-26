@@ -82,7 +82,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         updateTimeText();
 
         view.findViewById(R.id.row_deadline).setOnClickListener(v -> showDatePicker());
-        view.findViewById(R.id.row_time).setOnClickListener(v -> showTimePicker());
+        view.findViewById(R.id.row_time).setOnClickListener(v -> toggleReminder());
         view.findViewById(R.id.row_subject).setOnClickListener(v -> showSubjectPicker());
         view.findViewById(R.id.row_priority).setOnClickListener(v -> showPriorityPicker());
         view.findViewById(R.id.btn_save_task).setOnClickListener(v -> {
@@ -124,7 +124,9 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         etTaskTitle.setText(editingTask.getTitle());
         tvDeadlineValue.setText(editingTask.getDeadline());
         cbCompleted.setChecked(editingTask.isChecked());
-        cbReminder.setChecked(editingTask.isReminderEnabled());
+        
+        boolean isReminder = editingTask.isReminderEnabled();
+        cbReminder.setChecked(isReminder);
         
         selectedPriority = editingTask.getPriority();
         updatePriorityText(selectedPriority);
@@ -136,11 +138,16 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
             calendar.setTime(sdf.parse(editingTask.getDeadline()));
-            updateTimeText();
+            if (isReminder) {
+                updateTimeText();
+            } else {
+                tvTimeValue.setText("Tắt");
+            }
         } catch (Exception e) {
             try {
                 SimpleDateFormat sdfDateOnly = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                 calendar.setTime(sdfDateOnly.parse(editingTask.getDeadline()));
+                tvTimeValue.setText("Tắt");
             } catch (Exception e2) {
                 Log.e("TaskCreateSheet", "Error parsing deadline", e2);
             }
@@ -191,19 +198,40 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     }
 
     private void showTimePicker() {
-        new android.app.TimePickerDialog(requireContext(), (view, hourOfDay, minute) -> {
-            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-            calendar.set(Calendar.MINUTE, minute);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            updateTimeText();
-        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+        // Sử dụng style Spinner cho TimePickerDialog
+        new android.app.TimePickerDialog(requireContext(), 
+            android.R.style.Theme_Holo_Light_Dialog_NoActionBar, // Style spinner/wheel
+            (view, hourOfDay, minute) -> {
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendar.set(Calendar.MINUTE, minute);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+                cbReminder.setChecked(true);
+                updateTimeText();
+            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true)
+            .show();
     }
 
     private void updateTimeText() {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        tvTimeValue.setText(sdf.format(calendar.getTime()));
+        if (cbReminder.isChecked()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            tvTimeValue.setText(sdf.format(calendar.getTime()));
+        } else {
+            tvTimeValue.setText("Tắt");
+        }
     }
+
+    private void toggleReminder() {
+        if (cbReminder.isChecked()) {
+            // Đang bật -> Tắt đi
+            cbReminder.setChecked(false);
+            updateTimeText();
+        } else {
+            // Đang tắt -> Mở picker để chọn giờ và bật
+            showTimePicker();
+        }
+    }
+
 
     private void showSubjectPicker() {
         Log.d("TaskCreateSheet", "Mở bộ chọn môn học");

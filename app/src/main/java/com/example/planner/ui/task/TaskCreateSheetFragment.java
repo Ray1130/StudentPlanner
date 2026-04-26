@@ -69,6 +69,13 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         cbCompleted = view.findViewById(R.id.cb_completed);
         btnDelete = view.findViewById(R.id.btn_delete_task);
 
+        // Xử lý ngày mặc định từ bundle nếu có
+        if (getArguments() != null && getArguments().containsKey("default_date")) {
+            long defaultTimestamp = getArguments().getLong("default_date");
+            calendar.setTimeInMillis(defaultTimestamp);
+        }
+        updateDeadlineText();
+
         view.findViewById(R.id.row_deadline).setOnClickListener(v -> showDatePicker());
         view.findViewById(R.id.row_subject).setOnClickListener(v -> showSubjectPicker());
         view.findViewById(R.id.row_priority).setOnClickListener(v -> showPriorityPicker());

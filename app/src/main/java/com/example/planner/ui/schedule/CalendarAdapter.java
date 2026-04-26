@@ -55,39 +55,30 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
 
         if (date == null) {
             holder.tvDayOfMonth.setText("");
+            holder.dotIndicator.setVisibility(View.GONE);
         } else {
             holder.tvDayOfMonth.setText(String.valueOf(date.getDayOfMonth()));
 
-            // RESET các trạng thái mặc định để tránh lỗi khi RecyclerView tái sử dụng (Recycle) view
+            // RESET các trạng thái mặc định
             holder.tvDayOfMonth.setBackground(null);
-            holder.tvTaskNote.setVisibility(View.GONE);
+            holder.dotIndicator.setVisibility(View.GONE);
 
             // LOGIC CHÍNH: Kiểm tra ngày thuộc tháng hiện tại hay tháng trước/sau
             if (date.getMonthValue() != selectedDate.getMonthValue()) {
-                // Nếu KHÔNG thuộc tháng hiện tại -> Làm mờ
                 holder.tvDayOfMonth.setTextColor(Color.LTGRAY);
             } else {
-                // Nếu THUỘC tháng hiện tại -> Để màu đen hoặc highlight
                 holder.tvDayOfMonth.setTextColor(Color.BLACK);
 
-                // Highlight ngày hôm nay (Vòng tròn tím)
+                // Highlight ngày hôm nay
                 if (date.equals(LocalDate.now())) {
                     holder.tvDayOfMonth.setBackgroundResource(R.drawable.bg_circle_purple);
                     holder.tvDayOfMonth.setTextColor(Color.WHITE);
                 }
             }
 
-            // Hiển thị thông tin task từ database
+            // Hiển thị chấm tím nếu ngày đó có task
             if (taskData != null && taskData.containsKey(date)) {
-                CalendarTaskInfo info = taskData.get(date);
-                holder.tvTaskNote.setVisibility(View.VISIBLE);
-                holder.tvTaskSubject.setVisibility(View.VISIBLE);
-                
-                holder.tvTaskNote.setText(info.getTaskTitle());
-                holder.tvTaskSubject.setText(info.getSubjectName());
-            } else {
-                holder.tvTaskNote.setVisibility(View.GONE);
-                holder.tvTaskSubject.setVisibility(View.GONE);
+                holder.dotIndicator.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -104,16 +95,14 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
 
     public static class CalendarViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView tvDayOfMonth;
-        private final TextView tvTaskNote;
-        private final TextView tvTaskSubject;
+        private final View dotIndicator;
         private final OnItemListener onItemListener;
         private final ArrayList<LocalDate> days;
 
         public CalendarViewHolder(@NonNull View itemView, OnItemListener onItemListener, ArrayList<LocalDate> days) {
             super(itemView);
             tvDayOfMonth = itemView.findViewById(R.id.tvDayOfMonth);
-            tvTaskNote = itemView.findViewById(R.id.tvTaskNote);
-            tvTaskSubject = itemView.findViewById(R.id.tvTaskSubject);
+            dotIndicator = itemView.findViewById(R.id.dotIndicator);
             this.onItemListener = onItemListener;
             this.days = days;
             itemView.setOnClickListener(this);

@@ -25,7 +25,7 @@ public class ScheduleActivity extends BaseActivity {
 
     private TextView tvCurrentMonth;
     private RecyclerView rvCalendar;
-    private ImageButton btnPrevMonth, btnNextMonth;
+    private ImageButton btnPrevMonth, btnNextMonth, btnAddTask;
     private CalendarAdapter adapter;
     private TextView tvTaskCount;
     private LocalDate selectedDate;
@@ -55,6 +55,16 @@ public class ScheduleActivity extends BaseActivity {
         btnNextMonth.setOnClickListener(v -> {
             selectedDate = selectedDate.plusMonths(1);
             setMonthView();
+        });
+
+        btnAddTask.setOnClickListener(v -> {
+            com.example.planner.ui.task.TaskCreateSheetFragment sheet = new com.example.planner.ui.task.TaskCreateSheetFragment();
+            // Truyền ngày đang chọn vào bundle để TaskCreateSheetFragment biết ngày mặc định
+            Bundle bundle = new Bundle();
+            long timestamp = selectedDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
+            bundle.putLong("default_date", timestamp);
+            sheet.setArguments(bundle);
+            sheet.show(getSupportFragmentManager(), "TaskCreateSheet");
         });
 
         setupBottomNavigation(R.id.nav_calendar);
@@ -101,6 +111,7 @@ public class ScheduleActivity extends BaseActivity {
         btnPrevMonth = findViewById(R.id.btnPrevMonth);
         btnNextMonth = findViewById(R.id.btnNextMonth);
         tvTaskCount = findViewById(R.id.tvTaskCount);
+        btnAddTask = findViewById(R.id.btnAddTask);
     }
 
     private void updateTaskCount(int count) {
@@ -149,8 +160,8 @@ public class ScheduleActivity extends BaseActivity {
             days.add(date.withDayOfMonth(i));
         }
 
-        // 3. Lấp đầy các ô trống còn lại bằng ngày tháng sau (tổng 42 ô)
-        int nextMonthDays = 35 - days.size();
+        // 3. Lấp đầy các ô trống còn lại bằng ngày tháng sau (tổng 42 ô để cố định 6 hàng)
+        int nextMonthDays = 42 - days.size();
         for (int i = 1; i <= nextMonthDays; i++) {
             days.add(date.plusMonths(1).withDayOfMonth(i));
         }

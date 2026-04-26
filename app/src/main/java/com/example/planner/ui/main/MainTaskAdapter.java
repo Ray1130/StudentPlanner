@@ -78,17 +78,21 @@ public class MainTaskAdapter extends RecyclerView.Adapter<MainTaskAdapter.TaskVi
 
             // Dấu chấm ưu tiên
             int priorityDrawable;
-            if (item.getPriority() == MainTaskItem.PRIORITY_HIGH) {
-                priorityDrawable = R.drawable.bg_priority_dot_red;
-            } else if (item.getPriority() == MainTaskItem.PRIORITY_MEDIUM) {
-                priorityDrawable = R.drawable.bg_priority_dot_orange;
-            } else {
-                priorityDrawable = R.drawable.bg_priority_dot_green;
+            switch (item.getPriority()) {
+                case MainTaskItem.PRIORITY_HIGH:
+                    priorityDrawable = R.drawable.bg_priority_dot_red;
+                    break;
+                case MainTaskItem.PRIORITY_MEDIUM:
+                    priorityDrawable = R.drawable.bg_priority_dot_orange;
+                    break;
+                case MainTaskItem.PRIORITY_LOW:
+                default:
+                    priorityDrawable = R.drawable.bg_priority_dot_green;
+                    break;
             }
 
-            Drawable background = ContextCompat.getDrawable(itemView.getContext(), priorityDrawable);
             if (viewPriorityDot != null) {
-                viewPriorityDot.setBackground(background);
+                viewPriorityDot.setBackgroundResource(priorityDrawable);
             }
         }
     }

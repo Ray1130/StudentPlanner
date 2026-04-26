@@ -54,6 +54,7 @@ public class TaskActivity extends BaseActivity {
                 updateTask.isCompleted = task.isChecked();
                 updateTask.priority = task.getPriority();
                 updateTask.isReminderEnabled = task.isReminderEnabled();
+                updateTask.note = task.getNote();
                 viewModel.update(updateTask, null);
             }
 
@@ -157,9 +158,9 @@ public class TaskActivity extends BaseActivity {
                 TaskUiModel.TYPE_TABLE_ROW,
                 task.title,
                 DateUtils.timestampToString(task.dueDate),
-                "",
+                task.note != null ? task.note : "",
                 task.isCompleted,
-                task.priority != null ? task.priority : "low",
+                task.priority != null ? task.priority.toLowerCase() : "low",
                 task.subjectId,
                 task.isReminderEnabled
         ));

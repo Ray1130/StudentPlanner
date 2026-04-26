@@ -50,12 +50,15 @@ public class ScheduleViewModel extends AndroidViewModel {
                             ? subjects.get(task.subjectId) : "Nhiệm vụ";
                     
                     String meta = subjectName + " • " + DateUtils.timestampToString(task.dueDate);
+                    if (task.note != null && !task.note.isEmpty()) {
+                        meta = task.note + " • " + meta;
+                    }
                     
-                    int uiPriority = MainTaskItem.PRIORITY_MEDIUM;
+                    int uiPriority = MainTaskItem.PRIORITY_LOW;
                     if ("high".equalsIgnoreCase(task.priority)) {
                         uiPriority = MainTaskItem.PRIORITY_HIGH;
-                    } else if ("low".equalsIgnoreCase(task.priority)) {
-                        uiPriority = MainTaskItem.PRIORITY_LOW;
+                    } else if ("medium".equalsIgnoreCase(task.priority)) {
+                        uiPriority = MainTaskItem.PRIORITY_MEDIUM;
                     }
                     
                     items.add(new MainTaskItem(task.title, meta, uiPriority, task.isCompleted, task.isReminderEnabled));

@@ -15,6 +15,7 @@ public class Task {
     public String category; // Để phân biệt màu sắc hoặc loại
     public String priority; // low, medium, high
     public boolean isReminderEnabled;
+    public String note;
 
     public Task(String title, long dueDate, int subjectId) {
         this.title = title;

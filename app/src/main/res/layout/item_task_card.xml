@@ -16,15 +16,6 @@
         android:layout_height="wrap_content"
         android:minHeight="72dp">
 
-        <View
-            android:id="@+id/viewPriorityStrip"
-            android:layout_width="4dp"
-            android:layout_height="0dp"
-            android:background="@color/danger"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <ImageView
             android:id="@+id/ivCheck"
             android:layout_width="24dp"
@@ -32,7 +23,7 @@
             android:layout_marginStart="16dp"
             android:src="@drawable/ic_radio_unchecked"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/viewPriorityStrip"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView

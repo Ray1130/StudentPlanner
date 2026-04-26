@@ -323,6 +323,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
             task.isCompleted = cbCompleted.isChecked();
             task.priority = selectedPriority;
             task.isReminderEnabled = cbReminder.isChecked();
+            task.note = editingTask.getNote();
 
             viewModel.update(task, () -> {
                 if (getActivity() != null) {
@@ -346,6 +347,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
             newTask.isCompleted = cbCompleted.isChecked();
             newTask.priority = selectedPriority;
             newTask.isReminderEnabled = cbReminder.isChecked();
+            newTask.note = ""; // Default empty note
             
             viewModel.saveTask(newTask, () -> {
                 if (getActivity() != null) {

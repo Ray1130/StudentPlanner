@@ -82,21 +82,24 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 return true;
             });
             
-            int color;
-            switch (item.getPriority() != null ? item.getPriority() : "low") {
+            // Dấu chấm ưu tiên
+            int priorityDrawable;
+            String priority = item.getPriority() != null ? item.getPriority().toLowerCase() : "low";
+            switch (priority) {
                 case "high":
-                    color = holder.itemView.getContext().getResources().getColor(android.R.color.holo_red_light);
+                    priorityDrawable = R.drawable.bg_priority_dot_red;
                     break;
                 case "medium":
-                    color = holder.itemView.getContext().getResources().getColor(android.R.color.holo_orange_light);
+                    priorityDrawable = R.drawable.bg_priority_dot_orange;
                     break;
                 case "low":
                 default:
-                    color = holder.itemView.getContext().getResources().getColor(android.R.color.holo_green_light);
+                    priorityDrawable = R.drawable.bg_priority_dot_green;
                     break;
             }
-            cardHolder.viewPriorityStrip.setBackgroundColor(color);
-            cardHolder.viewPriorityStrip.setVisibility(View.VISIBLE);
+            if (cardHolder.viewPriorityDot != null) {
+                cardHolder.viewPriorityDot.setBackgroundResource(priorityDrawable);
+            }
         }
     }
 
@@ -126,14 +129,14 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     static class TaskCardViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvSubtitle;
         ImageView ivCheck, ivBell;
-        View viewPriorityStrip;
+        View viewPriorityDot;
         TaskCardViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTaskTitle);
             tvSubtitle = itemView.findViewById(R.id.tvTaskSubtitle);
             ivCheck = itemView.findViewById(R.id.ivCheck);
             ivBell = itemView.findViewById(R.id.ivBell);
-            viewPriorityStrip = itemView.findViewById(R.id.viewPriorityStrip);
+            viewPriorityDot = itemView.findViewById(R.id.viewPriorityDot);
         }
     }
 

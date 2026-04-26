@@ -12,14 +12,12 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import com.example.planner.ui.main.MainTaskItem;
-import com.example.planner.ui.main.MainTaskAdapter;
+import java.util.List;
 
 import androidx.lifecycle.ViewModelProvider;
 import com.example.planner.ui.main.MainTaskItem;
 import com.example.planner.ui.main.MainTaskAdapter;
 import com.example.planner.ui.BaseActivity;
-import java.util.List;
 
 public class ScheduleActivity extends BaseActivity {
 

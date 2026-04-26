@@ -47,6 +47,7 @@ public class MainTaskAdapter extends RecyclerView.Adapter<MainTaskAdapter.TaskVi
 
     static class TaskViewHolder extends RecyclerView.ViewHolder {
         private final ImageView imgStatus;
+        private final ImageView imgReminder;
         private final TextView tvTaskTitle;
         private final TextView tvTaskMeta;
         private final View viewPriorityDot;
@@ -54,6 +55,7 @@ public class MainTaskAdapter extends RecyclerView.Adapter<MainTaskAdapter.TaskVi
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
             imgStatus = itemView.findViewById(R.id.imgStatus);
+            imgReminder = itemView.findViewById(R.id.imgReminder);
             tvTaskTitle = itemView.findViewById(R.id.tvTaskTitle);
             tvTaskMeta = itemView.findViewById(R.id.tvTaskMeta);
             viewPriorityDot = itemView.findViewById(R.id.viewPriorityDot);
@@ -62,6 +64,11 @@ public class MainTaskAdapter extends RecyclerView.Adapter<MainTaskAdapter.TaskVi
         void bind(MainTaskItem item) {
             tvTaskTitle.setText(item.getTitle());
             tvTaskMeta.setText(item.getMeta());
+
+            // Nhắc nhở
+            if (imgReminder != null) {
+                imgReminder.setVisibility(item.isReminderEnabled() ? View.VISIBLE : View.GONE);
+            }
 
             // Icon trạng thái
             int statusIcon = item.isCompleted() ? R.drawable.ic_check_circle_24 : R.drawable.ic_circle_outline_24;

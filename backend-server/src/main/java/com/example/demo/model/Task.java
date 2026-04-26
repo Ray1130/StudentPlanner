@@ -14,6 +14,7 @@ public class Task {
     private Integer subjectId;
     private boolean isCompleted;
     private String priority;
+    private boolean isReminderEnabled;
 
     // Default constructor
     public Task() {}
@@ -25,6 +26,7 @@ public class Task {
         this.subjectId = subjectId;
         this.isCompleted = false;
         this.priority = "low";
+        this.isReminderEnabled = false;
     }
 
     // Getters and Setters
@@ -40,4 +42,6 @@ public class Task {
     public void setCompleted(boolean completed) { isCompleted = completed; }
     public String getPriority() { return priority; }
     public void setPriority(String priority) { this.priority = priority; }
+    public boolean isReminderEnabled() { return isReminderEnabled; }
+    public void setReminderEnabled(boolean reminderEnabled) { isReminderEnabled = reminderEnabled; }
 }

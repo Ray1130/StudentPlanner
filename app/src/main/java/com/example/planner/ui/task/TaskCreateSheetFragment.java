@@ -31,9 +31,11 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
 
     private EditText etTaskTitle;
     private TextView tvDeadlineValue;
+    private TextView tvTimeValue;
     private TextView tvSubjectValue;
     private TextView tvPriorityValue;
     private CheckBox cbCompleted;
+    private CheckBox cbReminder;
 
     private TaskViewModel viewModel;
     private Calendar calendar = Calendar.getInstance();
@@ -64,9 +66,11 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
 
         etTaskTitle = view.findViewById(R.id.et_task_title);
         tvDeadlineValue = view.findViewById(R.id.tv_deadline_value);
+        tvTimeValue = view.findViewById(R.id.tv_time_value);
         tvSubjectValue = view.findViewById(R.id.tv_subject_value);
         tvPriorityValue = view.findViewById(R.id.tv_priority_value);
         cbCompleted = view.findViewById(R.id.cb_completed);
+        cbReminder = view.findViewById(R.id.cb_reminder);
         btnDelete = view.findViewById(R.id.btn_delete_task);
 
         // Xử lý ngày mặc định từ bundle nếu có
@@ -75,8 +79,10 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
             calendar.setTimeInMillis(defaultTimestamp);
         }
         updateDeadlineText();
+        updateTimeText();
 
         view.findViewById(R.id.row_deadline).setOnClickListener(v -> showDatePicker());
+        view.findViewById(R.id.row_time).setOnClickListener(v -> showTimePicker());
         view.findViewById(R.id.row_subject).setOnClickListener(v -> showSubjectPicker());
         view.findViewById(R.id.row_priority).setOnClickListener(v -> showPriorityPicker());
         view.findViewById(R.id.btn_save_task).setOnClickListener(v -> {
@@ -118,6 +124,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         etTaskTitle.setText(editingTask.getTitle());
         tvDeadlineValue.setText(editingTask.getDeadline());
         cbCompleted.setChecked(editingTask.isChecked());
+        cbReminder.setChecked(editingTask.isReminderEnabled());
         
         selectedPriority = editingTask.getPriority();
         updatePriorityText(selectedPriority);
@@ -127,10 +134,16 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
 
         // Parse deadline string to calendar
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
             calendar.setTime(sdf.parse(editingTask.getDeadline()));
+            updateTimeText();
         } catch (Exception e) {
-            Log.e("TaskCreateSheet", "Error parsing deadline", e);
+            try {
+                SimpleDateFormat sdfDateOnly = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                calendar.setTime(sdfDateOnly.parse(editingTask.getDeadline()));
+            } catch (Exception e2) {
+                Log.e("TaskCreateSheet", "Error parsing deadline", e2);
+            }
         }
     }
 
@@ -175,6 +188,21 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     private void updateDeadlineText() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         tvDeadlineValue.setText(sdf.format(calendar.getTime()));
+    }
+
+    private void showTimePicker() {
+        new android.app.TimePickerDialog(requireContext(), (view, hourOfDay, minute) -> {
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            calendar.set(Calendar.MINUTE, minute);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            updateTimeText();
+        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+    }
+
+    private void updateTimeText() {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        tvTimeValue.setText(sdf.format(calendar.getTime()));
     }
 
     private void showSubjectPicker() {
@@ -266,6 +294,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
             task.id = editingTask.getId();
             task.isCompleted = cbCompleted.isChecked();
             task.priority = selectedPriority;
+            task.isReminderEnabled = cbReminder.isChecked();
 
             viewModel.update(task, () -> {
                 if (getActivity() != null) {
@@ -288,6 +317,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
             );
             newTask.isCompleted = cbCompleted.isChecked();
             newTask.priority = selectedPriority;
+            newTask.isReminderEnabled = cbReminder.isChecked();
             
             viewModel.saveTask(newTask, () -> {
                 if (getActivity() != null) {

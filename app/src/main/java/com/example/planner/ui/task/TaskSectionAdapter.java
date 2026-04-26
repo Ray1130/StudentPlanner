@@ -62,6 +62,10 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
             cardHolder.tvSubtitle.setText(subtitle);
 
+            if (cardHolder.ivBell != null) {
+                cardHolder.ivBell.setVisibility(item.isReminderEnabled() ? View.VISIBLE : View.GONE);
+            }
+
             updateCheckIcon(cardHolder.ivCheck, item.isChecked());
             cardHolder.ivCheck.setOnClickListener(v -> {
                 item.setChecked(!item.isChecked());
@@ -121,13 +125,14 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     static class TaskCardViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvSubtitle;
-        ImageView ivCheck;
+        ImageView ivCheck, ivBell;
         View viewPriorityStrip;
         TaskCardViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTaskTitle);
             tvSubtitle = itemView.findViewById(R.id.tvTaskSubtitle);
             ivCheck = itemView.findViewById(R.id.ivCheck);
+            ivBell = itemView.findViewById(R.id.ivBell);
             viewPriorityStrip = itemView.findViewById(R.id.viewPriorityStrip);
         }
     }

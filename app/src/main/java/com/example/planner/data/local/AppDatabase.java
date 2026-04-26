@@ -8,6 +8,8 @@ import androidx.room.RoomDatabase;
 import com.example.planner.data.model.PomodoroSession;
 import com.example.planner.data.model.Subject;
 import com.example.planner.data.model.Task;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 
 @Database(entities = {Subject.class, Task.class, PomodoroSession.class}, version = 4, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {

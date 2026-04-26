@@ -19,5 +19,8 @@ public interface SubjectDao {
     void delete(Subject subject); // Lệnh xóa môn học
 
     @Query("SELECT * FROM subjects")
-    List<Subject> getAllSubjects(); // Lệnh lấy danh sách toàn bộ môn học
+    List<Subject> getAllSubjects();
+
+    @Query("SELECT * FROM subjects")
+    androidx.lifecycle.LiveData<List<Subject>> getAllSubjectsLiveData();
 }

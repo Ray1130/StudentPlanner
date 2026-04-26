@@ -5,14 +5,18 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.planner.R;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import com.example.planner.ui.main.MainTaskItem;
+import com.example.planner.ui.main.MainTaskAdapter;
 
 import com.example.planner.ui.BaseActivity;
+import java.util.List;
 
 public class ScheduleActivity extends BaseActivity {
 
@@ -22,6 +26,8 @@ public class ScheduleActivity extends BaseActivity {
     private CalendarAdapter adapter;
     private TextView tvTaskCount;
     private LocalDate selectedDate;
+    private MainTaskAdapter taskAdapter;
+    private RecyclerView rvTasks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +41,8 @@ public class ScheduleActivity extends BaseActivity {
         initWidgets();
 
         setMonthView();
+
+        showTasksForSelectedDate();
 
         btnPrevMonth.setOnClickListener(v -> {
             selectedDate = selectedDate.minusMonths(1);
@@ -53,6 +61,7 @@ public class ScheduleActivity extends BaseActivity {
         // Trong Activity, gọi trực tiếp findViewById
         rvCalendar = findViewById(R.id.rvCalendar);
         tvCurrentMonth = findViewById(R.id.tvCurrentMonth);
+        rvTasks = findViewById(R.id.rv_tasks);
         btnPrevMonth = findViewById(R.id.btnPrevMonth);
         btnNextMonth = findViewById(R.id.btnNextMonth);
         tvTaskCount = findViewById(R.id.tvTaskCount);
@@ -62,6 +71,28 @@ public class ScheduleActivity extends BaseActivity {
         if (tvTaskCount != null) {
             tvTaskCount.setText(count + " công việc hiện tại");
         }
+    }
+
+    private void showTasksForSelectedDate() {
+        // 1. Dùng đúng Model MainTaskItem thay vì Task
+        List<MainTaskItem> list = new ArrayList<>();
+
+        // Giả sử constructor của MainTaskItem là: (Title, Meta, IsCompleted, Priority)
+        // Bạn hãy kiểm tra lại file MainTaskItem.java để truyền đúng tham số nhé
+        list.add(new MainTaskItem("Design figma", "Mobile - 1/4", MainTaskItem.PRIORITY_HIGH, false));
+        list.add(new MainTaskItem("Viết latex", "Mobile - 1/4", MainTaskItem.PRIORITY_MEDIUM, false));
+
+        // 2. Khởi tạo adapter (MainTaskAdapter không dùng list trong constructor)
+        if (taskAdapter == null) {
+            taskAdapter = new MainTaskAdapter();
+            rvTasks.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this));
+            rvTasks.setAdapter(taskAdapter);
+        }
+
+        // 3. Sử dụng hàm submitList() của MainTaskAdapter để đổ dữ liệu
+        taskAdapter.submitList(list);
+
+        updateTaskCount(list.size());
     }
 
     private void setMonthView() {
@@ -81,6 +112,7 @@ public class ScheduleActivity extends BaseActivity {
                 selectedDate = date;
                 setMonthView();
 
+                showTasksForSelectedDate();
                 // Log hoặc Toast để kiểm tra
                 // Toast.makeText(this, "Bạn chọn ngày: " + date, Toast.LENGTH_SHORT).show();
             }

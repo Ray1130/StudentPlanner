@@ -23,4 +23,9 @@ public class TaskController {
     public Task createTask(@RequestBody Task task) {
         return taskRepository.save(task);
     }
+
+    @GetMapping("/date")
+    public List<Task> getTasksByDate(@RequestParam Long start, @RequestParam Long end) {
+        return taskRepository.findByDueDateBetween(start, end);
+    }
 }

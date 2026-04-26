@@ -15,7 +15,8 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
 
     private final ArrayList<LocalDate> days;
     private final OnItemListener onItemListener;
-    private final LocalDate selectedDate;
+    private LocalDate selectedDate;
+    private java.util.Map<LocalDate, CalendarTaskInfo> taskData = new java.util.HashMap<>();
 
     public CalendarAdapter(ArrayList<LocalDate> days, LocalDate selectedDate, OnItemListener onItemListener) {
         this.days = days;
@@ -23,20 +24,28 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
         this.onItemListener = onItemListener;
     }
 
+    public void updateSelectedDate(LocalDate date) {
+        this.selectedDate = date;
+        notifyDataSetChanged();
+    }
+
+    public void setTaskData(java.util.Map<LocalDate, CalendarTaskInfo> data) {
+        this.taskData = data;
+        notifyDataSetChanged();
+    }
+
+    public void updateDays(ArrayList<LocalDate> newDays, LocalDate selectedDate) {
+        this.days.clear();
+        this.days.addAll(newDays);
+        this.selectedDate = selectedDate;
+        notifyDataSetChanged();
+    }
+
 
     @NonNull
     @Override
     public CalendarViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_calendar_cell, parent, false);
-
-        // Ép chiều cao mỗi ô là một con số cụ thể nếu nó không hiện (ví dụ 150px)
-        // Hoặc tính toán dựa trên chiều cao RecyclerView
-        int parentHeight = parent.getHeight();
-        if (parentHeight <= 0) {
-            parentHeight = 800; // Giá trị mặc định nếu chưa đo được height
-        }
-        view.getLayoutParams().height = parentHeight / 6;
-
         return new CalendarViewHolder(view, onItemListener, days);
     }
 
@@ -68,17 +77,17 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
                 }
             }
 
-            // Logic hiển thị task dummy (Giữ nguyên hoặc tối ưu theo tháng)
-            if (date.getDayOfMonth() == 30 && date.getMonthValue() == 3) {
+            // Hiển thị thông tin task từ database
+            if (taskData != null && taskData.containsKey(date)) {
+                CalendarTaskInfo info = taskData.get(date);
                 holder.tvTaskNote.setVisibility(View.VISIBLE);
-                holder.tvTaskNote.setText("Training");
-                holder.tvTaskNote.setTextColor(Color.parseColor("#E9C46A"));
-            }
-
-            if (date.getDayOfMonth() == 2 && date.getMonthValue() == 4) {
-                holder.tvTaskNote.setVisibility(View.VISIBLE);
-                holder.tvTaskNote.setText("Des fig");
-                holder.tvTaskNote.setTextColor(Color.parseColor("#4CAF50"));
+                holder.tvTaskSubject.setVisibility(View.VISIBLE);
+                
+                holder.tvTaskNote.setText(info.getTaskTitle());
+                holder.tvTaskSubject.setText(info.getSubjectName());
+            } else {
+                holder.tvTaskNote.setVisibility(View.GONE);
+                holder.tvTaskSubject.setVisibility(View.GONE);
             }
         }
     }
@@ -96,6 +105,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
     public static class CalendarViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView tvDayOfMonth;
         private final TextView tvTaskNote;
+        private final TextView tvTaskSubject;
         private final OnItemListener onItemListener;
         private final ArrayList<LocalDate> days;
 
@@ -103,6 +113,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
             super(itemView);
             tvDayOfMonth = itemView.findViewById(R.id.tvDayOfMonth);
             tvTaskNote = itemView.findViewById(R.id.tvTaskNote);
+            tvTaskSubject = itemView.findViewById(R.id.tvTaskSubject);
             this.onItemListener = onItemListener;
             this.days = days;
             itemView.setOnClickListener(this);

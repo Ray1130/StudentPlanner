@@ -6,7 +6,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.example.planner.data.ApiService;
 import com.example.planner.data.local.AppDatabase;
@@ -14,7 +13,6 @@ import com.example.planner.data.model.Subject;
 import com.example.planner.data.model.Task;
 import com.example.planner.data.repository.TaskRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -24,61 +22,50 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TaskViewModel extends AndroidViewModel {
-    private TaskRepository repository;
-    private LiveData<List<Task>> allTasks;
-    private LiveData<List<Task>> pendingTasks;
-    private MutableLiveData<List<Subject>> allSubjects = new MutableLiveData<>();
-    private ApiService apiService;
-    private AppDatabase database;
+    private final TaskRepository repository;
+    private final LiveData<List<Task>> allTasks;
+    private final LiveData<List<Task>> pendingTasks;
+    private final LiveData<List<Subject>> allSubjects;
+    private final ApiService apiService;
+    private final AppDatabase database;
 
     public TaskViewModel(@NonNull Application application) {
         super(application);
         repository = new TaskRepository(application);
         database = AppDatabase.getDatabase(application);
+        
+        // Luôn ưu tiên hiển thị dữ liệu từ Local Database (Room) để UI mượt mà
         allTasks = repository.getAllTasks();
         pendingTasks = repository.getPendingTasks();
+        allSubjects = database.subjectDao().getAllSubjectsLiveData();
 
+        // Cấu hình Retrofit cho việc đồng bộ Online
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8080/")
+                .baseUrl("http://10.0.2.2:8080/") // IP mặc định để emulator kết nối localhost máy tính
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(ApiService.class);
 
+        // Mỗi lần mở app, thử fetch dữ liệu mới nhất từ server về local
         loadSubjects();
     }
 
     public void loadSubjects() {
-        // 1. Load từ Local DB trước
-        AppDatabase.databaseWriteExecutor.execute(() -> {
-            List<Subject> localSubjects = database.subjectDao().getAllSubjects();
-            if (localSubjects != null) {
-                allSubjects.postValue(localSubjects);
-            }
-        });
-
-        // 2. Load từ Server
         apiService.getAllSubjects().enqueue(new Callback<List<Subject>>() {
             @Override
             public void onResponse(Call<List<Subject>> call, Response<List<Subject>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Subject> serverSubjects = response.body();
-                    allSubjects.postValue(serverSubjects);
-                    
-                    // Cập nhật local cache
                     AppDatabase.databaseWriteExecutor.execute(() -> {
                         for (Subject s : serverSubjects) {
                             database.subjectDao().insert(s);
                         }
                     });
-                } else if (allSubjects.getValue() == null) {
-                    allSubjects.postValue(new ArrayList<>());
                 }
             }
             @Override
             public void onFailure(Call<List<Subject>> call, Throwable t) {
-                if (allSubjects.getValue() == null) {
-                    allSubjects.postValue(new ArrayList<>());
-                }
+                Log.e("Sync", "Cannot connect to server, using local data only.");
             }
         });
     }
@@ -88,31 +75,26 @@ public class TaskViewModel extends AndroidViewModel {
     }
 
     public void insertSubject(Subject subject, OnSubjectCreatedListener listener) {
-        // Lưu local trước để đảm bảo mượt mà
+        // 1. Lưu Local trước
         AppDatabase.databaseWriteExecutor.execute(() -> {
             database.subjectDao().insert(subject);
-            // Sau khi insert local, chúng ta vẫn cần đẩy lên server
-            // Note: Room @Insert trả về rowId nhưng model dùng Integer id từ server.
         });
 
+        // 2. Đẩy lên Server
         apiService.createSubject(subject).enqueue(new Callback<Subject>() {
             @Override
             public void onResponse(Call<Subject> call, Response<Subject> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Subject createdSubject = response.body();
-                    // Cập nhật lại local với ID từ server
-                    AppDatabase.databaseWriteExecutor.execute(() -> {
-                        database.subjectDao().insert(createdSubject);
-                        loadSubjects();
-                        if (listener != null) listener.onCreated(createdSubject);
-                    });
+                    Subject created = response.body();
+                    AppDatabase.databaseWriteExecutor.execute(() -> database.subjectDao().insert(created));
+                    if (listener != null) listener.onCreated(created);
                 } else {
-                    if (listener != null) listener.onCreated(null);
+                    if (listener != null) listener.onCreated(subject);
                 }
             }
             @Override
             public void onFailure(Call<Subject> call, Throwable t) {
-                if (listener != null) listener.onCreated(null);
+                if (listener != null) listener.onCreated(subject);
             }
         });
     }
@@ -122,7 +104,10 @@ public class TaskViewModel extends AndroidViewModel {
     }
 
     public void saveTask(Task task, Runnable onSuccess) {
+        // Lưu Local
         repository.insertTask(task);
+        
+        // Đồng bộ lên Server
         apiService.createTask(task).enqueue(new Callback<Task>() {
             @Override
             public void onResponse(Call<Task> call, Response<Task> response) {
@@ -143,10 +128,6 @@ public class TaskViewModel extends AndroidViewModel {
         return pendingTasks;
     }
 
-    public void insert(Task task) {
-        repository.insertTask(task);
-    }
-
     public void update(Task task, Runnable onSuccess) {
         repository.updateTask(task);
         apiService.updateTask(task).enqueue(new Callback<Task>() {
@@ -162,6 +143,8 @@ public class TaskViewModel extends AndroidViewModel {
     }
 
     public void delete(int taskId, Runnable onSuccess) {
+        // Xóa local qua repository (giả định repository có hàm delete bằng ID hoặc object)
+        // Lưu ý: Cần tìm object Task từ ID để xóa
         List<Task> currentTasks = allTasks.getValue();
         if (currentTasks != null) {
             for (Task t : currentTasks) {

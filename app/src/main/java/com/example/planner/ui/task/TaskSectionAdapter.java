@@ -82,23 +82,31 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 return true;
             });
             
-            // Dấu chấm ưu tiên
+            // Dấu chấm ưu tiên và Gạch màu
             int priorityDrawable;
+            int priorityColor;
             String priority = item.getPriority() != null ? item.getPriority().toLowerCase() : "low";
             switch (priority) {
                 case "high":
                     priorityDrawable = R.drawable.bg_priority_dot_red;
+                    priorityColor = holder.itemView.getContext().getColor(R.color.priority_high);
                     break;
                 case "medium":
                     priorityDrawable = R.drawable.bg_priority_dot_orange;
+                    priorityColor = holder.itemView.getContext().getColor(R.color.priority_medium);
                     break;
                 case "low":
                 default:
                     priorityDrawable = R.drawable.bg_priority_dot_green;
+                    priorityColor = holder.itemView.getContext().getColor(R.color.priority_low);
                     break;
             }
+            
             if (cardHolder.viewPriorityDot != null) {
                 cardHolder.viewPriorityDot.setBackgroundResource(priorityDrawable);
+            }
+            if (cardHolder.viewPriorityStrip != null) {
+                cardHolder.viewPriorityStrip.setBackgroundColor(priorityColor);
             }
         }
     }
@@ -129,7 +137,7 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     static class TaskCardViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvSubtitle;
         ImageView ivCheck, ivBell;
-        View viewPriorityDot;
+        View viewPriorityDot, viewPriorityStrip;
         TaskCardViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTaskTitle);
@@ -137,6 +145,7 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             ivCheck = itemView.findViewById(R.id.ivCheck);
             ivBell = itemView.findViewById(R.id.ivBell);
             viewPriorityDot = itemView.findViewById(R.id.viewPriorityDot);
+            viewPriorityStrip = itemView.findViewById(R.id.viewPriorityStrip);
         }
     }
 

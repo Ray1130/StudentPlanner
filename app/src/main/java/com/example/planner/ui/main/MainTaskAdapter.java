@@ -51,6 +51,7 @@ public class MainTaskAdapter extends RecyclerView.Adapter<MainTaskAdapter.TaskVi
         private final TextView tvTaskTitle;
         private final TextView tvTaskMeta;
         private final View viewPriorityDot;
+        private final View viewPriorityStrip;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -59,6 +60,7 @@ public class MainTaskAdapter extends RecyclerView.Adapter<MainTaskAdapter.TaskVi
             tvTaskTitle = itemView.findViewById(R.id.tvTaskTitle);
             tvTaskMeta = itemView.findViewById(R.id.tvTaskMeta);
             viewPriorityDot = itemView.findViewById(R.id.viewPriorityDot);
+            viewPriorityStrip = itemView.findViewById(R.id.viewPriorityStrip);
         }
 
         void bind(MainTaskItem item) {
@@ -76,23 +78,30 @@ public class MainTaskAdapter extends RecyclerView.Adapter<MainTaskAdapter.TaskVi
             imgStatus.setImageResource(statusIcon);
             imgStatus.setColorFilter(ContextCompat.getColor(itemView.getContext(), statusTint));
 
-            // Dấu chấm ưu tiên
+            // Dấu chấm ưu tiên và Gạch màu
             int priorityDrawable;
+            int priorityColor;
             switch (item.getPriority()) {
                 case MainTaskItem.PRIORITY_HIGH:
                     priorityDrawable = R.drawable.bg_priority_dot_red;
+                    priorityColor = R.color.priority_high;
                     break;
                 case MainTaskItem.PRIORITY_MEDIUM:
                     priorityDrawable = R.drawable.bg_priority_dot_orange;
+                    priorityColor = R.color.priority_medium;
                     break;
                 case MainTaskItem.PRIORITY_LOW:
                 default:
                     priorityDrawable = R.drawable.bg_priority_dot_green;
+                    priorityColor = R.color.priority_low;
                     break;
             }
 
             if (viewPriorityDot != null) {
                 viewPriorityDot.setBackgroundResource(priorityDrawable);
+            }
+            if (viewPriorityStrip != null) {
+                viewPriorityStrip.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), priorityColor));
             }
         }
     }

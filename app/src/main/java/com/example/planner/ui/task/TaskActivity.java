@@ -53,6 +53,8 @@ public class TaskActivity extends BaseActivity {
                 updateTask.id = task.getId();
                 updateTask.isCompleted = task.isChecked();
                 updateTask.priority = task.getPriority();
+                updateTask.isReminderEnabled = task.isReminderEnabled();
+                updateTask.note = task.getNote();
                 viewModel.update(updateTask, null);
             }
 
@@ -136,7 +138,7 @@ public class TaskActivity extends BaseActivity {
         }
 
         if (!orphanTasks.isEmpty()) {
-            taskList.add(new TaskUiModel(TaskUiModel.TYPE_GROUP_HEADER, "Chưa phân loại", "", "", false, "low"));
+            taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, "Chưa phân loại", "", "", false, "low", 0, false));
             for (Task task : orphanTasks) {
                 addTaskToUiList(task);
             }
@@ -156,10 +158,11 @@ public class TaskActivity extends BaseActivity {
                 TaskUiModel.TYPE_TABLE_ROW,
                 task.title,
                 DateUtils.timestampToString(task.dueDate),
-                "",
+                task.note != null ? task.note : "",
                 task.isCompleted,
-                task.priority != null ? task.priority : "low",
-                task.subjectId
+                task.priority != null ? task.priority.toLowerCase() : "low",
+                task.subjectId,
+                task.isReminderEnabled
         ));
     }
 }

@@ -71,16 +71,16 @@ public class MainViewModel extends AndroidViewModel {
             if (isToday) todayCount++;
 
             String dateStr = DateUtils.timestampToString(task.dueDate);
-            String meta = dateStr; // Task class doesn't have note field
+            String meta = task.note != null && !task.note.isEmpty() ? task.note + " • " + dateStr : dateStr;
             
-            int uiPriority = MainTaskItem.PRIORITY_MEDIUM;
+            int uiPriority = MainTaskItem.PRIORITY_LOW;
             if ("high".equalsIgnoreCase(task.priority)) {
                 uiPriority = MainTaskItem.PRIORITY_HIGH;
-            } else if ("low".equalsIgnoreCase(task.priority)) {
-                uiPriority = MainTaskItem.PRIORITY_LOW;
+            } else if ("medium".equalsIgnoreCase(task.priority)) {
+                uiPriority = MainTaskItem.PRIORITY_MEDIUM;
             }
 
-            MainTaskItem item = new MainTaskItem(task.title, meta, uiPriority, task.isCompleted);
+            MainTaskItem item = new MainTaskItem(task.title, meta, uiPriority, task.isCompleted, task.isReminderEnabled);
 
             if (isToday || isOverdue) todayTasks.add(item);
             else upcomingTasks.add(item);

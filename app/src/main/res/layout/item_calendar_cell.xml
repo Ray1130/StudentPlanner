@@ -16,13 +16,13 @@
         android:textColor="#3F3379"
         android:textSize="14sp" />
 
-    <TextView
-        android:id="@+id/tvTaskNote"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Training"
-        android:textColor="#E9C46A"
-        android:textSize="10sp"
-        android:visibility="gone" /> <!-- Mặc định ẩn, hiện khi có task -->
+    <View
+        android:id="@+id/dotIndicator"
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_circle_purple"
+        android:visibility="gone" />
 
 </LinearLayout>

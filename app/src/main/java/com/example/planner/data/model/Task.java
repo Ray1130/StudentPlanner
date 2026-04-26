@@ -14,6 +14,8 @@ public class Task {
     public long timestamp; // Thời gian thực hiện
     public String category; // Để phân biệt màu sắc hoặc loại
     public String priority; // low, medium, high
+    public boolean isReminderEnabled;
+    public String note;
 
     public Task(String title, long dueDate, int subjectId) {
         this.title = title;
@@ -21,6 +23,7 @@ public class Task {
         this.subjectId = subjectId;
         this.isCompleted = false; // Mặc định tạo mới là chưa hoàn thành
         this.priority = "low"; // Mặc định là low
+        this.isReminderEnabled = false;
         this.id = null;
     }
 }

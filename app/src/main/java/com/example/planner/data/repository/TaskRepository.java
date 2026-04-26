@@ -40,4 +40,8 @@ public class TaskRepository {
     public LiveData<List<Task>> getPendingTasks() {
         return taskDao.getPendingTasks();
     }
+
+    public LiveData<List<Task>> getTasksByDate(long startOfDay, long endOfDay) {
+        return taskDao.getTasksByDate(startOfDay, endOfDay);
+    }
 }

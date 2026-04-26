@@ -9,12 +9,14 @@ public class MainTaskItem {
     private final String meta;
     private final int priority;
     private final boolean completed;
+    private final boolean reminderEnabled;
 
-    public MainTaskItem(String title, String meta, int priority, boolean completed) {
+    public MainTaskItem(String title, String meta, int priority, boolean completed, boolean reminderEnabled) {
         this.title = title;
         this.meta = meta;
         this.priority = priority;
         this.completed = completed;
+        this.reminderEnabled = reminderEnabled;
     }
 
     public String getTitle() {
@@ -31,5 +33,9 @@ public class MainTaskItem {
 
     public boolean isCompleted() {
         return completed;
+    }
+
+    public boolean isReminderEnabled() {
+        return reminderEnabled;
     }
 }

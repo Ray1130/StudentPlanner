@@ -62,6 +62,10 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
             cardHolder.tvSubtitle.setText(subtitle);
 
+            if (cardHolder.ivBell != null) {
+                cardHolder.ivBell.setVisibility(item.isReminderEnabled() ? View.VISIBLE : View.GONE);
+            }
+
             updateCheckIcon(cardHolder.ivCheck, item.isChecked());
             cardHolder.ivCheck.setOnClickListener(v -> {
                 item.setChecked(!item.isChecked());
@@ -78,21 +82,32 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 return true;
             });
             
-            int color;
-            switch (item.getPriority() != null ? item.getPriority() : "low") {
+            // Dấu chấm ưu tiên và Gạch màu
+            int priorityDrawable;
+            int priorityColor;
+            String priority = item.getPriority() != null ? item.getPriority().toLowerCase() : "low";
+            switch (priority) {
                 case "high":
-                    color = holder.itemView.getContext().getResources().getColor(android.R.color.holo_red_light);
+                    priorityDrawable = R.drawable.bg_priority_dot_red;
+                    priorityColor = holder.itemView.getContext().getColor(R.color.priority_high);
                     break;
                 case "medium":
-                    color = holder.itemView.getContext().getResources().getColor(android.R.color.holo_orange_light);
+                    priorityDrawable = R.drawable.bg_priority_dot_orange;
+                    priorityColor = holder.itemView.getContext().getColor(R.color.priority_medium);
                     break;
                 case "low":
                 default:
-                    color = holder.itemView.getContext().getResources().getColor(android.R.color.holo_green_light);
+                    priorityDrawable = R.drawable.bg_priority_dot_green;
+                    priorityColor = holder.itemView.getContext().getColor(R.color.priority_low);
                     break;
             }
-            cardHolder.viewPriorityStrip.setBackgroundColor(color);
-            cardHolder.viewPriorityStrip.setVisibility(View.VISIBLE);
+            
+            if (cardHolder.viewPriorityDot != null) {
+                cardHolder.viewPriorityDot.setBackgroundResource(priorityDrawable);
+            }
+            if (cardHolder.viewPriorityStrip != null) {
+                cardHolder.viewPriorityStrip.setBackgroundColor(priorityColor);
+            }
         }
     }
 
@@ -121,13 +136,15 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     static class TaskCardViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvSubtitle;
-        ImageView ivCheck;
-        View viewPriorityStrip;
+        ImageView ivCheck, ivBell;
+        View viewPriorityDot, viewPriorityStrip;
         TaskCardViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTaskTitle);
             tvSubtitle = itemView.findViewById(R.id.tvTaskSubtitle);
             ivCheck = itemView.findViewById(R.id.ivCheck);
+            ivBell = itemView.findViewById(R.id.ivBell);
+            viewPriorityDot = itemView.findViewById(R.id.viewPriorityDot);
             viewPriorityStrip = itemView.findViewById(R.id.viewPriorityStrip);
         }
     }

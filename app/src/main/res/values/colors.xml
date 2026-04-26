@@ -22,7 +22,11 @@
     <color name="bottom_nav_icon_unselected">#695E8B</color>
     <color name="priority_orange">#FFA726</color>
     <color name="priority_yellow">#FFEB3B</color>
-    
+
+    <color name="priority_high">#FF3B30</color>
+    <color name="priority_medium">#FFB200</color>
+    <color name="priority_low">#44B556</color>
+
     <color name="table_header_bg">#D7D7D7</color>
     <color name="table_row_bg">#E2E2E2</color>
     <color name="input_border">#E0E0E0</color>

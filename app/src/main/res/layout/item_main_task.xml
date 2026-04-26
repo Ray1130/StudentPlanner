@@ -9,51 +9,85 @@
     app:strokeColor="@color/card_stroke"
     app:strokeWidth="1dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="14dp">
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/imgStatus"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/ic_circle_outline_24"
-            app:tint="@color/text_secondary" />
+        <View
+            android:id="@+id/viewPriorityStrip"
+            android:layout_width="4dp"
+            android:layout_height="0dp"
+            android:background="@color/priority_high"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="14dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/viewPriorityStrip"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/tvTaskTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Train model KTDL"
-                android:textColor="@color/text_primary"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+            <ImageView
+                android:id="@+id/imgStatus"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_circle_outline_24"
+                app:tint="@color/text_secondary" />
 
-            <TextView
-                android:id="@+id/tvTaskMeta"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="KTDL • Quá hạn"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvTaskTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Train model KTDL"
+                    android:textColor="@color/text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/imgReminder"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:layout_marginEnd="4dp"
+                        android:src="@drawable/ic_notification_24"
+                        android:visibility="gone"
+                        app:tint="@color/text_secondary" />
+
+                    <TextView
+                        android:id="@+id/tvTaskMeta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="KTDL • Quá hạn"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/viewPriorityDot"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:background="@drawable/bg_priority_dot_red" />
         </LinearLayout>
-
-        <View
-            android:id="@+id/viewPriorityDot"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:background="@drawable/bg_priority_dot_red" />
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

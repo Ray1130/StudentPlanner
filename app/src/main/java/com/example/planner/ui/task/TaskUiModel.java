@@ -15,6 +15,7 @@ public class TaskUiModel {
     private boolean checked;
     private String priority; // low, medium, high
     private int subjectId;
+    private boolean isReminderEnabled;
 
     public TaskUiModel(int viewType, String title, String deadline, String note, boolean checked, String priority) {
         this.viewType = viewType;
@@ -23,9 +24,10 @@ public class TaskUiModel {
         this.note = note;
         this.checked = checked;
         this.priority = priority;
+        this.isReminderEnabled = false;
     }
 
-    public TaskUiModel(int id, int viewType, String title, String deadline, String note, boolean checked, String priority, int subjectId) {
+    public TaskUiModel(int id, int viewType, String title, String deadline, String note, boolean checked, String priority, int subjectId, boolean isReminderEnabled) {
         this.id = id;
         this.viewType = viewType;
         this.title = title;
@@ -34,6 +36,7 @@ public class TaskUiModel {
         this.checked = checked;
         this.priority = priority;
         this.subjectId = subjectId;
+        this.isReminderEnabled = isReminderEnabled;
     }
 
     public int getId() { return id; }
@@ -50,4 +53,6 @@ public class TaskUiModel {
     public void setChecked(boolean checked) { this.checked = checked; }
     public String getPriority() { return priority; }
     public void setPriority(String priority) { this.priority = priority; }
+    public boolean isReminderEnabled() { return isReminderEnabled; }
+    public void setReminderEnabled(boolean reminderEnabled) { isReminderEnabled = reminderEnabled; }
 }

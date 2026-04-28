@@ -16,7 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="UNIPLAN"
+        android:text="@string/app_name"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -29,4 +29,3 @@
         android:textColor="#EDE7FF"
         android:textSize="13sp" />
 </LinearLayout>
-

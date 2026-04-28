@@ -158,8 +158,8 @@ public class ScheduleActivity extends BaseActivity {
             days.add(date.withDayOfMonth(i));
         }
 
-        // 3. Lấp đầy các ô trống còn lại bằng ngày tháng sau (tổng 42 ô để cố định 6 hàng)
-        int nextMonthDays = 42 - days.size();
+        // 3. Lấp đầy các ô trống còn lại bằng ngày tháng sau (tổng 35 ô để cố định 6 hàng)
+        int nextMonthDays = 35 - days.size();
         for (int i = 1; i <= nextMonthDays; i++) {
             days.add(date.plusMonths(1).withDayOfMonth(i));
         }

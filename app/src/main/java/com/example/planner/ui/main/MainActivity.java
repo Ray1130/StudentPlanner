@@ -129,7 +129,7 @@ public class MainActivity extends BaseActivity
         String dateText = new SimpleDateFormat("EEEE, dd/MM/yyyy", new Locale("vi", "VN"))
                 .format(new Date());
         if (tvDate != null) tvDate.setText(capitalizeFirstLetter(dateText));
-        if (tvGreeting != null) tvGreeting.setText(getString(R.string.welcome_user, "Nhân"));
+        if (tvGreeting != null) tvGreeting.setText(getString(R.string.welcome_back));
     }
 
     private void observeUi() {

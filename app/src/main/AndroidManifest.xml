@@ -40,6 +40,10 @@
             android:name=".ui.pomodoro.PomodoroActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.profile.UserProfileActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

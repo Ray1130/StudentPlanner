@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="16dp">
+
+    <ImageView
+        android:id="@+id/ivSettingIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="16dp"
+        app:tint="#5E35B1"
+        tools:src="@android:drawable/ic_menu_preferences" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvSettingTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            tools:text="Tên Cài đặt" />
+
+        <TextView
+            android:id="@+id/tvSettingSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="#888888"
+            android:textSize="13sp"
+            android:visibility="gone"
+            tools:text="Mô tả cài đặt phụ" 
+            tools:visibility="visible"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvSettingValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:textColor="#A0A0A0"
+        android:textSize="14sp"
+        tools:text="Giá trị" />
+
+    <ImageView
+        android:id="@+id/ivSettingArrow"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:tint="#C0C0C0"
+        android:src="@android:drawable/ic_media_play" /> <!-- Placeholder cho icon chevron_right -->
+
+</LinearLayout>

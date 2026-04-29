@@ -44,4 +44,22 @@
     <string name="table_col_note">Ghi chú</string>
     <string name="action_new_page">+ Trang mới</string>
     <string name="action_new_group">+ Nhóm mới</string>
+
+    <!-- User Profile Strings -->
+    <string name="user_name_default">USER_name</string>
+    <string name="overview_title">Tổng quan công việc</string>
+    <string name="focus_tasks_today">Nhiệm vụ trọng tâm hôm nay</string>
+    <string name="tasks_completed">Nhiệm vụ đã hoàn thành:</string>
+    <string name="tasks_remaining">Nhiệm vụ còn lại:</string>
+    <string name="tasks_last_7_days">Nhiệm vụ trong 7 ngày qua</string>
+    <string name="setting_ringtone">Nhạc chuông hoàn thành nhiệm vụ</string>
+    <string name="setting_default_reminder">Nhắc nhở tác vụ mặc định</string>
+    <string name="setting_default_reminder_val">5 phút trước</string>
+    <string name="setting_pomodoro">Thời lượng Pomodoro</string>
+    <string name="setting_pomodoro_val">25 phút</string>
+    <string name="setting_focus_sound">Tiếng động giúp tập trung</string>
+    <string name="setting_focus_sound_val">Không</string>
+    <string name="setting_daily_reminder">Báo nhắc hàng ngày</string>
+    <string name="setting_language">Ngôn ngữ</string>
+    <string name="setting_guide">Hướng dẫn sử dụng</string>
 </resources>

@@ -169,6 +169,10 @@ public class MainActivity extends BaseActivity
             startActivity(new Intent(MainActivity.this, com.example.planner.ui.pomodoro.PomodoroActivity.class));
             drawerLayout.closeDrawers();
             return true;
+        } else if (id == R.id.nav_profile) {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.profile.UserProfileActivity.class));
+            drawerLayout.closeDrawers();
+            return true;
         }
         return false;
     }

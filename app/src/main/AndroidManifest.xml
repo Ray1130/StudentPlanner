@@ -16,17 +16,21 @@
         android:usesCleartextTraffic="true">
 
         <activity
-            android:name=".ui.task.TaskActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.main.LoginActivity"
+            android:name=".ui.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.task.TaskActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.main.LoginActivity"
+            android:exported="false" />
 
         <activity
             android:name=".ui.main.MainActivity"

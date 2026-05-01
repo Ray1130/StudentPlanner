@@ -8,7 +8,7 @@ public class TaskEntity {
     @PrimaryKey(autoGenerate = true)
     private int id;
     
-    private int viewType; // 2 cho Table Row
+    private int viewType;
     private String title;
     private String deadline;
     private String note;

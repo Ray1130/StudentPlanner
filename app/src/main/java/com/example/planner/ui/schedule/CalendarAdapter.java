@@ -59,24 +59,20 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
         } else {
             holder.tvDayOfMonth.setText(String.valueOf(date.getDayOfMonth()));
 
-            // RESET các trạng thái mặc định
             holder.tvDayOfMonth.setBackground(null);
             holder.dotIndicator.setVisibility(View.GONE);
 
-            // LOGIC CHÍNH: Kiểm tra ngày thuộc tháng hiện tại hay tháng trước/sau
             if (date.getMonthValue() != selectedDate.getMonthValue()) {
                 holder.tvDayOfMonth.setTextColor(Color.LTGRAY);
             } else {
                 holder.tvDayOfMonth.setTextColor(Color.BLACK);
 
-                // Highlight ngày hôm nay
                 if (date.equals(LocalDate.now())) {
                     holder.tvDayOfMonth.setBackgroundResource(R.drawable.bg_circle_purple);
                     holder.tvDayOfMonth.setTextColor(Color.WHITE);
                 }
             }
 
-            // Hiển thị chấm tím nếu ngày đó có task
             if (taskData != null && taskData.containsKey(date)) {
                 holder.dotIndicator.setVisibility(View.VISIBLE);
             }

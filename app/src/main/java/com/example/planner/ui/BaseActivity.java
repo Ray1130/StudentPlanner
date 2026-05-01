@@ -52,8 +52,11 @@ public abstract class BaseActivity extends AppCompatActivity {
                     startActivity(new Intent(this, UserProfileActivity.class));
                     finish();
                     return true;
+                } else if (itemId == R.id.nav_notifications) {
+                    startActivity(new Intent(this, com.example.planner.ui.notification.NotificationActivity.class));
+                    finish();
+                    return true;
                 }
-                // Thêm các case khác khi có thêm Activity (Thông báo, Tôi)
                 return false;
             });
         }

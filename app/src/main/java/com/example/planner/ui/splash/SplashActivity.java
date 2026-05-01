@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.splashscreen.SplashScreen;
 
 import com.example.planner.R;
 import com.example.planner.ui.main.LoginActivity;
@@ -20,6 +21,9 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Dòng này giúp kết nối màn hình hệ thống với trang của bạn, xóa bỏ icon Android mặc định
+        SplashScreen.installSplashScreen(this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 

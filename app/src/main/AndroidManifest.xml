@@ -26,15 +26,16 @@
         </activity>
 
         <activity
+            android:name=".ui.main.MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Planner" />
+
+        <activity
             android:name=".ui.task.TaskActivity"
             android:exported="false" />
 
         <activity
             android:name=".ui.main.LoginActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.main.MainActivity"
             android:exported="false" />
 
         <activity

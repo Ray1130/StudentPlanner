@@ -8,9 +8,20 @@
 
     <style name="Theme.Planner" parent="Base.Theme.Planner" />
 
-    <style name="Theme.Planner.Splash" parent="Theme.Material3.DayNight.NoActionBar">
+    <!-- Splash Theme: Làm ẩn splash hệ thống để hiện splash của bạn -->
+    <style name="Theme.Planner.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/pastel_indigo</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/pastel_indigo</item>
+
+        <!-- Để icon trong suốt để không bị trùng lặp với logo trong activity_splash.xml -->
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@android:color/transparent</item>
+
+        <item name="postSplashScreenTheme">@style/Theme.Planner</item>
+    </style>
+
+    <style name="Theme.Planner.Splash.Post" parent="Base.Theme.Planner">
         <item name="android:windowBackground">@color/pastel_indigo</item>
         <item name="android:statusBarColor">@color/pastel_indigo</item>
-        <item name="android:windowTranslucentStatus">true</item>
     </style>
 </resources>

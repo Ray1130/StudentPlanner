@@ -80,7 +80,6 @@ public class MainActivity extends BaseActivity
         ivMenu = findViewById(R.id.ivMenu);
         drawerLayout = findViewById(R.id.drawerLayout);
 
-        // Nút "Công việc" trong Grid
         findViewById(R.id.btn_nav_tasks).setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, com.example.planner.ui.task.TaskActivity.class));
         });

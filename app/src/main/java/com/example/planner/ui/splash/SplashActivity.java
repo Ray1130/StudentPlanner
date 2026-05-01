@@ -21,9 +21,7 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Dòng này giúp kết nối màn hình hệ thống với trang của bạn, xóa bỏ icon Android mặc định
         SplashScreen.installSplashScreen(this);
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 

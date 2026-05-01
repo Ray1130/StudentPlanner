@@ -18,10 +18,7 @@ public class UserProfileActivity extends BaseActivity {
 
         setupBottomNavigation(R.id.nav_profile);
 
-        // Header & Overview Setup
         setupOverview();
-
-        // Setting list setup
         setupSettingRow(R.id.settingRingtone, R.drawable.ic_music_note, getString(R.string.setting_ringtone), null);
         setupSettingRow(R.id.settingDefaultReminder, R.drawable.ic_alarm, getString(R.string.setting_default_reminder), getString(R.string.setting_default_reminder_val));
         setupSettingRow(R.id.settingPomodoro, R.drawable.ic_timer, getString(R.string.setting_pomodoro), getString(R.string.setting_pomodoro_val));
@@ -30,7 +27,6 @@ public class UserProfileActivity extends BaseActivity {
         setupSettingRow(R.id.settingLanguage, R.drawable.ic_language, getString(R.string.setting_language), null);
         setupSettingRow(R.id.settingUserGuide, R.drawable.ic_menu_book, getString(R.string.setting_guide), null);
 
-        // Setup Back Button
         ImageView btnBack = findViewById(R.id.btnBack);
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> onBackPressed());
@@ -38,13 +34,11 @@ public class UserProfileActivity extends BaseActivity {
     }
 
     private void setupOverview() {
-        // Here you would normally set actual data from a ViewModel
         TextView tvUserName = findViewById(R.id.tvUserName);
         TextView tvCompletedCount = findViewById(R.id.tvCompletedTasksCount);
         TextView tvRemainingCount = findViewById(R.id.tvRemainingTasksCount);
 
         if (tvUserName != null) tvUserName.setText(R.string.user_name_default);
-        // Mocking Data to match UI definition
         if (tvCompletedCount != null) tvCompletedCount.setText("5");
         if (tvRemainingCount != null) tvRemainingCount.setText("2");
     }
@@ -52,8 +46,6 @@ public class UserProfileActivity extends BaseActivity {
     private void setupSettingRow(int includeId, int iconResId, String title, String value) {
         View settingView = findViewById(includeId);
         if (settingView == null) return;
-
-        // Bind inner views of item_setting_row.xml
         ImageView ivSettingIcon = settingView.findViewById(R.id.ivSettingIcon);
         TextView tvSettingTitle = settingView.findViewById(R.id.tvSettingTitle);
         TextView tvSettingValue = settingView.findViewById(R.id.tvSettingValue);
@@ -75,9 +67,7 @@ public class UserProfileActivity extends BaseActivity {
             ivSettingArrow.setImageResource(R.drawable.ic_chevron_right_24);
         }
 
-        // Setup OnClickListener
         settingView.setOnClickListener(v -> {
-            // Handle click action here later
         });
     }
 }

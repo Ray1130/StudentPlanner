@@ -26,7 +26,7 @@ public class DateUtils {
         long currentTimestamp = System.currentTimeMillis();
         long diff = dueDateTimestamp - currentTimestamp;
 
-        // Trả về số ngày (đổi từ milliseconds sang ngày)
+        // Trả về số ngày
         return (int) (diff / (1000 * 60 * 60 * 24));
     }
 }

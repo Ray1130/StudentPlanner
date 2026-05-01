@@ -86,14 +86,14 @@ public class ScheduleViewModel extends AndroidViewModel {
         long end = days.get(days.size() - 1).plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 
         executorService.execute(() -> {
-            // 1. Lấy danh sách môn học trực tiếp để đảm bảo không bị "Nhiệm vụ"
+            // Lấy danh sách môn học
             List<Subject> subjectsList = database.subjectDao().getAllSubjects();
             Map<Integer, String> sMap = new HashMap<>();
             for (Subject s : subjectsList) {
                 sMap.put(s.id, s.name);
             }
 
-            // 2. Lấy tất cả task trong tháng
+            // Lấy tất cả task trong tháng
             List<Task> tasks = database.taskDao().getTasksByDateSync(start, end);
             Map<LocalDate, List<Task>> tasksByDate = new HashMap<>();
             for (Task t : tasks) {
@@ -101,7 +101,7 @@ public class ScheduleViewModel extends AndroidViewModel {
                 tasksByDate.computeIfAbsent(d, k -> new ArrayList<>()).add(t);
             }
 
-            // 3. Gom nhóm thông tin cho từng ngày
+            // Gom nhóm thông tin cho từng ngày
             Map<LocalDate, CalendarTaskInfo> dataMap = new HashMap<>();
             for (Map.Entry<LocalDate, List<Task>> entry : tasksByDate.entrySet()) {
                 List<Task> dayTasks = entry.getValue();
@@ -111,7 +111,6 @@ public class ScheduleViewModel extends AndroidViewModel {
 
                 for (int i = 0; i < dayTasks.size(); i++) {
                     Task t = dayTasks.get(i);
-                    // Nối tên task (tối đa hiện 2 task đầu tiên để tránh quá tải ô lịch)
                     if (i < 2) {
                         if (titles.length() > 0) titles.append(", ");
                         titles.append(t.title);
@@ -123,8 +122,6 @@ public class ScheduleViewModel extends AndroidViewModel {
                 }
                 
                 if (dayTasks.size() > 2) titles.append("...");
-                
-                // Nối tên các môn học khác nhau
                 String subjectsStr = String.join(", ", seenSubjects);
                 dataMap.put(entry.getKey(), new CalendarTaskInfo(titles.toString(), subjectsStr));
             }

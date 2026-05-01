@@ -16,10 +16,10 @@ public interface ApiService {
     @POST("api/tasks")
     Call<Task> createTask(@Body Task task);
 
-    @POST("api/tasks/update") // Hoặc @PUT nếu server hỗ trợ
+    @POST("api/tasks/update")
     Call<Task> updateTask(@Body Task task);
 
-    @POST("api/tasks/delete") // Hoặc @DELETE nếu server hỗ trợ
+    @POST("api/tasks/delete")
     Call<Void> deleteTask(@Body Integer id);
 
     @GET("api/subjects")

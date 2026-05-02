@@ -17,12 +17,13 @@ public class Task {
     @SerializedName("subjectId")
     public int subjectId;
     
-    @SerializedName("isCompleted")
+    @SerializedName("completed")
     public boolean isCompleted; // Trạng thái: Đã làm xong chưa?
 
     public long timestamp; // Thời gian thực hiện
-    public String category; // Để phân biệt màu sắc hoặc loại
+    public String category;
     public String priority; // low, medium, high
+    @SerializedName("reminderEnabled")
     public boolean isReminderEnabled;
     public String note;
 
@@ -31,7 +32,7 @@ public class Task {
         this.dueDate = dueDate;
         this.subjectId = subjectId;
         this.isCompleted = false; // Mặc định tạo mới là chưa hoàn thành
-        this.priority = "low"; // Mặc định là low
+//        this.priority = "low"; // Mặc định là low
         this.isReminderEnabled = false;
         this.id = null;
     }

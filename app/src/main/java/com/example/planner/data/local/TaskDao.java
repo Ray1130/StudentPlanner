@@ -46,4 +46,7 @@ public interface TaskDao {
 
     @Query("SELECT * FROM tasks WHERE dueDate >= :startOfDay AND dueDate <= :endOfDay")
     List<Task> getTasksByDateSync(long startOfDay, long endOfDay);
+
+    @Query("SELECT * FROM tasks WHERE id = :id")
+    Task getTaskByIdSync(int id);
 }

@@ -70,8 +70,11 @@ public class PriorityTaskAdapter extends RecyclerView.Adapter<PriorityTaskAdapte
             holder.tvSubtitle.setText(dateStr);
         }
 
-        holder.ivCheck.setImageResource(task.isCompleted ? R.drawable.ic_check_circle_24 : R.drawable.ic_radio_unchecked);
-        holder.ivCheck.setAlpha(task.isCompleted ? 0.5f : 1.0f);
+        int iconRes = task.isCompleted ? R.drawable.ic_check_circle_24 : R.drawable.ic_circle_outline_24;
+        holder.ivCheck.setImageResource(iconRes);
+        int tintColor = task.isCompleted ? R.color.success : R.color.text_secondary;
+        holder.ivCheck.setColorFilter(androidx.core.content.ContextCompat.getColor(holder.itemView.getContext(), tintColor));
+        holder.ivCheck.setAlpha(1.0f);
         holder.tvTitle.setAlpha(task.isCompleted ? 0.5f : 1.0f);
 
         holder.ivCheck.setOnClickListener(v -> {
@@ -83,8 +86,27 @@ public class PriorityTaskAdapter extends RecyclerView.Adapter<PriorityTaskAdapte
         });
 
         holder.ivBell.setVisibility(task.isReminderEnabled ? View.VISIBLE : View.GONE);
-        holder.viewPriorityStrip.setBackgroundColor(holder.itemView.getContext().getColor(R.color.priority_high));
-        holder.viewPriorityDot.setBackgroundResource(R.drawable.bg_priority_dot_red);
+        
+        // Cập nhật Priority UI đồng nhất
+        int priorityDrawable;
+        int priorityColor;
+        String priority = task.priority != null ? task.priority.toLowerCase() : "low";
+        switch (priority) {
+            case "high":
+                priorityDrawable = R.drawable.bg_priority_dot_red;
+                priorityColor = holder.itemView.getContext().getColor(R.color.priority_high);
+                break;
+            case "medium":
+                priorityDrawable = R.drawable.bg_priority_dot_orange;
+                priorityColor = holder.itemView.getContext().getColor(R.color.priority_medium);
+                break;
+            default:
+                priorityDrawable = R.drawable.bg_priority_dot_green;
+                priorityColor = holder.itemView.getContext().getColor(R.color.priority_low);
+                break;
+        }
+        holder.viewPriorityStrip.setBackgroundColor(priorityColor);
+        holder.viewPriorityDot.setBackgroundResource(priorityDrawable);
     }
 
     @Override

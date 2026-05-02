@@ -160,6 +160,30 @@ public class TaskViewModel extends AndroidViewModel {
         return pendingTasks;
     }
 
+    public void toggleTaskCompletion(int taskId) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            Task task = database.taskDao().getTaskByIdSync(taskId);
+            if (task != null) {
+                task.isCompleted = !task.isCompleted;
+                database.taskDao().update(task);
+                
+                // Đồng bộ trạng thái mới lên server
+                apiService.updateTask(task).enqueue(new Callback<Task>() {
+                    @Override
+                    public void onResponse(Call<Task> call, Response<Task> response) {
+                        if (response.isSuccessful()) {
+                            Log.d("TaskViewModel", "Server updated completion for task: " + taskId);
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<Task> call, Throwable t) {
+                        Log.e("TaskViewModel", "Failed to sync completion to server");
+                    }
+                });
+            }
+        });
+    }
+
     public void update(Task task, Runnable onSuccess) {
         // Cập nhật local trước
         repository.updateTask(task);

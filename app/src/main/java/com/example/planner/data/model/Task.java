@@ -1,14 +1,23 @@
 package com.example.planner.data.model;
+import com.google.gson.annotations.SerializedName;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 @Entity(tableName = "tasks")
 public class Task {
     @PrimaryKey(autoGenerate = true)
+    @SerializedName("id")
     public Integer id;
 
+    @SerializedName("title")
     public String title;
+    
+    @SerializedName("dueDate")
     public long dueDate;
+    
+    @SerializedName("subjectId")
     public int subjectId;
+    
+    @SerializedName("isCompleted")
     public boolean isCompleted; // Trạng thái: Đã làm xong chưa?
 
     public long timestamp; // Thời gian thực hiện

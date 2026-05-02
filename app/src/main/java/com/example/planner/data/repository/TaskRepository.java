@@ -29,6 +29,10 @@ public class TaskRepository {
     public void deleteTask(Task task) {
         executorService.execute(() -> taskDao.delete(task));
     }
+
+    public void deleteById(int taskId) {
+        executorService.execute(() -> taskDao.deleteById(taskId));
+    }
     public LiveData<List<Task>> getAllTasks() {
         return taskDao.getAllTasks();
     }

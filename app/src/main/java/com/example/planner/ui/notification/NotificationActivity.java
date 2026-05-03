@@ -11,7 +11,8 @@ import com.example.planner.ui.BaseActivity;
 public class NotificationActivity extends BaseActivity {
 
     private NotificationViewModel viewModel;
-    private PriorityTaskAdapter adapter;
+    private PriorityTaskAdapter priorityAdapter;
+    private PriorityTaskAdapter reminderAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -19,38 +20,52 @@ public class NotificationActivity extends BaseActivity {
         setContentView(R.layout.activity_notification);
 
         setupBottomNavigation(R.id.nav_notifications);
-        setupRecyclerView();
+        setupRecyclerViews();
         setupViewModel();
     }
 
-    private void setupRecyclerView() {
-        RecyclerView recyclerView = findViewById(R.id.rv_Tasks);
-        if (recyclerView != null) {
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-            adapter = new PriorityTaskAdapter();
-            adapter.setOnTaskStatusChangeListener(task -> {
-                if (viewModel != null) {
-                    viewModel.updateTask(task);
-                }
+    private void setupRecyclerViews() {
+        RecyclerView rvPriority = findViewById(R.id.rv_Tasks);
+        if (rvPriority != null) {
+            rvPriority.setLayoutManager(new LinearLayoutManager(this));
+            priorityAdapter = new PriorityTaskAdapter();
+            priorityAdapter.setOnTaskStatusChangeListener(task -> {
+                if (viewModel != null) viewModel.updateTask(task);
             });
-            recyclerView.setAdapter(adapter);
-            recyclerView.setNestedScrollingEnabled(false);
+            rvPriority.setAdapter(priorityAdapter);
+            rvPriority.setNestedScrollingEnabled(false);
+        }
+
+        RecyclerView rvReminders = findViewById(R.id.rv_Reminders);
+        if (rvReminders != null) {
+            rvReminders.setLayoutManager(new LinearLayoutManager(this));
+            reminderAdapter = new PriorityTaskAdapter();
+            reminderAdapter.setOnTaskStatusChangeListener(task -> {
+                if (viewModel != null) viewModel.updateTask(task);
+            });
+            rvReminders.setAdapter(reminderAdapter);
+            rvReminders.setNestedScrollingEnabled(false);
         }
     }
 
     private void setupViewModel() {
         viewModel = new ViewModelProvider(this).get(NotificationViewModel.class);
+        
         viewModel.getHighPriorityTasks().observe(this, tasks -> {
-            android.util.Log.d("NotificationActivity", "Received tasks: " + (tasks != null ? tasks.size() : "null"));
-            if (tasks != null) {
-                adapter.setTasks(tasks);
-            }
+            if (tasks != null) priorityAdapter.setTasks(tasks);
         });
+
+        viewModel.getReminders().observe(this, tasks -> {
+            if (tasks != null) reminderAdapter.setTasks(tasks);
+        });
+
         viewModel.getSubjects().observe(this, subjects -> {
             if (subjects != null) {
-                adapter.setSubjects(subjects);
+                priorityAdapter.setSubjects(subjects);
+                reminderAdapter.setSubjects(subjects);
             }
         });
+
         viewModel.fetchSubjects();
     }
 }

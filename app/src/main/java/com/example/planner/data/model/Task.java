@@ -18,7 +18,7 @@ public class Task {
     public int subjectId;
     
     @SerializedName("completed")
-    public boolean isCompleted; // Trạng thái: Đã làm xong chưa?
+    public boolean isCompleted; // Trạng thái: Đã làm xong chưa
 
     public long timestamp; // Thời gian thực hiện
     public String category;

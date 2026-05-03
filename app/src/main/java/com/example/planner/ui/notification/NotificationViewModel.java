@@ -19,6 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class NotificationViewModel extends AndroidViewModel {
     private static final String TAG = "NotificationVM";
     private final MutableLiveData<List<Task>> highPriorityTasks = new MutableLiveData<>();
+    private final MutableLiveData<List<Task>> reminders = new MutableLiveData<>();
     private final MutableLiveData<List<com.example.planner.data.model.Subject>> subjects = new MutableLiveData<>();
     private final ApiService apiService;
     private final TaskRepository repository;
@@ -43,6 +44,10 @@ public class NotificationViewModel extends AndroidViewModel {
         return subjects;
     }
 
+    public LiveData<List<Task>> getReminders() {
+        return reminders;
+    }
+
     public void fetchSubjects() {
         apiService.getAllSubjects().enqueue(new Callback<List<com.example.planner.data.model.Subject>>() {
             @Override
@@ -65,16 +70,13 @@ public class NotificationViewModel extends AndroidViewModel {
     }
 
     public void fetchHighPriorityTasks() {
-        Log.d(TAG, "Fetching high priority tasks from: " + apiService.getHighPriorityTasks().request().url());
-        apiService.getHighPriorityTasks().enqueue(new Callback<List<Task>>() {
+        Log.d(TAG, "Fetching tasks from server...");
+        apiService.getAllTasks().enqueue(new Callback<List<Task>>() {
             @Override
             public void onResponse(Call<List<Task>> call, Response<List<Task>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Task> tasks = response.body();
-                    Log.d(TAG, "Successfully fetched " + tasks.size() + " tasks");
-                    highPriorityTasks.setValue(tasks);
-                } else {
-                    Log.e(TAG, "Server error: " + response.code());
+                    List<Task> allTasks = response.body();
+                    processTasks(allTasks);
                 }
             }
 
@@ -83,6 +85,32 @@ public class NotificationViewModel extends AndroidViewModel {
                 Log.e(TAG, "Network failure: " + t.getMessage());
             }
         });
+    }
+
+    private void processTasks(List<Task> allTasks) {
+        List<Task> highPriority = new java.util.ArrayList<>();
+        List<Task> reminderList = new java.util.ArrayList<>();
+        long now = System.currentTimeMillis();
+        long next24h = now + (24 * 60 * 60 * 1000);
+
+        for (Task task : allTasks) {
+            if (task.isCompleted) continue;
+
+            // Priority High
+            if ("high".equalsIgnoreCase(task.priority)) {
+                highPriority.add(task);
+            }
+
+            // Reminders: Pending tasks due within 24h OR tasks that have reminder enabled
+            // Theo yêu cầu: hiện những task chưa hoàn thành và hiện số giờ còn lại (trong 24h)
+            if (task.dueDate > 0 && task.dueDate <= next24h && task.dueDate > now - (3600000)) { // Hiện cả task vừa quá hạn 1h
+                reminderList.add(task);
+            } else if (task.isReminderEnabled) {
+                reminderList.add(task);
+            }
+        }
+        highPriorityTasks.setValue(highPriority);
+        reminders.setValue(reminderList);
     }
 
     public void updateTask(Task task) {

@@ -10,12 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.planner.R;
 import com.example.planner.data.model.Subject;
 import com.example.planner.data.model.Task;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class PriorityTaskAdapter extends RecyclerView.Adapter<PriorityTaskAdapter.ViewHolder> {
@@ -38,7 +35,6 @@ public class PriorityTaskAdapter extends RecyclerView.Adapter<PriorityTaskAdapte
         notifyDataSetChanged();
     }
 
-    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task_card, parent, false);
@@ -61,13 +57,12 @@ public class PriorityTaskAdapter extends RecyclerView.Adapter<PriorityTaskAdapte
         holder.tvTitle.setText(task.title);
         
         String subjectName = subjectMap.get(task.subjectId);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        String dateStr = (task.dueDate > 0) ? sdf.format(new Date(task.dueDate)) : "Không có hạn";
+        String remainingText = getRemainingTimeText(task.dueDate);
         
         if (subjectName != null && !subjectName.isEmpty()) {
-            holder.tvSubtitle.setText(subjectName + " • " + dateStr);
+            holder.tvSubtitle.setText(subjectName + " • " + remainingText);
         } else {
-            holder.tvSubtitle.setText(dateStr);
+            holder.tvSubtitle.setText(remainingText);
         }
 
         int iconRes = task.isCompleted ? R.drawable.ic_check_circle_24 : R.drawable.ic_circle_outline_24;
@@ -87,7 +82,7 @@ public class PriorityTaskAdapter extends RecyclerView.Adapter<PriorityTaskAdapte
 
         holder.ivBell.setVisibility(task.isReminderEnabled ? View.VISIBLE : View.GONE);
         
-        // Cập nhật Priority UI đồng nhất
+        // Priority UI consistency
         int priorityDrawable;
         int priorityColor;
         String priority = task.priority != null ? task.priority.toLowerCase() : "low";
@@ -107,6 +102,27 @@ public class PriorityTaskAdapter extends RecyclerView.Adapter<PriorityTaskAdapte
         }
         holder.viewPriorityStrip.setBackgroundColor(priorityColor);
         holder.viewPriorityDot.setBackgroundResource(priorityDrawable);
+    }
+
+    private String getRemainingTimeText(long dueDate) {
+        if (dueDate <= 0) return "Không có hạn";
+        
+        long now = System.currentTimeMillis();
+        long diff = dueDate - now;
+        
+        if (diff <= 0) return "Quá hạn";
+        
+        long hours = diff / (1000 * 60 * 60);
+        if (hours < 24) {
+            if (hours == 0) {
+                long minutes = diff / (1000 * 60);
+                return "Còn " + minutes + " phút";
+            }
+            return "Còn " + hours + " giờ";
+        } else {
+            long days = hours / 24;
+            return "Còn " + days + " ngày";
+        }
     }
 
     @Override

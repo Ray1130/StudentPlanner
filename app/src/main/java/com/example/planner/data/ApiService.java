@@ -27,4 +27,7 @@ public interface ApiService {
 
     @POST("api/subjects")
     Call<Subject> createSubject(@Body Subject subject);
+
+    @GET("api/tasks/priority/high")
+    Call<List<Task>> getHighPriorityTasks();
 }

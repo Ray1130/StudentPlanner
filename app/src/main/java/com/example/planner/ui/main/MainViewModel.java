@@ -80,7 +80,7 @@ public class MainViewModel extends AndroidViewModel {
                 uiPriority = MainTaskItem.PRIORITY_MEDIUM;
             }
 
-            MainTaskItem item = new MainTaskItem(task.title, meta, uiPriority, task.isCompleted, task.isReminderEnabled);
+            MainTaskItem item = new MainTaskItem(task.id, task.title, meta, uiPriority, task.isCompleted, task.isReminderEnabled);
 
             if (isToday || isOverdue) todayTasks.add(item);
             else upcomingTasks.add(item);

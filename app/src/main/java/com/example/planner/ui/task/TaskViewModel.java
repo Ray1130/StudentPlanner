@@ -34,20 +34,20 @@ public class TaskViewModel extends AndroidViewModel {
         repository = new TaskRepository(application);
         database = AppDatabase.getDatabase(application);
         
-        // Luôn ưu tiên hiển thị dữ liệu từ Local Database (Room) để UI mượt mà
+        // Luôn ưu tiên hiển thị dữ liệu từ Local Database
         allTasks = repository.getAllTasks();
         pendingTasks = repository.getPendingTasks();
         allSubjects = database.subjectDao().getAllSubjectsLiveData();
 
         // Cấu hình Retrofit cho việc đồng bộ Online
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8080/") // IP mặc định để emulator kết nối localhost máy tính
+                .baseUrl("http://10.0.2.2:8080/") //
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(ApiService.class);
 
-        // Mỗi lần mở app, thử fetch dữ liệu mới nhất từ server về local
         loadSubjects();
+        syncTasksFromServer();
     }
 
     public void loadSubjects() {
@@ -57,6 +57,7 @@ public class TaskViewModel extends AndroidViewModel {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Subject> serverSubjects = response.body();
                     AppDatabase.databaseWriteExecutor.execute(() -> {
+                        database.subjectDao().deleteAll();
                         for (Subject s : serverSubjects) {
                             database.subjectDao().insert(s);
                         }
@@ -75,12 +76,10 @@ public class TaskViewModel extends AndroidViewModel {
     }
 
     public void insertSubject(Subject subject, OnSubjectCreatedListener listener) {
-        // 1. Lưu Local trước
         AppDatabase.databaseWriteExecutor.execute(() -> {
             database.subjectDao().insert(subject);
         });
 
-        // 2. Đẩy lên Server
         apiService.createSubject(subject).enqueue(new Callback<Subject>() {
             @Override
             public void onResponse(Call<Subject> call, Response<Subject> response) {
@@ -104,18 +103,48 @@ public class TaskViewModel extends AndroidViewModel {
     }
 
     public void saveTask(Task task, Runnable onSuccess) {
-        // Lưu Local
-        repository.insertTask(task);
-        
-        // Đồng bộ lên Server
+        // 1. Gửi lên Server trước để lấy ID thật
         apiService.createTask(task).enqueue(new Callback<Task>() {
             @Override
             public void onResponse(Call<Task> call, Response<Task> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Task serverTask = response.body();
+                    // 2. Lưu vào Local với ID từ Server
+                    AppDatabase.databaseWriteExecutor.execute(() -> {
+                        database.taskDao().insert(serverTask);
+                    });
+                } else {
+                    // Nếu server lỗi, lưu tạm vào local (id sẽ tự sinh)
+                    repository.insertTask(task);
+                }
                 if (onSuccess != null) onSuccess.run();
             }
             @Override
             public void onFailure(Call<Task> call, Throwable t) {
+                repository.insertTask(task);
                 if (onSuccess != null) onSuccess.run();
+            }
+        });
+    }
+
+    public void syncTasksFromServer() {
+        apiService.getAllTasks().enqueue(new Callback<List<Task>>() {
+            @Override
+            public void onResponse(Call<List<Task>> call, Response<List<Task>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Task> serverTasks = response.body();
+                    AppDatabase.databaseWriteExecutor.execute(() -> {
+                        // Xóa sạch local và thay bằng data từ server để đồng bộ ID
+                        database.taskDao().deleteAll();
+                        for (Task t : serverTasks) {
+                            database.taskDao().insert(t);
+                        }
+                    });
+                }
+            }
+            @Override
+            public void onFailure(Call<List<Task>> call, Throwable t) {
+                Log.e("Sync", "Failed to sync tasks: " + t.getMessage());
             }
         });
     }
@@ -128,11 +157,46 @@ public class TaskViewModel extends AndroidViewModel {
         return pendingTasks;
     }
 
+    public void toggleTaskCompletion(int taskId) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            Task task = database.taskDao().getTaskByIdSync(taskId);
+            if (task != null) {
+                task.isCompleted = !task.isCompleted;
+                // 1. Cập nhật Local
+                database.taskDao().update(task);
+
+                // 2. Gửi lên Server
+                apiService.updateTask(task).enqueue(new Callback<Task>() {
+                    @Override
+                    public void onResponse(Call<Task> call, Response<Task> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            Log.d("TaskViewModel", "Server updated completion for task: " + taskId);
+                            AppDatabase.databaseWriteExecutor.execute(() -> {
+                                database.taskDao().update(response.body());
+                            });
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<Task> call, Throwable t) {
+                        Log.e("TaskViewModel", "Failed to sync completion to server: " + t.getMessage());
+                    }
+                });
+            }
+        });
+    }
+
     public void update(Task task, Runnable onSuccess) {
         repository.updateTask(task);
         apiService.updateTask(task).enqueue(new Callback<Task>() {
             @Override
             public void onResponse(Call<Task> call, Response<Task> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Cập nhật lại local với dữ liệu chuẩn từ server (nếu cần)
+                    Task updatedTask = response.body();
+                    AppDatabase.databaseWriteExecutor.execute(() -> {
+                        database.taskDao().update(updatedTask);
+                    });
+                }
                 if (onSuccess != null) onSuccess.run();
             }
             @Override
@@ -143,18 +207,8 @@ public class TaskViewModel extends AndroidViewModel {
     }
 
     public void delete(int taskId, Runnable onSuccess) {
-        // Xóa local qua repository (giả định repository có hàm delete bằng ID hoặc object)
-        // Lưu ý: Cần tìm object Task từ ID để xóa
-        List<Task> currentTasks = allTasks.getValue();
-        if (currentTasks != null) {
-            for (Task t : currentTasks) {
-                if (t.id != null && t.id == taskId) {
-                    repository.deleteTask(t);
-                    break;
-                }
-            }
-        }
-        
+        repository.deleteById(taskId);
+
         apiService.deleteTask(taskId).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -162,6 +216,7 @@ public class TaskViewModel extends AndroidViewModel {
             }
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                Log.e("TaskViewModel", "Failed to delete task on server: " + t.getMessage());
                 if (onSuccess != null) onSuccess.run();
             }
         });

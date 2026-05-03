@@ -83,6 +83,26 @@ public class MainActivity extends BaseActivity
         findViewById(R.id.btn_nav_tasks).setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, com.example.planner.ui.task.TaskActivity.class));
         });
+
+        findViewById(R.id.btn_nav_calendar).setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.schedule.ScheduleActivity.class));
+        });
+
+        findViewById(R.id.btn_nav_reminders).setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.notification.NotificationActivity.class));
+        });
+
+        findViewById(R.id.btn_nav_organize).setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.task.TaskActivity.class));
+        });
+
+        findViewById(R.id.tvViewAllToday).setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.task.TaskActivity.class));
+        });
+
+        findViewById(R.id.tvViewAllUpcoming).setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.task.TaskActivity.class));
+        });
     }
 
     private void setupToolbarDrawer() {
@@ -164,6 +184,25 @@ public class MainActivity extends BaseActivity
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
+            return true;
+        } else if (id == R.id.nav_home) {
+            drawerLayout.closeDrawers();
+            return true;
+        } else if (id == R.id.nav_calendar) {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.schedule.ScheduleActivity.class));
+            drawerLayout.closeDrawers();
+            return true;
+        } else if (id == R.id.nav_tasks) {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.task.TaskActivity.class));
+            drawerLayout.closeDrawers();
+            return true;
+        } else if (id == R.id.nav_organize) {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.task.TaskActivity.class));
+            drawerLayout.closeDrawers();
+            return true;
+        } else if (id == R.id.nav_reminder) {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.notification.NotificationActivity.class));
+            drawerLayout.closeDrawers();
             return true;
         } else if (id == R.id.nav_pomodoro) {
             startActivity(new Intent(MainActivity.this, com.example.planner.ui.pomodoro.PomodoroActivity.class));

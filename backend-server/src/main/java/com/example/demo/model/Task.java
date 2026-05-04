@@ -16,10 +16,8 @@ public class Task {
     private String priority;
     private boolean isReminderEnabled;
 
-    // Default constructor
     public Task() {}
 
-    // Constructor matching DemoApplication usage
     public Task(String title, Long dueDate, Integer subjectId) {
         this.title = title;
         this.dueDate = dueDate;
@@ -29,7 +27,6 @@ public class Task {
         this.isReminderEnabled = false;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getTitle() { return title; }

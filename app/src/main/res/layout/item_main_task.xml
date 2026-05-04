@@ -35,8 +35,8 @@
 
             <ImageView
                 android:id="@+id/imgStatus"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/ic_circle_outline_24"
                 app:tint="@color/text_secondary" />
 

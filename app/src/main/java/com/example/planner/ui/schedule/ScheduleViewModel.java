@@ -61,7 +61,7 @@ public class ScheduleViewModel extends AndroidViewModel {
                         uiPriority = MainTaskItem.PRIORITY_MEDIUM;
                     }
                     
-                    items.add(new MainTaskItem(task.title, meta, uiPriority, task.isCompleted, task.isReminderEnabled));
+                    items.add(new MainTaskItem(task.id, task.title, meta, uiPriority, task.isCompleted, task.isReminderEnabled));
                 }
                 return items;
             });

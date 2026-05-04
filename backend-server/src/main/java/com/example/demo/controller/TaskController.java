@@ -28,4 +28,19 @@ public class TaskController {
     public List<Task> getTasksByDate(@RequestParam Long start, @RequestParam Long end) {
         return taskRepository.findByDueDateBetween(start, end);
     }
+
+    @GetMapping("/priority/high")
+    public List<Task> getHighPriorityUncompletedTasks() {
+        return taskRepository.findByPriorityAndIsCompleted("high", false);
+    }
+
+    @PostMapping("/update")
+    public Task updateTask(@RequestBody Task task) {
+        return taskRepository.save(task);
+    }
+
+    @PostMapping("/delete")
+    public void deleteTask(@RequestBody Integer id) {
+        taskRepository.deleteById(id.longValue());
+    }
 }

@@ -26,6 +26,9 @@ public interface TaskDao {
     @Delete
     void delete(Task task);
 
+    @Query("DELETE FROM tasks WHERE id = :id")
+    void deleteById(int id);
+
     @Query("DELETE FROM tasks")
     void deleteAll();
 
@@ -43,4 +46,7 @@ public interface TaskDao {
 
     @Query("SELECT * FROM tasks WHERE dueDate >= :startOfDay AND dueDate <= :endOfDay")
     List<Task> getTasksByDateSync(long startOfDay, long endOfDay);
+
+    @Query("SELECT * FROM tasks WHERE id = :id")
+    Task getTaskByIdSync(int id);
 }

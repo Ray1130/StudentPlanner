@@ -111,19 +111,21 @@
                                 android:layout_height="72dp">
 
                                 <ProgressBar
+                                    android:id="@+id/pbTaskProgress"
                                     style="?android:attr/progressBarStyleHorizontal"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:indeterminate="false"
                                     android:max="100"
-                                    android:progress="67"
+                                    android:progress="0"
                                     android:progressDrawable="@drawable/bg_circular_progress" />
 
                                 <TextView
+                                    android:id="@+id/tvProgressPercentage"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
-                                    android:text="67%"
+                                    android:text="0%"
                                     android:textColor="@color/black"
                                     android:textSize="16sp"
                                     android:textStyle="bold" />
@@ -153,7 +155,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="8dp"
-                                        android:text="5"
+                                        android:text="0"
                                         android:textColor="#4CAF50"
                                         android:textSize="16sp"
                                         android:textStyle="bold" />
@@ -178,7 +180,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="8dp"
-                                        android:text="2"
+                                        android:text="0"
                                         android:textColor="#FF9800"
                                         android:textSize="16sp"
                                         android:textStyle="bold" />
@@ -205,13 +207,17 @@
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <!-- Placeholder for Stacked Bar Chart (MPAndroidChart or similar) -->
-                <View
+                <!-- Placeholder for Stacked Bar Chart -->
+                <LinearLayout
                     android:id="@+id/barChartContainer"
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
                     android:layout_marginTop="16dp"
-                    android:background="#FAFAFA" />
+                    android:background="#FAFAFA"
+                    android:orientation="horizontal"
+                    android:gravity="bottom"
+                    android:paddingHorizontal="10dp"
+                    android:paddingBottom="10dp" />
             </LinearLayout>
 
             <!-- Settings List Section -->

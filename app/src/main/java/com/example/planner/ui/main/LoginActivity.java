@@ -50,6 +50,7 @@ public class LoginActivity extends AppCompatActivity {
                     // Lưu trạng thái đăng nhập
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putBoolean("isLoggedIn", true);
+                    editor.putString("username", email);
                     editor.apply();
 
                     Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();

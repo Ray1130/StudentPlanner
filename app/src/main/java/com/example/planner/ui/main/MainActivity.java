@@ -11,8 +11,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.core.graphics.Insets;
-import androidx.core.view.GravityCompat;
+import androidx.core.graphics.Insets;import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -79,15 +78,32 @@ public class MainActivity extends BaseActivity
         ivMenu = findViewById(R.id.ivMenu);
         drawerLayout = findViewById(R.id.drawerLayout);
 
-        // Nút "Công việc" trong Grid
         findViewById(R.id.btn_nav_tasks).setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.task.TaskActivity.class));
+        });
+
+        findViewById(R.id.btn_nav_calendar).setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.schedule.ScheduleActivity.class));
+        });
+
+        findViewById(R.id.btn_nav_reminders).setOnClickListener(v -> {
+        });
+
+
+        findViewById(R.id.btn_nav_pomodoro).setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.pomodoro.PomodoroActivity.class));
+        });
+
+        findViewById(R.id.tvViewAllToday).setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.task.TaskActivity.class));
+        });
+
+        findViewById(R.id.tvViewAllUpcoming).setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, com.example.planner.ui.task.TaskActivity.class));
         });
     }
 
     private void setupToolbarDrawer() {
-        NavigationView navigationView = findViewById(R.id.navigationView);
-
         if (ivMenu != null && drawerLayout != null) {
             ivMenu.setOnClickListener(v -> {
                 drawerLayout.openDrawer(GravityCompat.START);
@@ -129,7 +145,7 @@ public class MainActivity extends BaseActivity
         String dateText = new SimpleDateFormat("EEEE, dd/MM/yyyy", new Locale("vi", "VN"))
                 .format(new Date());
         if (tvDate != null) tvDate.setText(capitalizeFirstLetter(dateText));
-        if (tvGreeting != null) tvGreeting.setText(getString(R.string.welcome_user, "Nhân"));
+        if (tvGreeting != null) tvGreeting.setText(getString(R.string.welcome_back));
     }
 
     private void observeUi() {
@@ -151,7 +167,6 @@ public class MainActivity extends BaseActivity
         return input.substring(0, 1).toUpperCase(new Locale("vi", "VN")) + input.substring(1);
     }
 
-    // Xử lý sự kiện logout khi bấm Đăng xuất từ giao diện trang chủ
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.nav_logout) {
@@ -165,8 +180,23 @@ public class MainActivity extends BaseActivity
             startActivity(intent);
             finish();
             return true;
+        } else if (id == R.id.nav_home) {
+            drawerLayout.closeDrawers();
+            return true;
+        } else if (id == R.id.nav_calendar) {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.schedule.ScheduleActivity.class));
+            drawerLayout.closeDrawers();
+            return true;
+        } else if (id == R.id.nav_tasks) {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.task.TaskActivity.class));
+            drawerLayout.closeDrawers();
+            return true;
         } else if (id == R.id.nav_pomodoro) {
             startActivity(new Intent(MainActivity.this, com.example.planner.ui.pomodoro.PomodoroActivity.class));
+            drawerLayout.closeDrawers();
+            return true;
+        } else if (id == R.id.nav_profile) {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.profile.UserProfileActivity.class));
             drawerLayout.closeDrawers();
             return true;
         }

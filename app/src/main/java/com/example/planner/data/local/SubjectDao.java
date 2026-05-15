@@ -23,4 +23,7 @@ public interface SubjectDao {
 
     @Query("SELECT * FROM subjects")
     androidx.lifecycle.LiveData<List<Subject>> getAllSubjectsLiveData();
+
+    @Query("DELETE FROM subjects")
+    void deleteAll();
 }

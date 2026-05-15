@@ -22,16 +22,12 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.register_form);
 
         Toast.makeText(this, "Đang ở Login", Toast.LENGTH_SHORT).show();
-
-        // 🔗 Ánh xạ view
         edtEmail = findViewById(R.id.edtEmail);
         edtPassword = findViewById(R.id.edtPassword);
         btnSubmit = findViewById(R.id.btnSubmit);
 
-        // 🔥 Check nếu đã login rồi → vào thẳng Main
+        // Nếu đã login rồi thì vào thẳng Main
         SharedPreferences preferences = getSharedPreferences("USER_FILE", MODE_PRIVATE);
-        // Bỏ clear để giữ session
-        // preferences.edit().clear().apply();
         boolean isLoggedIn = preferences.getBoolean("isLoggedIn", false);
 
 
@@ -49,12 +45,12 @@ public class LoginActivity extends AppCompatActivity {
                 String email = edtEmail.getText().toString().trim();
                 String password = edtPassword.getText().toString().trim();
 
-                // Check đơn giản (demo)
                 if (email.equals("admin") && password.equals("123")) {
 
                     // Lưu trạng thái đăng nhập
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putBoolean("isLoggedIn", true);
+                    editor.putString("username", email);
                     editor.apply();
 
                     Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();

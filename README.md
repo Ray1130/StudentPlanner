@@ -20,9 +20,12 @@ Dự án bao gồm hai thành phần chính chạy song song:
 
 ## 🚀 Tính năng hiện có
 - [x] **Kết nối Fullstack:** App Android đã có thể lấy dữ liệu thật từ Spring Boot qua Retrofit.
-- [x] **Giao diện Task thông minh:** Hiển thị task phân nhóm theo môn học với giao diện bảng (Table UI).
-- [x] **Cấu hình độc lập:** Backend có bộ Gradle Wrapper riêng (8.5), tránh xung đột với Android Gradle (9.x).
-- [x] **Chế độ Developer:** Tự động bỏ qua màn hình Login để vào thẳng giao diện xử lý Task.
+- [x] **Splash Screen mượt mà:** Tích hợp `androidx.core:core-splashscreen` giúp loại bỏ màn hình trắng trên Android 12+, đồng bộ với hiệu ứng fade-in và màu nền tím đặc trưng.
+- [x] **Điều hướng thông minh:** Hệ thống Bottom Navigation và Navigation Drawer giúp chuyển đổi nhanh giữa Trang chủ, Công việc, Lịch, Pomodoro, Thông báo và Cá nhân.
+- [x] **Quản lý Task & Môn học:** Tích hợp backend để quản lý danh sách công việc và môn học (Subject), hiển thị theo deadline và độ ưu tiên.
+- [x] **Thông báo & Nhắc nhở:** Màn hình thông báo chuyên biệt giúp theo dõi các hạn chót sắp tới.
+- [x] **Dữ liệu cục bộ:** Sử dụng Room Database để lưu trữ dữ liệu, đảm bảo ứng dụng hoạt động ổn định.
+- [x] **Màn hình Profile:** Quản lý thông tin cá nhân và cài đặt ứng dụng.
 
 ## 🛠 Hướng dẫn chạy dự án
 

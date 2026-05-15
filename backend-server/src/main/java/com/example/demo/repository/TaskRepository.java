@@ -8,4 +8,5 @@ import java.util.List;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByDueDateBetween(Long start, Long end);
+    List<Task> findByPriorityAndIsCompleted(String priority, boolean isCompleted);
 }

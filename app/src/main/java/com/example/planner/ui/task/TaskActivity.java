@@ -48,14 +48,8 @@ public class TaskActivity extends BaseActivity {
 
             @Override
             public void onTaskStatusChanged(TaskUiModel task) {
-                // Chuyển đổi TaskUiModel sang Task entity để update
-                Task updateTask = new Task(task.getTitle(), DateUtils.stringToTimestamp(task.getDeadline()), task.getSubjectId());
-                updateTask.id = task.getId();
-                updateTask.isCompleted = task.isChecked();
-                updateTask.priority = task.getPriority();
-                updateTask.isReminderEnabled = task.isReminderEnabled();
-                updateTask.note = task.getNote();
-                viewModel.update(updateTask, null);
+                // Sử dụng hàm toggle chuyên dụng để lấy data gốc từ DB và đổi trạng thái
+                viewModel.toggleTaskCompletion(task.getId());
             }
 
             @Override

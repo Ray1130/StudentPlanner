@@ -16,12 +16,9 @@
         android:usesCleartextTraffic="true">
 
         <activity
-            android:name=".ui.task.TaskActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.main.LoginActivity"
-            android:exported="true">
+            android:name=".ui.splash.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Planner.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -30,6 +27,15 @@
 
         <activity
             android:name=".ui.main.MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Planner" />
+
+        <activity
+            android:name=".ui.task.TaskActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.main.LoginActivity"
             android:exported="false" />
 
         <activity
@@ -42,6 +48,10 @@
 
         <activity
             android:name=".ui.profile.UserProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.notification.NotificationActivity"
             android:exported="false" />
 
     </application>

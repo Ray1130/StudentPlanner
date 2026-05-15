@@ -57,7 +57,6 @@ public class ScheduleActivity extends BaseActivity {
 
         btnAddTask.setOnClickListener(v -> {
             com.example.planner.ui.task.TaskCreateSheetFragment sheet = new com.example.planner.ui.task.TaskCreateSheetFragment();
-            // Truyền ngày đang chọn vào bundle để TaskCreateSheetFragment biết ngày mặc định
             Bundle bundle = new Bundle();
             long timestamp = selectedDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
             bundle.putLong("default_date", timestamp);
@@ -75,7 +74,7 @@ public class ScheduleActivity extends BaseActivity {
                 selectedDate = date;
                 viewModel.setSelectedDate(date);
                 adapter.updateSelectedDate(date);
-                // Nếu click vào ngày của tháng khác, chuyển tháng luôn
+                // Nếu click vào ngày của tháng khác thì chuyển tháng
                 if (date.getMonthValue() != selectedDate.getMonthValue()) {
                     setMonthView();
                 }
@@ -123,8 +122,7 @@ public class ScheduleActivity extends BaseActivity {
         ArrayList<LocalDate> daysInMonth = daysInMonthList(selectedDate);
         
         viewModel.loadTaskCountsForMonth(daysInMonth);
-        
-        // Chỉ cập nhật danh sách ngày, không set lại Adapter
+
         if (adapter != null) {
             adapter.updateDays(daysInMonth, selectedDate);
         }
@@ -141,10 +139,8 @@ public class ScheduleActivity extends BaseActivity {
         int daysInMonth = yearMonth.lengthOfMonth();
 
         LocalDate firstOfMonth = date.withDayOfMonth(1);
-        int dayOfWeek = firstOfMonth.getDayOfWeek().getValue(); // T2=1, ..., CN=7
+        int dayOfWeek = firstOfMonth.getDayOfWeek().getValue();
 
-        // 1. Lấy ngày của tháng trước để lấp đầy hàng đầu tiên
-        // dayOfWeek = 1 (T2) thì không cần bù, 2 (T3) bù 1 ngày...
         int daysToBefore = dayOfWeek - 1;
         LocalDate prevMonth = date.minusMonths(1);
         int daysInPrevMonth = YearMonth.from(prevMonth).lengthOfMonth();
@@ -153,13 +149,12 @@ public class ScheduleActivity extends BaseActivity {
             days.add(prevMonth.withDayOfMonth(daysInPrevMonth - i));
         }
 
-        // 2. Thêm ngày của tháng hiện tại
+        // Thêm ngày của tháng hiện tại
         for (int i = 1; i <= daysInMonth; i++) {
             days.add(date.withDayOfMonth(i));
         }
 
-        // 3. Lấp đầy các ô trống còn lại bằng ngày tháng sau (tổng 42 ô để cố định 6 hàng)
-        int nextMonthDays = 42 - days.size();
+        int nextMonthDays = 35 - days.size();
         for (int i = 1; i <= nextMonthDays; i++) {
             days.add(date.plusMonths(1).withDayOfMonth(i));
         }

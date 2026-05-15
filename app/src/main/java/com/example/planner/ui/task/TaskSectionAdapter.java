@@ -103,8 +103,12 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             updateCheckIcon(cardHolder.ivCheck, item.isChecked());
             cardHolder.ivCheck.setOnClickListener(v -> {
-                item.setChecked(!item.isChecked());
-                updateCheckIcon(cardHolder.ivCheck, item.isChecked());
+                // 1. Phản hồi UI ngay lập tức
+                boolean newCheckedState = !item.isChecked();
+                item.setChecked(newCheckedState);
+                updateCheckIcon(cardHolder.ivCheck, newCheckedState);
+                
+                // 2. Thông báo cho ViewModel để lưu vào DB
                 if (listener != null) listener.onTaskStatusChanged(item);
             });
 
@@ -157,8 +161,10 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void updateCheckIcon(ImageView imageView, boolean isChecked) {
-        int iconRes = isChecked ? R.drawable.ic_check_circle_24 : R.drawable.ic_radio_unchecked;
+        int iconRes = isChecked ? R.drawable.ic_check_circle_24 : R.drawable.ic_circle_outline_24;
         imageView.setImageResource(iconRes);
+        int tintColor = isChecked ? R.color.success : R.color.text_secondary;
+        imageView.setColorFilter(androidx.core.content.ContextCompat.getColor(imageView.getContext(), tintColor));
     }
 
     @Override

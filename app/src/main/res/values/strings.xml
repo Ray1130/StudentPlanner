@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">UNIPLAN</string>
-    <string name="welcome_back">Chúc mừng bạn quay lại</string>
-    <string name="welcome_user">Chúc mừng %1$s quay lại!</string>
+    <string name="app_name">Tick &amp; Do</string>
+    <string name="welcome_back">Chào mừng bạn đã trở lại</string>
+    <string name="welcome_user">Chào mừng %1$s quay lại!</string>
     <string name="sample_date">Thứ 7, 28/03/2026</string>
     <string name="today">Hôm nay</string>
     <string name="overdue">Quá hạn</string>

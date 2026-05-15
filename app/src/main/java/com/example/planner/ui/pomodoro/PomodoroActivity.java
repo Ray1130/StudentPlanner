@@ -29,7 +29,7 @@ public class PomodoroActivity extends BaseActivity {
     private TextView btnModePomodoro, btnModeShortBreak, btnModeLongBreak;
     
     private CountDownTimer countDownTimer;
-    private long timeLeftInMillis = 1500000; // 25 phút mặc định
+    private long timeLeftInMillis = 1500000;
     private long initialTimeInMillis = 1500000;
     private boolean timerRunning = false;
 
@@ -42,7 +42,7 @@ public class PomodoroActivity extends BaseActivity {
         initViews();
         setupListeners();
         updateCountDownText();
-        updateTabFocus(btnModePomodoro); // Focus mặc định
+        updateTabFocus(btnModePomodoro);
     }
 
     private void initViews() {
@@ -82,12 +82,9 @@ public class PomodoroActivity extends BaseActivity {
     }
 
     private void updateTabFocus(TextView selectedTab) {
-        // Reset tất cả về trạng thái chưa chọn
         resetTabStyle(btnModePomodoro);
         resetTabStyle(btnModeShortBreak);
         resetTabStyle(btnModeLongBreak);
-
-        // Highlight tab được chọn
         selectedTab.setBackgroundResource(R.drawable.bg_mode_selected);
         selectedTab.setTextColor(ContextCompat.getColor(this, android.R.color.white));
         selectedTab.setTypeface(null, android.graphics.Typeface.BOLD);

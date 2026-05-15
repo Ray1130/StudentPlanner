@@ -14,9 +14,20 @@
     <color name="primary_purple">#8872C6</color>
     <color name="secondary_purple">#C5BAE6</color>
     <color name="task_bg_light_purple">#F4EFFF</color>
-    <color name="chip_selected_bg">#8872C6</color>
-    <color name="chip_unselected_bg">#CEBAEB</color>
-    <color name="chip_unselected_text">#FFFFFF</color>
+    
+    <!-- Tag Colors -->
+    <color name="tag_course_bg">#F2EDFC</color>
+    <color name="tag_course_text">#785FC7</color>
+    <color name="tag_extracurricular_bg">#E6FBF2</color>
+    <color name="tag_extracurricular_text">#3AB98D</color>
+    <color name="tag_important_bg">#FFF0F2</color>
+    <color name="tag_important_text">#FA3854</color>
+    
+    <color name="chip_selected_bg">#644EE4</color>
+    <color name="chip_selected_text">#FFFFFF</color>
+    <color name="chip_unselected_bg">#FFFFFF</color>
+    <color name="chip_unselected_stroke">#E5E7EB</color>
+    <color name="chip_unselected_text">#6B7280</color>
     <color name="bottom_nav_selected_bg">#E5DBFA</color>
     <color name="bottom_nav_icon_selected">#6C5CC3</color>
     <color name="bottom_nav_icon_unselected">#695E8B</color>

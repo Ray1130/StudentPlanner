@@ -66,10 +66,30 @@ public class TaskActivity extends BaseActivity {
         rvTasks.setAdapter(adapter);
 
         findViewById(R.id.fabAddTask).setOnClickListener(v -> showCreateSheet());
+        
+        // UI MOCKUP - DELETE WHEN INTEGRATING REAL LOGIC
+        initMockData();
 
-        observeData();
-        viewModel.loadSubjects();
+        // observeData();
+        // viewModel.loadSubjects();
         setupBottomNavigation(R.id.nav_tasks);
+    }
+
+    // UI MOCKUP - DELETE WHEN INTEGRATING REAL LOGIC
+    private void initMockData() {
+        taskList.clear();
+        taskList.add(new TaskUiModel(1, TaskUiModel.TYPE_TABLE_ROW, "Bài tập chương 3", "Hôm nay, 17:00", "Kinh tế vĩ mô • KTN201", false, "high", 1, true));
+        taskList.add(new TaskUiModel(2, TaskUiModel.TYPE_TABLE_ROW, "Thuyết trình giữa kỳ", "Mai, 10:00", "Marketing căn bản • MAR301", false, "medium", 1, true));
+        taskList.add(new TaskUiModel(3, TaskUiModel.TYPE_TABLE_ROW, "Đọc tài liệu tuần 5", "Thứ 5, 25/05", "Tiếng Anh học thuật • ENG102", false, "low", 1, true));
+        taskList.add(new TaskUiModel(4, TaskUiModel.TYPE_TABLE_ROW, "Họp CLB Truyền thông", "Thứ 6, 26/05 • 19:30", "CLB Truyền thông • Phòng B203", false, "medium", 2, false));
+        taskList.add(new TaskUiModel(5, TaskUiModel.TYPE_TABLE_ROW, "Chuẩn bị kế hoạch Mùa hè xanh", "Thứ 7, 27/05 • Online", "Tình nguyện", false, "low", 2, false));
+        taskList.add(new TaskUiModel(6, TaskUiModel.TYPE_TABLE_ROW, "Nộp đề cương tiểu luận", "Chủ nhật, 28/05, 23:59", "Phương pháp nghiên cứu • RES201", false, "medium", 1, true));
+        adapter.updateData(taskList);
+        
+        TextView tvCount = findViewById(R.id.tv_task_count);
+        if (tvCount != null) {
+            tvCount.setText(taskList.size() + " công việc hiện tại");
+        }
     }
 
     private void showCreateSheet() {

@@ -121,36 +121,23 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             });
             
             // Dấu chấm ưu tiên và Gạch màu
-            int priorityDrawable;
             int priorityColor;
-            String priorityStatusText;
             String priority = item.getPriority() != null ? item.getPriority().toLowerCase() : "low";
             switch (priority) {
                 case "high":
-                    priorityDrawable = R.drawable.bg_priority_dot_red;
                     priorityColor = holder.itemView.getContext().getColor(R.color.priority_high);
-                    priorityStatusText = "Cao";
                     break;
                 case "medium":
-                    priorityDrawable = R.drawable.bg_priority_dot_orange;
                     priorityColor = holder.itemView.getContext().getColor(R.color.priority_medium);
-                    priorityStatusText = "Sắp đến hạn";
                     break;
                 case "low":
                 default:
-                    priorityDrawable = R.drawable.bg_priority_dot_green;
                     priorityColor = holder.itemView.getContext().getColor(R.color.priority_low);
-                    priorityStatusText = "Đã lên lịch";
                     break;
             }
             
-            if (cardHolder.viewPriorityDot != null) {
-                cardHolder.viewPriorityDot.setBackgroundResource(priorityDrawable);
-            }
-            
-            if (cardHolder.tvStatus != null) {
-                cardHolder.tvStatus.setText(priorityStatusText);
-                cardHolder.tvStatus.setTextColor(priorityColor);
+            if (cardHolder.viewPriorityStrip != null) {
+                cardHolder.viewPriorityStrip.setBackgroundColor(priorityColor);
             }
         }
     }
@@ -181,9 +168,9 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     static class TaskCardViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvSubtitle, tvTag, tvTime, tvStatus, tvCommentCount;
+        TextView tvTitle, tvSubtitle, tvTag, tvTime, tvCommentCount;
         ImageView ivCheck, ivBell, ivLocation;
-        View viewPriorityDot, viewPriorityStrip;
+        View viewPriorityStrip;
         TaskCardViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTaskTitle);
@@ -191,13 +178,11 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             ivCheck = itemView.findViewById(R.id.ivCheck);
             ivBell = itemView.findViewById(R.id.ivBell);
             ivLocation = itemView.findViewById(R.id.ivLocation);
-            viewPriorityDot = itemView.findViewById(R.id.viewPriorityDot);
             viewPriorityStrip = itemView.findViewById(R.id.viewPriorityStrip);
             
             // UI MOCKUP - DELETE WHEN INTEGRATING REAL LOGIC
             tvTag = itemView.findViewById(R.id.tvTag);
             tvTime = itemView.findViewById(R.id.tvTime);
-            tvStatus = itemView.findViewById(R.id.tvStatus);
             tvCommentCount = itemView.findViewById(R.id.tvCommentCount);
         }
     }

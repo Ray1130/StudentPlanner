@@ -45,6 +45,7 @@ public class MainViewModel extends AndroidViewModel {
 
         int todayCount = 0;
         int overdueCount = 0;
+        int highPriorityCount = 0;
         int completedCount = 0;
 
         Calendar cal = Calendar.getInstance();
@@ -56,19 +57,20 @@ public class MainViewModel extends AndroidViewModel {
         long endOfToday = startOfToday + (24 * 60 * 60 * 1000);
 
         for (Task task : tasks) {
-            if (task.isCompleted) completedCount++;
+            if (task.isCompleted) {
+                completedCount++;
+            }
 
             long dueDate = task.dueDate;
-
             boolean isToday = dueDate >= startOfToday && dueDate < endOfToday;
             boolean isOverdue = dueDate < startOfToday && dueDate > 0;
 
-            int priorityLevel = MainTaskItem.PRIORITY_MEDIUM;
-            if (isOverdue) {
-                overdueCount++;
-                priorityLevel = MainTaskItem.PRIORITY_HIGH;
+            // Chỉ đếm các task chưa hoàn thành cho Today, Overdue và High Priority
+            if (!task.isCompleted) {
+                if (isToday) todayCount++;
+                if (isOverdue) overdueCount++;
+                if ("high".equalsIgnoreCase(task.priority)) highPriorityCount++;
             }
-            if (isToday) todayCount++;
 
             String dateStr = DateUtils.timestampToString(task.dueDate);
             String meta = task.note != null && !task.note.isEmpty() ? task.note + " • " + dateStr : dateStr;
@@ -87,7 +89,7 @@ public class MainViewModel extends AndroidViewModel {
         }
 
         dashboardUiState.setValue(new DashboardUiState(
-                todayCount, overdueCount, 0, completedCount, todayTasks, upcomingTasks
+                todayCount, overdueCount, highPriorityCount, completedCount, todayTasks, upcomingTasks
         ));
     }
 

@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.planner.R;
 import com.example.planner.ui.BaseActivity;
+import com.example.planner.ui.task.TaskActivity;
 import com.google.android.material.navigation.NavigationView;
 
 import java.text.SimpleDateFormat;
@@ -87,8 +88,8 @@ public class MainActivity extends BaseActivity
         });
 
         findViewById(R.id.btn_nav_reminders).setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, com.example.planner.ui.notification.NotificationActivity.class));
         });
-
 
         findViewById(R.id.btn_nav_pomodoro).setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, com.example.planner.ui.pomodoro.PomodoroActivity.class));
@@ -124,15 +125,29 @@ public class MainActivity extends BaseActivity
         RecyclerView rvTodayTasks = findViewById(R.id.rvTodayTasks);
         RecyclerView rvUpcomingTasks = findViewById(R.id.rvUpcomingTasks);
 
+        MainTaskAdapter.OnTaskStatusChangeListener listener = new MainTaskAdapter.OnTaskStatusChangeListener() {
+            @Override
+            public void onStatusChanged(int taskId, boolean isCompleted) {
+                viewModel.updateTaskStatus(taskId, isCompleted);
+            }
+
+            @Override
+            public void onTaskClick(int taskId) {
+                startActivity(new Intent(MainActivity.this, TaskActivity.class));
+            }
+        };
+
         if (rvTodayTasks != null) {
             rvTodayTasks.setLayoutManager(new LinearLayoutManager(this));
             todayAdapter = new MainTaskAdapter();
+            todayAdapter.setOnTaskStatusChangeListener(listener);
             rvTodayTasks.setAdapter(todayAdapter);
         }
 
         if (rvUpcomingTasks != null) {
             rvUpcomingTasks.setLayoutManager(new LinearLayoutManager(this));
             upcomingAdapter = new MainTaskAdapter();
+            upcomingAdapter.setOnTaskStatusChangeListener(listener);
             rvUpcomingTasks.setAdapter(upcomingAdapter);
         }
     }

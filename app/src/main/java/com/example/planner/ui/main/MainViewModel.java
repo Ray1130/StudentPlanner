@@ -10,6 +10,7 @@ import androidx.lifecycle.MediatorLiveData;
 
 import com.example.planner.data.local.AppDatabase;
 import com.example.planner.data.model.Task;
+import com.example.planner.data.repository.TaskRepository;
 import com.example.planner.utils.DateUtils;
 
 import java.util.ArrayList;
@@ -19,20 +20,27 @@ import java.util.List;
 public class MainViewModel extends AndroidViewModel {
 
     private final MediatorLiveData<DashboardUiState> dashboardUiState = new MediatorLiveData<>();
-    private final AppDatabase database;
+    private final TaskRepository repository;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
-        database = AppDatabase.getDatabase(application);
+        repository = new TaskRepository(application);
 
-        // Theo dõi dữ liệu từ Room Database
-        LiveData<List<Task>> tasksFromDb = database.taskDao().getAllTasks();
+        LiveData<List<Task>> tasksFromDb = repository.getAllTasks();
         
         dashboardUiState.addSource(tasksFromDb, tasks -> {
             if (tasks != null) {
                 processTasks(tasks);
             }
         });
+
+        // Đồng bộ dữ liệu
+        repository.syncTasksFromServer();
+    }
+
+    public void updateTaskStatus(int taskId, boolean isCompleted) {
+        // Repository đã có hàm toggle hoặc update, dùng chung để đồng nhất logic
+        repository.toggleTaskCompletion(taskId);
     }
 
     public LiveData<DashboardUiState> getDashboardUiState() {
@@ -65,7 +73,6 @@ public class MainViewModel extends AndroidViewModel {
             boolean isToday = dueDate >= startOfToday && dueDate < endOfToday;
             boolean isOverdue = dueDate < startOfToday && dueDate > 0;
 
-            // Chỉ đếm các task chưa hoàn thành cho Today, Overdue và High Priority
             if (!task.isCompleted) {
                 if (isToday) todayCount++;
                 if (isOverdue) overdueCount++;

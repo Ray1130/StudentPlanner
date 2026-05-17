@@ -61,11 +61,8 @@ public class TaskActivity extends BaseActivity {
 
         findViewById(R.id.fabAddTask).setOnClickListener(v -> showCreateSheet());
         
-        // UI MOCKUP - DELETE WHEN INTEGRATING REAL LOGIC
-        initMockData();
-
-        // observeData();
-        // viewModel.loadSubjects();
+        observeData();
+        viewModel.loadSubjects();
         setupBottomNavigation(R.id.nav_tasks);
     }
 
@@ -121,22 +118,21 @@ public class TaskActivity extends BaseActivity {
 
         Map<Integer, List<Task>> groupedTasks = new HashMap<>();
         List<Task> orphanTasks = new ArrayList<>();
+        Map<Integer, Subject> subjectMap = new HashMap<>();
+        for (Subject s : subjects) {
+            if (s.id != null) subjectMap.put(s.id, s);
+        }
 
         for (Task task : tasks) {
-            boolean found = false;
-            for (Subject s : subjects) {
-                if (s.id != null && s.id.equals(task.subjectId)) {
-                    List<Task> group = groupedTasks.get(task.subjectId);
-                    if (group == null) {
-                        group = new ArrayList<>();
-                        groupedTasks.put(task.subjectId, group);
-                    }
-                    group.add(task);
-                    found = true;
-                    break;
+            Subject s = subjectMap.get(task.subjectId);
+            if (s != null) {
+                List<Task> group = groupedTasks.get(task.subjectId);
+                if (group == null) {
+                    group = new ArrayList<>();
+                    groupedTasks.put(task.subjectId, group);
                 }
-            }
-            if (!found) {
+                group.add(task);
+            } else {
                 orphanTasks.add(task);
             }
         }
@@ -144,9 +140,9 @@ public class TaskActivity extends BaseActivity {
         for (Subject subject : subjects) {
             List<Task> subjectTasks = groupedTasks.get(subject.id);
             if (subjectTasks != null && !subjectTasks.isEmpty()) {
-                taskList.add(new TaskUiModel(TaskUiModel.TYPE_GROUP_HEADER, subject.name, "", "", false, "low"));
+                taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, subject.name, "", "", false, "low", subject.id, false));
                 for (Task task : subjectTasks) {
-                    addTaskToUiList(task);
+                    addTaskToUiList(task, subject);
                 }
             }
         }
@@ -154,7 +150,7 @@ public class TaskActivity extends BaseActivity {
         if (!orphanTasks.isEmpty()) {
             taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, "Chưa phân loại", "", "", false, "low", 0, false));
             for (Task task : orphanTasks) {
-                addTaskToUiList(task);
+                addTaskToUiList(task, null);
             }
         }
 
@@ -162,17 +158,24 @@ public class TaskActivity extends BaseActivity {
 
         TextView tvCount = findViewById(R.id.tv_task_count);
         if (tvCount != null) {
-            tvCount.setText(getString(R.string.task_count_format, tasks.size()));
+            tvCount.setText(tasks.size() + " công việc hiện tại");
         }
     }
 
-    private void addTaskToUiList(Task task) {
+    private void addTaskToUiList(Task task, Subject subject) {
+        String subtitle = "";
+        if (subject != null) {
+            subtitle = subject.name + (subject.code != null ? " • " + subject.code : "");
+        } else if (task.category != null) {
+            subtitle = task.category;
+        }
+
         taskList.add(new TaskUiModel(
                 task.id != null ? task.id : 0,
                 TaskUiModel.TYPE_TABLE_ROW,
                 task.title,
                 DateUtils.timestampToString(task.dueDate),
-                task.note != null ? task.note : "",
+                subtitle,
                 task.isCompleted,
                 task.priority != null ? task.priority.toLowerCase() : "low",
                 task.subjectId,

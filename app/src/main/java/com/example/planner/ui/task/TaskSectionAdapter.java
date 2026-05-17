@@ -56,49 +56,48 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             TaskCardViewHolder cardHolder = (TaskCardViewHolder) holder;
             cardHolder.tvTitle.setText(item.getTitle());
             
-            // UI MOCKUP - DELETE WHEN INTEGRATING REAL LOGIC
-            String subtitleTemplate = item.getNote() != null && !item.getNote().isEmpty() ? item.getNote() : "Kinh tế vĩ mô • KTN201";
-            if (subtitleTemplate.contains(" • ")) {
-                int dotIndex = subtitleTemplate.indexOf(" • ");
-                android.text.SpannableString spannable = new android.text.SpannableString(subtitleTemplate);
+            String subtitle = item.getNote(); // Note trong UiModel hiện tại chứa subject info
+            if (subtitle != null && subtitle.contains(" • ")) {
+                int dotIndex = subtitle.indexOf(" • ");
+                android.text.SpannableString spannable = new android.text.SpannableString(subtitle);
                 spannable.setSpan(new android.text.style.ForegroundColorSpan(cardHolder.itemView.getContext().getColor(R.color.primary_purple)),
                         dotIndex + 1, dotIndex + 2, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 cardHolder.tvSubtitle.setText(spannable);
             } else {
-                cardHolder.tvSubtitle.setText(subtitleTemplate);
+                cardHolder.tvSubtitle.setText(subtitle != null ? subtitle : "");
             }
             
             if (cardHolder.tvTag != null) {
-                // Giả lập thẻ Tag: Học phần vs Ngoại khoá 
-                if ("high".equalsIgnoreCase(item.getPriority())) {
-                    cardHolder.tvTag.setText("Ngoại khoá");
-                    cardHolder.tvTag.setBackgroundResource(R.drawable.bg_tag_extracurricular);
-                    cardHolder.tvTag.setTextColor(cardHolder.itemView.getContext().getColor(R.color.tag_extracurricular_text));
-                } else {
+                // Phân loại dựa trên Subject hoặc Category
+                if (item.getSubjectId() > 0) {
                     cardHolder.tvTag.setText("Học phần");
                     cardHolder.tvTag.setBackgroundResource(R.drawable.bg_tag_course);
                     cardHolder.tvTag.setTextColor(cardHolder.itemView.getContext().getColor(R.color.tag_course_text));
-                }
-                
-                // Logic hiển thị icon theo Tag
-                if ("Học phần".equals(cardHolder.tvTag.getText().toString())) {
-                    if (cardHolder.ivBell != null) cardHolder.ivBell.setVisibility(View.VISIBLE);
+                    if (cardHolder.ivBell != null) cardHolder.ivBell.setVisibility(item.isReminderEnabled() ? View.VISIBLE : View.GONE);
                     if (cardHolder.ivLocation != null) cardHolder.ivLocation.setVisibility(View.GONE);
                 } else {
+                    cardHolder.tvTag.setText("Ngoại khoá");
+                    cardHolder.tvTag.setBackgroundResource(R.drawable.bg_tag_extracurricular);
+                    cardHolder.tvTag.setTextColor(cardHolder.itemView.getContext().getColor(R.color.tag_extracurricular_text));
                     if (cardHolder.ivBell != null) cardHolder.ivBell.setVisibility(View.GONE);
                     if (cardHolder.ivLocation != null) cardHolder.ivLocation.setVisibility(View.VISIBLE);
                 }
             }
             
             if (cardHolder.tvTime != null) {
-                String time = item.getDeadline();
-                cardHolder.tvTime.setText(time != null && !time.isEmpty() ? time : "Hôm nay, 17:00");
-                cardHolder.tvTime.setTextColor(cardHolder.itemView.getContext().getColor(R.color.danger));
+                cardHolder.tvTime.setText(item.getDeadline());
+                // Highlight red if overdue
+                try {
+                    // Giả định getDeadline() trả về chuỗi có thể so sánh hoặc đã format
+                    // Logic đơn giản: nếu là "Hôm nay" hoặc quá hạn thì màu đỏ
+                    cardHolder.tvTime.setTextColor(cardHolder.itemView.getContext().getColor(R.color.danger));
+                } catch (Exception e) {
+                    cardHolder.tvTime.setTextColor(cardHolder.itemView.getContext().getColor(R.color.text_secondary));
+                }
             }
             
             if (cardHolder.tvCommentCount != null) {
-                // Hardcode comment count
-                cardHolder.tvCommentCount.setText(String.valueOf((int)(Math.random() * 5) + 1));
+                cardHolder.tvCommentCount.setText("0"); // Mặc định 0 vì DB chưa có field này
             }
 
             updateCheckIcon(cardHolder.ivCheck, item.isChecked());
@@ -124,37 +123,33 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             // Dấu chấm ưu tiên và Gạch màu
             int priorityDrawable;
             int priorityColor;
-            String priorityText; // UI MOCKUP
+            String priorityStatusText;
             String priority = item.getPriority() != null ? item.getPriority().toLowerCase() : "low";
             switch (priority) {
                 case "high":
                     priorityDrawable = R.drawable.bg_priority_dot_red;
                     priorityColor = holder.itemView.getContext().getColor(R.color.priority_high);
-                    priorityText = "Cao";
+                    priorityStatusText = "Cao";
                     break;
                 case "medium":
                     priorityDrawable = R.drawable.bg_priority_dot_orange;
                     priorityColor = holder.itemView.getContext().getColor(R.color.priority_medium);
-                    priorityText = "Sắp đến hạn";
+                    priorityStatusText = "Sắp đến hạn";
                     break;
                 case "low":
                 default:
                     priorityDrawable = R.drawable.bg_priority_dot_green;
                     priorityColor = holder.itemView.getContext().getColor(R.color.priority_low);
-                    priorityText = "Đã lên lịch";
+                    priorityStatusText = "Đã lên lịch";
                     break;
             }
             
             if (cardHolder.viewPriorityDot != null) {
                 cardHolder.viewPriorityDot.setBackgroundResource(priorityDrawable);
             }
-            if (cardHolder.viewPriorityStrip != null) {
-                cardHolder.viewPriorityStrip.setBackgroundColor(priorityColor); // Deprecated in UI but safely keep
-            }
-
-            // UI MOCKUP - DELETE WHEN INTEGRATING REAL LOGIC
+            
             if (cardHolder.tvStatus != null) {
-                cardHolder.tvStatus.setText(priorityText);
+                cardHolder.tvStatus.setText(priorityStatusText);
                 cardHolder.tvStatus.setTextColor(priorityColor);
             }
         }

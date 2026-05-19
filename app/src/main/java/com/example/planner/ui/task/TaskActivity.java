@@ -117,12 +117,12 @@ public class TaskActivity extends BaseActivity {
     // UI MOCKUP - DELETE WHEN INTEGRATING REAL LOGIC
     private void initMockData() {
         taskList.clear();
-        taskList.add(new TaskUiModel(1, TaskUiModel.TYPE_TABLE_ROW, "Bài tập chương 3", "Hôm nay, 17:00", "Kinh tế vĩ mô • KTN201", false, "high", 1, true));
-        taskList.add(new TaskUiModel(2, TaskUiModel.TYPE_TABLE_ROW, "Thuyết trình giữa kỳ", "Mai, 10:00", "Marketing căn bản • MAR301", false, "medium", 1, true));
-        taskList.add(new TaskUiModel(3, TaskUiModel.TYPE_TABLE_ROW, "Đọc tài liệu tuần 5", "Thứ 5, 25/05", "Tiếng Anh học thuật • ENG102", false, "low", 1, true));
-        taskList.add(new TaskUiModel(4, TaskUiModel.TYPE_TABLE_ROW, "Họp CLB Truyền thông", "Thứ 6, 26/05 • 19:30", "CLB Truyền thông • Phòng B203", false, "medium", 2, false));
-        taskList.add(new TaskUiModel(5, TaskUiModel.TYPE_TABLE_ROW, "Chuẩn bị kế hoạch Mùa hè xanh", "Thứ 7, 27/05 • Online", "Tình nguyện", false, "low", 2, false));
-        taskList.add(new TaskUiModel(6, TaskUiModel.TYPE_TABLE_ROW, "Nộp đề cương tiểu luận", "Chủ nhật, 28/05, 23:59", "Phương pháp nghiên cứu • RES201", false, "medium", 1, true));
+        taskList.add(new TaskUiModel(1, TaskUiModel.TYPE_TABLE_ROW, "Bài tập chương 3", "Hôm nay, 17:00", "Kinh tế vĩ mô • KTN201", false, "high", 1, true, "Học tập", ""));
+        taskList.add(new TaskUiModel(2, TaskUiModel.TYPE_TABLE_ROW, "Thuyết trình giữa kỳ", "Mai, 10:00", "Marketing căn bản • MAR301", false, "medium", 1, true, "Học tập", ""));
+        taskList.add(new TaskUiModel(3, TaskUiModel.TYPE_TABLE_ROW, "Đọc tài liệu tuần 5", "Thứ 5, 25/05", "Tiếng Anh học thuật • ENG102", false, "low", 1, true, "Học tập", ""));
+        taskList.add(new TaskUiModel(4, TaskUiModel.TYPE_TABLE_ROW, "Họp CLB Truyền thông", "Thứ 6, 26/05 • 19:30", "Phòng B203", false, "medium", 0, false, "CLB", "CLB Truyền thông"));
+        taskList.add(new TaskUiModel(5, TaskUiModel.TYPE_TABLE_ROW, "Chuẩn bị kế hoạch Mùa hè xanh", "Thứ 7, 27/05 • Online", "", false, "low", 0, false, "Tình nguyện", "Tình nguyện"));
+        taskList.add(new TaskUiModel(6, TaskUiModel.TYPE_TABLE_ROW, "Nộp đề cương tiểu luận", "Chủ nhật, 28/05, 23:59", "Phương pháp nghiên cứu • RES201", false, "medium", 1, true, "Học tập", ""));
         adapter.updateData(taskList);
         
         TextView tvCount = findViewById(R.id.tv_task_count);
@@ -159,71 +159,118 @@ public class TaskActivity extends BaseActivity {
 
     public void fetchTasksFromServer() {
         viewModel.loadSubjects();
+        viewModel.syncTasksFromServer();
     }
 
     private void processAndDisplayTasks(List<Subject> subjects, List<Task> tasks) {
         taskList.clear();
 
         if (currentFilter.equals("ALL")) {
+            // Hiển thị Header "Học tập"
+            taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, "Học tập", "", "", false, "low", 0, false, "Học tập", ""));
+            
+            // Nhóm Học tập theo môn học
+            Map<Integer, List<Task>> courseGroups = new HashMap<>();
+            List<Task> otherStudy = new ArrayList<>();
             for (Task task : tasks) {
-                Subject s = null;
-                for (Subject sub : subjects) {
-                    if (sub.id != null && sub.id.equals(task.subjectId)) {
-                        s = sub;
-                        break;
+                if (task.subjectId > 0 || "Học tập".equals(task.category)) {
+                    if (task.subjectId > 0) {
+                        if (!courseGroups.containsKey(task.subjectId)) courseGroups.put(task.subjectId, new ArrayList<>());
+                        courseGroups.get(task.subjectId).add(task);
+                    } else {
+                        otherStudy.add(task);
                     }
                 }
-                addTaskToUiList(task, s);
             }
-        } else if (currentFilter.equals("COURSE")) {
-            Map<Integer, List<Task>> groupedTasks = new HashMap<>();
-            Map<Integer, Subject> subjectMap = new HashMap<>();
+            
             for (Subject s : subjects) {
-                if (s.id != null) subjectMap.put(s.id, s);
+                List<Task> group = courseGroups.get(s.id);
+                if (group != null) {
+                    for (Task t : group) addTaskToUiList(t, s);
+                }
+            }
+            for (Task t : otherStudy) addTaskToUiList(t, null);
+
+            // Hiển thị Header "Ngoại khóa"
+            taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, "Ngoại khóa", "", "", false, "low", 0, false, "Ngoại khóa", ""));
+            
+            // Nhóm Ngoại khóa theo category
+            Map<String, List<Task>> extraGroups = new HashMap<>();
+            for (Task task : tasks) {
+                if (!"Học tập".equals(task.category) && task.subjectId <= 0) {
+                    String cat = (task.category == null || task.category.isEmpty()) ? "Cá nhân" : task.category;
+                    if (!extraGroups.containsKey(cat)) extraGroups.put(cat, new ArrayList<>());
+                    extraGroups.get(cat).add(task);
+                }
+            }
+            for (Map.Entry<String, List<Task>> entry : extraGroups.entrySet()) {
+                for (Task t : entry.getValue()) addTaskToUiList(t, null);
             }
 
+        } else if (currentFilter.equals("COURSE")) {
+            Map<Integer, List<Task>> groupedTasks = new HashMap<>();
+            List<Task> nonSubjectStudyTasks = new ArrayList<>();
+
             for (Task task : tasks) {
-                if (task.subjectId > 0) {
-                    List<Task> group = groupedTasks.get(task.subjectId);
-                    if (group == null) {
-                        group = new ArrayList<>();
-                        groupedTasks.put(task.subjectId, group);
+                if (task.subjectId > 0 || "Học tập".equals(task.category)) {
+                    if (task.subjectId > 0) {
+                        if (!groupedTasks.containsKey(task.subjectId)) groupedTasks.put(task.subjectId, new ArrayList<>());
+                        groupedTasks.get(task.subjectId).add(task);
+                    } else {
+                        nonSubjectStudyTasks.add(task);
                     }
-                    group.add(task);
                 }
             }
 
             for (Subject subject : subjects) {
                 List<Task> subjectTasks = groupedTasks.get(subject.id);
                 if (subjectTasks != null && !subjectTasks.isEmpty()) {
-                    taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, subject.name, "", "", false, "low", subject.id, false));
-                    for (Task task : subjectTasks) {
-                        addTaskToUiList(task, subject);
-                    }
+                    taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, subject.name, "", "", false, "low", subject.id, false, "Học tập", ""));
+                    for (Task task : subjectTasks) addTaskToUiList(task, subject);
                 }
             }
+
+            if (!nonSubjectStudyTasks.isEmpty()) {
+                taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, "Tự học / Khác", "", "", false, "low", 0, false, "Học tập", ""));
+                for (Task task : nonSubjectStudyTasks) addTaskToUiList(task, null);
+            }
+
         } else if (currentFilter.equals("EXTRA")) {
+            Map<String, List<Task>> groupedTasks = new HashMap<>();
+
             for (Task task : tasks) {
-                if (task.subjectId <= 0) {
-                    addTaskToUiList(task, null);
+                if (!"Học tập".equals(task.category) && task.subjectId <= 0) {
+                    String cat = (task.category == null || task.category.isEmpty()) ? "Cá nhân" : task.category;
+                    if (!groupedTasks.containsKey(cat)) groupedTasks.put(cat, new ArrayList<>());
+                    groupedTasks.get(cat).add(task);
                 }
+            }
+
+            for (Map.Entry<String, List<Task>> entry : groupedTasks.entrySet()) {
+                taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, entry.getKey(), "", "", false, "low", 0, false, entry.getKey(), ""));
+                for (Task task : entry.getValue()) addTaskToUiList(task, null);
             }
         }
 
         adapter.updateData(taskList);
-
         TextView tvCount = findViewById(R.id.tv_task_count);
-        if (tvCount != null) {
-            tvCount.setText(taskList.size() + " công việc hiện tại");
-        }
+        if (tvCount != null) tvCount.setText(taskList.size() + " công việc");
     }
 
     private void addTaskToUiList(Task task, Subject subject) {
-        String subtitle = "";
+        String displaySubtitle = "";
         if (subject != null) {
-            subtitle = subject.name + (subject.code != null ? " • " + subject.code : "");
-        } else if (task.category != null) {
-            subtitle = task.category;
+            displaySubtitle = subject.name + (subject.code != null ? " • " + subject.code : "");
+        } else {
+            // Hiển thị Category (CLB, Tình nguyện, Hiến máu...)
+            if (task.category != null && !task.category.isEmpty() && !task.category.equals("Học tập")) {
+                displaySubtitle = task.category;
+            } else if (task.note != null && !task.note.isEmpty()) {
+                displaySubtitle = task.note;
+            } else {
+                // Mặc định cho các hoạt động ngoại khóa khác là Cá nhân
+                displaySubtitle = "Cá nhân";
+            }
         }
 
         taskList.add(new TaskUiModel(
@@ -231,11 +278,13 @@ public class TaskActivity extends BaseActivity {
                 TaskUiModel.TYPE_TABLE_ROW,
                 task.title,
                 DateUtils.timestampToString(task.dueDate),
-                subtitle,
+                task.note,
                 task.isCompleted,
                 task.priority != null ? task.priority.toLowerCase() : "low",
                 task.subjectId,
-                task.isReminderEnabled
+                task.isReminderEnabled,
+                task.category != null ? task.category : "",
+                displaySubtitle
         ));
     }
 }

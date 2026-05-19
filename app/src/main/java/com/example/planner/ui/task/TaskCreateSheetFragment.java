@@ -137,9 +137,14 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         if (rgTaskType.getCheckedRadioButtonId() == R.id.rb_study) {
             rowSubject.setVisibility(View.VISIBLE);
             rowActivityGroup.setVisibility(View.GONE);
+            selectedActivityGroup = "Học tập";
         } else {
             rowSubject.setVisibility(View.GONE);
             rowActivityGroup.setVisibility(View.VISIBLE);
+            if (selectedActivityGroup == null || selectedActivityGroup.equals("Học tập")) {
+                selectedActivityGroup = "Cá nhân";
+            }
+            tvActivityGroupValue.setText(selectedActivityGroup);
         }
     }
 
@@ -175,10 +180,17 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         if (editingTask.getSubjectId() > 0) {
             rowSubject.setVisibility(View.VISIBLE);
             rowActivityGroup.setVisibility(View.GONE);
+            rgTaskType.check(R.id.rb_study);
+            selectedActivityGroup = "Học tập";
         } else {
             rowSubject.setVisibility(View.GONE);
             rowActivityGroup.setVisibility(View.VISIBLE);
-            tvActivityGroupValue.setText(editingTask.getNote()); // Temporary mapping or use category if available
+            rgTaskType.check(R.id.rb_extra);
+            selectedActivityGroup = editingTask.getCategory();
+            if (selectedActivityGroup == null || selectedActivityGroup.isEmpty() || selectedActivityGroup.equals("Học tập")) {
+                selectedActivityGroup = "Cá nhân";
+            }
+            tvActivityGroupValue.setText(selectedActivityGroup);
         }
 
         parseDeadline(editingTask.getDeadline());
@@ -232,7 +244,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     }
 
     private void showActivityGroupPicker() {
-        String[] groups = {"CLB", "Tình nguyện", "Thể thao", "Cá nhân"};
+        String[] groups = {"CLB", "Tình nguyện", "Hiến máu", "Thể thao", "Cá nhân"};
         new AlertDialog.Builder(requireContext())
                 .setTitle("Chọn nhóm hoạt động")
                 .setItems(groups, (dialog, which) -> {

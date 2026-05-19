@@ -56,7 +56,7 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             TaskCardViewHolder cardHolder = (TaskCardViewHolder) holder;
             cardHolder.tvTitle.setText(item.getTitle());
             
-            String subtitle = item.getNote(); // Note trong UiModel hiện tại chứa subject info
+            String subtitle = item.getSubtitle();
             if (subtitle != null && subtitle.contains(" • ")) {
                 int dotIndex = subtitle.indexOf(" • ");
                 android.text.SpannableString spannable = new android.text.SpannableString(subtitle);
@@ -76,7 +76,7 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     if (cardHolder.ivBell != null) cardHolder.ivBell.setVisibility(item.isReminderEnabled() ? View.VISIBLE : View.GONE);
                     if (cardHolder.ivLocation != null) cardHolder.ivLocation.setVisibility(View.GONE);
                 } else {
-                    cardHolder.tvTag.setText("Ngoại khoá");
+                    cardHolder.tvTag.setText("Ngoại khóa");
                     cardHolder.tvTag.setBackgroundResource(R.drawable.bg_tag_extracurricular);
                     cardHolder.tvTag.setTextColor(cardHolder.itemView.getContext().getColor(R.color.tag_extracurricular_text));
                     if (cardHolder.ivBell != null) cardHolder.ivBell.setVisibility(View.GONE);

@@ -7,35 +7,32 @@
     android:orientation="vertical"
     android:padding="24dp">
 
-    <!-- Header -->
+    <!-- Header / Delete -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp">
-
+        android:layout_height="wrap_content">
         <ImageView
             android:id="@+id/btn_delete_task"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
             android:padding="4dp"
             android:src="@drawable/ic_delete_24"
             android:visibility="gone"
             app:tint="@color/white" />
     </RelativeLayout>
 
-    <!-- Task Title -->
+    <!-- Task Title (Common) -->
     <EditText
         android:id="@+id/et_task_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:background="@null"
-        android:hint="Trang mới"
+        android:hint="Tên công việc"
         android:textColor="@color/white"
         android:textColorHint="#BBAAF1"
-        android:textSize="32sp"
+        android:textSize="28sp"
         android:textStyle="bold"
         android:inputType="textCapSentences" />
 
@@ -45,211 +42,345 @@
         android:layout_marginTop="8dp"
         android:background="#40FFFFFF" />
 
-    <!-- Details Container -->
+    <!-- STEP 1: Type Selection -->
     <LinearLayout
+        android:id="@+id/container_step_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginTop="24dp">
 
-        <!-- Deadline Row -->
-        <LinearLayout
-            android:id="@+id/row_deadline"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chọn loại công việc"
+            android:textColor="#D1C7F7"
+            android:textSize="14sp" />
+
+        <RadioGroup
+            android:id="@+id/rg_task_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingVertical="12dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackground">
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal">
 
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_calendar_24"
-                app:tint="@color/white" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:text="Hạn chót"
-                android:textColor="#D1C7F7"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/tv_deadline_value"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="Trống"
-                android:textColor="@color/white"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <!-- Time Row (Reminder Clock) -->
-        <LinearLayout
-            android:id="@+id/row_time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingVertical="12dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackground"
-            android:gravity="center_vertical">
-
-            <ImageView
-                android:id="@+id/iv_reminder_clock"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_today_24"
-                app:tint="@color/white" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:text="Nhắc nhở"
-                android:textColor="#D1C7F7"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/tv_time_value"
+            <RadioButton
+                android:id="@+id/rb_study"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="end"
+                android:button="@null"
+                android:background="@drawable/bg_type_selector"
+                android:text="📚 Học tập"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:padding="12dp"
                 android:layout_marginEnd="8dp"
-                android:text="Tắt"
-                android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:checked="true" />
 
-            <CheckBox
-                android:id="@+id/cb_reminder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/white"
-                android:visibility="gone" />
-        </LinearLayout>
-
-        <!-- Subject Row -->
-        <LinearLayout
-            android:id="@+id/row_subject"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingVertical="12dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackground">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_sort_24"
-                app:tint="@color/white" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:text="Môn"
-                android:textColor="#D1C7F7"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/tv_subject_value"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="Trống"
-                android:textColor="@color/white"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <!-- Priority Row -->
-        <LinearLayout
-            android:id="@+id/row_priority"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingVertical="12dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackground">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_priority_24"
-                app:tint="@color/white" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:text="Ưu tiên"
-                android:textColor="#D1C7F7"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/tv_priority_value"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="Thấp"
-                android:textColor="@color/white"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <!-- Completed Checkbox Row -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingVertical="12dp"
-            android:gravity="center_vertical">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_check_circle_24"
-                app:tint="@color/white" />
-
-            <TextView
+            <RadioButton
+                android:id="@+id/rb_extra"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
                 android:layout_weight="1"
-                android:text="Đã hoàn tất"
-                android:textColor="#D1C7F7"
-                android:textSize="16sp" />
+                android:button="@null"
+                android:background="@drawable/bg_type_selector"
+                android:text="🎯 Ngoại khóa"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:padding="12dp" />
+        </RadioGroup>
 
-            <CheckBox
-                android:id="@+id/cb_completed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/white" />
-        </LinearLayout>
-
+        <Button
+            android:id="@+id/btn_continue"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="32dp"
+            android:backgroundTint="@color/white"
+            android:text="Tiếp tục"
+            android:textColor="@color/primary_purple"
+            android:textStyle="bold"
+            app:cornerRadius="12dp" />
     </LinearLayout>
 
-    <!-- Save Button (Moved closer) -->
-    <Button
-        android:id="@+id/btn_save_task"
+    <!-- STEP 2: Expanded Details -->
+    <LinearLayout
+        android:id="@+id/container_step_2"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginTop="24dp"
-        android:backgroundTint="@color/white"
-        android:text="Lưu Task"
-        android:textColor="@color/primary_purple"
-        android:textStyle="bold"
-        app:cornerRadius="12dp" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_marginTop="16dp">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        <!-- Mandatory Fields Container -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Subject Row (Study Only) -->
+            <LinearLayout
+                android:id="@+id/row_subject"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_sort_24"
+                    app:tint="@color/white" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="Môn học"
+                    android:textColor="#D1C7F7"
+                    android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/tv_subject_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="Chọn môn"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Activity Group Row (Extra Only) -->
+            <LinearLayout
+                android:id="@+id/row_activity_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:visibility="gone">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_group_24"
+                    app:tint="@color/white" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="Nhóm hoạt động"
+                    android:textColor="#D1C7F7"
+                    android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/tv_activity_group_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="Chọn nhóm"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Deadline Row (Mandatory) -->
+            <LinearLayout
+                android:id="@+id/row_deadline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_calendar_24"
+                    app:tint="@color/white" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="Hạn chót"
+                    android:textColor="#D1C7F7"
+                    android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/tv_deadline_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="Trống"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Optional Section Toggle -->
+        <LinearLayout
+            android:id="@+id/btn_toggle_optional"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:paddingVertical="8dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView
+                android:id="@+id/tv_toggle_optional"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tùy chọn khác"
+                android:textColor="#BBAAF1"
+                android:textSize="14sp" />
+            <ImageView
+                android:id="@+id/iv_toggle_optional"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="4dp"
+                android:src="@drawable/ic_arrow_drop_down_24"
+                app:tint="#BBAAF1" />
+        </LinearLayout>
+
+        <!-- Optional Fields Container -->
+        <LinearLayout
+            android:id="@+id/container_optional"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <!-- Priority Row -->
+            <LinearLayout
+                android:id="@+id/row_priority"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_priority_24"
+                    app:tint="@color/white" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="Ưu tiên"
+                    android:textColor="#D1C7F7"
+                    android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/tv_priority_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="Thấp"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Reminder Row -->
+            <LinearLayout
+                android:id="@+id/row_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_today_24"
+                    app:tint="@color/white" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="Nhắc nhở"
+                    android:textColor="#D1C7F7"
+                    android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/tv_time_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="Tắt"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+                <CheckBox
+                    android:id="@+id/cb_reminder"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- Note Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="12dp">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_note_24"
+                    app:tint="@color/white" />
+                <EditText
+                    android:id="@+id/et_task_note"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:background="@null"
+                    android:hint="Ghi chú thêm..."
+                    android:textColor="@color/white"
+                    android:textColorHint="#40FFFFFF"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Completed Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="12dp"
+                android:gravity="center_vertical">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_check_circle_24"
+                    app:tint="@color/white" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:text="Đã hoàn tất"
+                    android:textColor="#D1C7F7"
+                    android:textSize="16sp" />
+                <CheckBox
+                    android:id="@+id/cb_completed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/white" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_save_task"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="@color/white"
+            android:text="Lưu công việc"
+            android:textColor="@color/primary_purple"
+            android:textStyle="bold"
+            app:cornerRadius="12dp" />
+    </LinearLayout>
 
 </LinearLayout>

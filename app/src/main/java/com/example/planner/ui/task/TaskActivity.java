@@ -66,84 +66,10 @@ public class TaskActivity extends BaseActivity {
 
         findViewById(R.id.fabAddTask).setOnClickListener(v -> showCreateSheet());
 
-        setupFilters();
         observeData();
         viewModel.loadSubjects();
+        viewModel.loadTasks(); // Kích hoạt đồng bộ
         setupBottomNavigation(R.id.nav_tasks);
-    }
-
-    private void setupFilters() {
-        TextView chipAll = findViewById(R.id.chipAll);
-        TextView chipCourse = findViewById(R.id.chipCourse);
-        TextView chipExtracurricular = findViewById(R.id.chipExtracurricular);
-
-        chipAll.setOnClickListener(v -> {
-            currentFilter = "ALL";
-            updateFilterUi();
-            refreshTaskDisplay();
-        });
-
-        chipCourse.setOnClickListener(v -> {
-            currentFilter = "COURSE";
-            updateFilterUi();
-            refreshTaskDisplay();
-        });
-
-        chipExtracurricular.setOnClickListener(v -> {
-            currentFilter = "EXTRA";
-            updateFilterUi();
-            refreshTaskDisplay();
-        });
-    }
-
-    private void updateFilterUi() {
-        TextView chipAll = findViewById(R.id.chipAll);
-        TextView chipCourse = findViewById(R.id.chipCourse);
-        TextView chipExtracurricular = findViewById(R.id.chipExtracurricular);
-
-        chipAll.setBackgroundResource(
-                currentFilter.equals("ALL") ? R.drawable.bg_chip_selected : R.drawable.bg_chip_unselected);
-        chipAll.setTextColor(getColor(currentFilter.equals("ALL") ? R.color.white : R.color.text_secondary));
-
-        chipCourse.setBackgroundResource(
-                currentFilter.equals("COURSE") ? R.drawable.bg_chip_selected : R.drawable.bg_chip_unselected);
-        chipCourse.setTextColor(getColor(currentFilter.equals("COURSE") ? R.color.white : R.color.text_secondary));
-
-        chipExtracurricular.setBackgroundResource(
-                currentFilter.equals("EXTRA") ? R.drawable.bg_chip_selected : R.drawable.bg_chip_unselected);
-        chipExtracurricular
-                .setTextColor(getColor(currentFilter.equals("EXTRA") ? R.color.white : R.color.text_secondary));
-    }
-
-    private void refreshTaskDisplay() {
-        List<Subject> subjects = viewModel.getAllSubjects().getValue();
-        List<Task> tasks = viewModel.getAllTasks().getValue();
-        if (tasks != null) {
-            processAndDisplayTasks(subjects != null ? subjects : new ArrayList<>(), tasks);
-        }
-    }
-
-    // UI MOCKUP - DELETE WHEN INTEGRATING REAL LOGIC
-    private void initMockData() {
-        taskList.clear();
-        taskList.add(new TaskUiModel(1, TaskUiModel.TYPE_TABLE_ROW, "Bài tập chương 3", "Hôm nay, 17:00",
-                "Kinh tế vĩ mô • KTN201", false, "high", 1, true, "Học tập", ""));
-        taskList.add(new TaskUiModel(2, TaskUiModel.TYPE_TABLE_ROW, "Thuyết trình giữa kỳ", "Mai, 10:00",
-                "Marketing căn bản • MAR301", false, "medium", 1, true, "Học tập", ""));
-        taskList.add(new TaskUiModel(3, TaskUiModel.TYPE_TABLE_ROW, "Đọc tài liệu tuần 5", "Thứ 5, 25/05",
-                "Tiếng Anh học thuật • ENG102", false, "low", 1, true, "Học tập", ""));
-        taskList.add(new TaskUiModel(4, TaskUiModel.TYPE_TABLE_ROW, "Họp CLB Truyền thông", "Thứ 6, 26/05 • 19:30",
-                "Phòng B203", false, "medium", 0, false, "CLB", "CLB Truyền thông"));
-        taskList.add(new TaskUiModel(5, TaskUiModel.TYPE_TABLE_ROW, "Chuẩn bị kế hoạch Mùa hè xanh",
-                "Thứ 7, 27/05 • Online", "", false, "low", 0, false, "Tình nguyện", "Tình nguyện"));
-        taskList.add(new TaskUiModel(6, TaskUiModel.TYPE_TABLE_ROW, "Nộp đề cương tiểu luận", "Chủ nhật, 28/05, 23:59",
-                "Phương pháp nghiên cứu • RES201", false, "medium", 1, true, "Học tập", ""));
-        adapter.updateData(taskList);
-
-        TextView tvCount = findViewById(R.id.tv_task_count);
-        if (tvCount != null) {
-            tvCount.setText(taskList.size() + " công việc hiện tại");
-        }
     }
 
     private void showCreateSheet() {
@@ -174,7 +100,7 @@ public class TaskActivity extends BaseActivity {
 
     public void fetchTasksFromServer() {
         viewModel.loadSubjects();
-        viewModel.syncTasksFromServer();
+        viewModel.loadTasks();
     }
 
     private void processAndDisplayTasks(List<Subject> subjects, List<Task> tasks) {
@@ -200,6 +126,11 @@ public class TaskActivity extends BaseActivity {
                 }
             }
 
+        int pendingCount = 0;
+        for (Task task : tasks) {
+            if (!task.isCompleted) pendingCount++;
+
+            boolean found = false;
             for (Subject s : subjects) {
                 List<Task> group = courseGroups.get(s.id);
                 if (group != null) {
@@ -284,8 +215,9 @@ public class TaskActivity extends BaseActivity {
 
         adapter.updateData(taskList);
         TextView tvCount = findViewById(R.id.tv_task_count);
-        if (tvCount != null)
-            tvCount.setText(taskList.size() + " công việc");
+        if (tvCount != null) {
+            tvCount.setText(getString(R.string.task_count_format, pendingCount));
+        }
     }
 
     private void addTaskToUiList(Task task, Subject subject) {

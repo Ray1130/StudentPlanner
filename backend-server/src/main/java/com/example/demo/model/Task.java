@@ -18,7 +18,8 @@ public class Task {
     private boolean isReminderEnabled;
     private String note;
 
-    public Task() {}
+    public Task() {
+    }
 
     public Task(String title, Long dueDate, Integer subjectId) {
         this.title = title;

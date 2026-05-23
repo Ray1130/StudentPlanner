@@ -45,11 +45,25 @@ public class TaskUiModel {
         this.subtitle = subtitle;
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
 
-    public int getSubjectId() { return subjectId; }
-    public void setSubjectId(int subjectId) { this.subjectId = subjectId; }
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(int subjectId) {
+        this.subjectId = subjectId;
+    }
+
+    public int getViewType() {
+        return viewType;
+    }
 
     public int getViewType() { return viewType; }
     public String getTitle() { return title; }

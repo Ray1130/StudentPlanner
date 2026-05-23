@@ -56,7 +56,8 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_task_create_side_sheet, container, false);
     }
 
@@ -169,10 +170,10 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         
         boolean isReminder = editingTask.isReminderEnabled();
         cbReminder.setChecked(isReminder);
-        
+
         selectedPriority = editingTask.getPriority();
         updatePriorityText(selectedPriority);
-        
+
         btnDelete.setVisibility(View.VISIBLE);
         btnDelete.setOnClickListener(v -> deleteTask());
 
@@ -237,9 +238,16 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
 
     private void updatePriorityText(String priority) {
         switch (priority) {
-            case "high": tvPriorityValue.setText("Cao"); break;
-            case "medium": tvPriorityValue.setText("Trung bình"); break;
-            case "low": default: tvPriorityValue.setText("Thấp"); break;
+            case "high":
+                tvPriorityValue.setText("Cao");
+                break;
+            case "medium":
+                tvPriorityValue.setText("Trung bình");
+                break;
+            case "low":
+            default:
+                tvPriorityValue.setText("Thấp");
+                break;
         }
     }
 
@@ -347,8 +355,8 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     }
 
     private void showPriorityPicker() {
-        String[] priorities = {"Thấp", "Trung bình", "Cao"};
-        String[] priorityValues = {"low", "medium", "high"};
+        String[] priorities = { "Thấp", "Trung bình", "Cao" };
+        String[] priorityValues = { "low", "medium", "high" };
 
         new AlertDialog.Builder(requireContext())
                 .setTitle("Chọn mức độ ưu tiên")

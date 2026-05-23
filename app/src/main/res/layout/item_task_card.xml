@@ -13,132 +13,139 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingTop="16dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="12dp">
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/ivCheck"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_radio_unchecked"
+        <View
+            android:id="@+id/viewPriorityStrip"
+            android:layout_width="4dp"
+            android:layout_height="0dp"
+            android:background="@color/priority_low"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tvTaskTitle"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/tvTag"
-            app:layout_constraintStart_toEndOf="@id/ivCheck"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Bài tập chương 3" />
-
-        <TextView
-            android:id="@+id/tvTag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_tag_course"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="4dp"
-            android:textColor="@color/tag_course_text"
-            android:textSize="12sp"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Học phần" />
-
-        <TextView
-            android:id="@+id/tvTaskSubtitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp"
-            android:maxLines="2"
-            android:ellipsize="end"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/tvTaskTitle"
-            app:layout_constraintTop_toBottomOf="@id/tvTaskTitle"
-            tools:text="Phương pháp nghiên cứu • RES201" />
-
-        <TextView
-            android:id="@+id/tvTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:textColor="@color/danger"
-            android:textSize="13sp"
-            app:layout_constraintStart_toStartOf="@id/tvTaskTitle"
-            app:layout_constraintTop_toBottomOf="@id/tvTaskSubtitle"
-            tools:text="Hôm nay, 17:00" />
-
-        <ImageView
-            android:id="@+id/ivBell"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="8dp"
-            android:src="@drawable/ic_bell"
-            app:layout_constraintBottom_toBottomOf="@id/tvTime"
-            app:layout_constraintStart_toEndOf="@id/tvTime"
-            app:layout_constraintTop_toTopOf="@id/tvTime"
-            app:tint="@color/text_secondary" />
-
-        <ImageView
-            android:id="@+id/ivLocation"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="8dp"
-            android:src="@drawable/ic_location_outline"
-            app:layout_constraintBottom_toBottomOf="@id/tvTime"
-            app:layout_constraintStart_toEndOf="@id/tvTime"
-            app:layout_constraintTop_toTopOf="@id/tvTime"
-            app:tint="@color/text_secondary"
-            android:visibility="gone" />
-
-        <LinearLayout
-            android:id="@+id/llComments"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="@id/tvTime"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvTime">
+            app:layout_constraintStart_toEndOf="@id/viewPriorityStrip"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginEnd="4dp"
-                android:src="@drawable/ic_comment_outline"
-                app:tint="@color/text_secondary" />
+                android:id="@+id/ivCheck"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_radio_unchecked"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tvCommentCount"
+                android:id="@+id/tvTaskTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/tvTag"
+                app:layout_constraintStart_toEndOf="@id/ivCheck"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Bài tập chương 3" />
+
+            <TextView
+                android:id="@+id/tvTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bg_tag_course"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:textColor="@color/tag_course_text"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Học phần" />
+
+            <TextView
+                android:id="@+id/tvTaskSubtitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:textColor="@color/text_secondary"
                 android:textSize="13sp"
-                tools:text="2" />
-        </LinearLayout>
+                android:maxLines="2"
+                android:ellipsize="end"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/tvTaskTitle"
+                app:layout_constraintTop_toBottomOf="@id/tvTaskTitle"
+                tools:text="Phương pháp nghiên cứu • RES201" />
 
-        <TextView
-            android:id="@+id/tvStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:fontFamily="sans-serif-medium"
-            android:textSize="13sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@id/tvTaskTitle"
-            app:layout_constraintTop_toBottomOf="@+id/tvTime"
-            tools:text="Đã lên lịch" />
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textColor="@color/danger"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/tvTaskTitle"
+                app:layout_constraintTop_toBottomOf="@id/tvTaskSubtitle"
+                tools:text="Hôm nay, 17:00" />
 
+            <ImageView
+                android:id="@+id/ivBell"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:src="@drawable/ic_bell"
+                app:layout_constraintBottom_toBottomOf="@id/tvTime"
+                app:layout_constraintStart_toEndOf="@id/tvTime"
+                app:layout_constraintTop_toTopOf="@id/tvTime"
+                app:tint="@color/text_secondary" />
+
+            <ImageView
+                android:id="@+id/ivLocation"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:src="@drawable/ic_location_outline"
+                app:layout_constraintBottom_toBottomOf="@id/tvTime"
+                app:layout_constraintStart_toEndOf="@id/tvTime"
+                app:layout_constraintTop_toTopOf="@id/tvTime"
+                app:tint="@color/text_secondary"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/llComments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="@id/tvTime"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tvTime">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginEnd="4dp"
+                    android:src="@drawable/ic_comment_outline"
+                    app:tint="@color/text_secondary" />
+
+                <TextView
+                    android:id="@+id/tvCommentCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    tools:text="2" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

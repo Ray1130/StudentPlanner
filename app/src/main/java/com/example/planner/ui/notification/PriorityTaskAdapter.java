@@ -83,29 +83,20 @@ public class PriorityTaskAdapter extends RecyclerView.Adapter<PriorityTaskAdapte
         holder.ivBell.setVisibility(task.isReminderEnabled ? View.VISIBLE : View.GONE);
         
         // Priority UI consistency
-        int priorityDrawable;
         int priorityColor;
         String priority = task.priority != null ? task.priority.toLowerCase() : "low";
         switch (priority) {
             case "high":
-                priorityDrawable = R.drawable.bg_priority_dot_red;
                 priorityColor = holder.itemView.getContext().getColor(R.color.priority_high);
                 break;
             case "medium":
-                priorityDrawable = R.drawable.bg_priority_dot_orange;
                 priorityColor = holder.itemView.getContext().getColor(R.color.priority_medium);
                 break;
             default:
-                priorityDrawable = R.drawable.bg_priority_dot_green;
                 priorityColor = holder.itemView.getContext().getColor(R.color.priority_low);
                 break;
         }
-        if (holder.viewPriorityStrip != null) {
-            holder.viewPriorityStrip.setBackgroundColor(priorityColor);
-        }
-        if (holder.viewPriorityDot != null) {
-            holder.viewPriorityDot.setBackgroundResource(priorityDrawable);
-        }
+        holder.viewPriorityStrip.setBackgroundColor(priorityColor);
     }
 
     private String getRemainingTimeText(long dueDate) {
@@ -137,7 +128,7 @@ public class PriorityTaskAdapter extends RecyclerView.Adapter<PriorityTaskAdapte
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvSubtitle;
         ImageView ivCheck, ivBell;
-        View viewPriorityDot, viewPriorityStrip;
+        View viewPriorityStrip;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -145,7 +136,6 @@ public class PriorityTaskAdapter extends RecyclerView.Adapter<PriorityTaskAdapte
             tvSubtitle = itemView.findViewById(R.id.tvTaskSubtitle);
             ivCheck = itemView.findViewById(R.id.ivCheck);
             ivBell = itemView.findViewById(R.id.ivBell);
-            viewPriorityDot = itemView.findViewById(R.id.viewPriorityDot);
             viewPriorityStrip = itemView.findViewById(R.id.viewPriorityStrip);
         }
     }

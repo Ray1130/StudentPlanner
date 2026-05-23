@@ -83,26 +83,26 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         containerStep1 = view.findViewById(R.id.container_step_1);
         containerStep2 = view.findViewById(R.id.container_step_2);
         containerOptional = view.findViewById(R.id.container_optional);
-
+        
         rgTaskType = view.findViewById(R.id.rg_task_type);
         etTaskTitle = view.findViewById(R.id.et_task_title);
         etTaskNote = view.findViewById(R.id.et_task_note);
-
+        
         tvDeadlineValue = view.findViewById(R.id.tv_deadline_value);
         tvTimeValue = view.findViewById(R.id.tv_time_value);
         tvSubjectValue = view.findViewById(R.id.tv_subject_value);
         tvPriorityValue = view.findViewById(R.id.tv_priority_value);
         tvActivityGroupValue = view.findViewById(R.id.tv_activity_group_value);
-
+        
         rowSubject = view.findViewById(R.id.row_subject);
         rowActivityGroup = view.findViewById(R.id.row_activity_group);
         rowDeadline = view.findViewById(R.id.row_deadline);
         rowTime = view.findViewById(R.id.row_time);
         rowPriority = view.findViewById(R.id.row_priority);
-
+        
         btnToggleOptional = view.findViewById(R.id.btn_toggle_optional);
         ivToggleOptional = view.findViewById(R.id.iv_toggle_optional);
-
+        
         cbCompleted = view.findViewById(R.id.cb_completed);
         cbReminder = view.findViewById(R.id.cb_reminder);
         btnDelete = view.findViewById(R.id.btn_delete_task);
@@ -113,15 +113,15 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
 
     private void setupListeners(View view) {
         view.findViewById(R.id.btn_continue).setOnClickListener(v -> handleContinue());
-
+        
         rowDeadline.setOnClickListener(v -> showDatePicker());
         rowTime.setOnClickListener(v -> toggleReminder());
         rowSubject.setOnClickListener(v -> showSubjectPicker());
         rowActivityGroup.setOnClickListener(v -> showActivityGroupPicker());
         rowPriority.setOnClickListener(v -> showPriorityPicker());
-
+        
         btnToggleOptional.setOnClickListener(v -> toggleOptionalSection());
-
+        
         view.findViewById(R.id.btn_save_task).setOnClickListener(v -> saveTask());
     }
 
@@ -162,12 +162,12 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     private void setupEditMode() {
         containerStep1.setVisibility(View.GONE);
         containerStep2.setVisibility(View.VISIBLE);
-
+        
         etTaskTitle.setText(editingTask.getTitle());
         tvDeadlineValue.setText(editingTask.getDeadline());
         cbCompleted.setChecked(editingTask.isChecked());
         etTaskNote.setText(editingTask.getNote());
-
+        
         boolean isReminder = editingTask.isReminderEnabled();
         cbReminder.setChecked(isReminder);
 
@@ -188,8 +188,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
             rowActivityGroup.setVisibility(View.VISIBLE);
             rgTaskType.check(R.id.rb_extra);
             selectedActivityGroup = editingTask.getCategory();
-            if (selectedActivityGroup == null || selectedActivityGroup.isEmpty()
-                    || selectedActivityGroup.equals("Học tập")) {
+            if (selectedActivityGroup == null || selectedActivityGroup.isEmpty() || selectedActivityGroup.equals("Học tập")) {
                 selectedActivityGroup = "Cá nhân";
             }
             tvActivityGroupValue.setText(selectedActivityGroup);
@@ -253,7 +252,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     }
 
     private void showActivityGroupPicker() {
-        String[] groups = { "CLB", "Tình nguyện", "Hiến máu", "Thể thao", "Cá nhân" };
+        String[] groups = {"CLB", "Tình nguyện", "Hiến máu", "Thể thao", "Cá nhân"};
         new AlertDialog.Builder(requireContext())
                 .setTitle("Chọn nhóm hoạt động")
                 .setItems(groups, (dialog, which) -> {
@@ -277,16 +276,16 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     }
 
     private void showTimePicker() {
-        new android.app.TimePickerDialog(requireContext(),
-                android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
-                (view, hourOfDay, minute) -> {
-                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                    calendar.set(Calendar.MINUTE, minute);
-                    calendar.set(Calendar.SECOND, 0);
-                    cbReminder.setChecked(true);
-                    updateTimeText();
-                }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true)
-                .show();
+        new android.app.TimePickerDialog(requireContext(), 
+            android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
+            (view, hourOfDay, minute) -> {
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendar.set(Calendar.MINUTE, minute);
+                calendar.set(Calendar.SECOND, 0);
+                cbReminder.setChecked(true);
+                updateTimeText();
+            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true)
+            .show();
     }
 
     private void updateTimeText() {
@@ -334,25 +333,25 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     private void showCreateSubjectDialog() {
         EditText input = new EditText(requireContext());
         new AlertDialog.Builder(requireContext())
-                .setTitle("Môn mới")
-                .setView(input)
-                .setPositiveButton("Lưu", (dialog, which) -> {
-                    String name = input.getText().toString().trim();
-                    if (!name.isEmpty()) {
-                        Subject newSubject = new Subject("", name);
-                        viewModel.insertSubject(newSubject, createdSubject -> {
-                            if (createdSubject != null && getActivity() != null) {
-                                getActivity().runOnUiThread(() -> {
-                                    selectedSubject = createdSubject;
-                                    tvSubjectValue.setText(createdSubject.name);
-                                    Toast.makeText(getContext(), "Đã tạo môn học mới", Toast.LENGTH_SHORT).show();
-                                });
-                            }
-                        });
-                    }
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
+            .setTitle("Môn mới")
+            .setView(input)
+            .setPositiveButton("Lưu", (dialog, which) -> {
+                String name = input.getText().toString().trim();
+                if (!name.isEmpty()) {
+                    Subject newSubject = new Subject("", name);
+                    viewModel.insertSubject(newSubject, createdSubject -> {
+                        if (createdSubject != null && getActivity() != null) {
+                            getActivity().runOnUiThread(() -> {
+                                selectedSubject = createdSubject; 
+                                tvSubjectValue.setText(createdSubject.name);
+                                Toast.makeText(getContext(), "Đã tạo môn học mới", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    });
+                }
+            })
+            .setNegativeButton("Hủy", null)
+            .show();
     }
 
     private void showPriorityPicker() {
@@ -399,9 +398,8 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         String category = isStudy ? "Học tập" : selectedActivityGroup;
 
         Task task = new Task(title, calendar.getTimeInMillis(), subjectId);
-        if (editingTask != null)
-            task.id = editingTask.getId();
-
+        if (editingTask != null) task.id = editingTask.getId();
+        
         task.isCompleted = cbCompleted.isChecked();
         task.priority = selectedPriority;
         task.isReminderEnabled = cbReminder.isChecked();

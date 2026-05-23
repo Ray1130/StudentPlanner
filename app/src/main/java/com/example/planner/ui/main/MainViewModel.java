@@ -10,6 +10,7 @@ import androidx.lifecycle.MediatorLiveData;
 
 import com.example.planner.data.local.AppDatabase;
 import com.example.planner.data.model.Task;
+import com.example.planner.data.repository.TaskRepository;
 import com.example.planner.utils.DateUtils;
 
 import java.util.ArrayList;
@@ -19,20 +20,27 @@ import java.util.List;
 public class MainViewModel extends AndroidViewModel {
 
     private final MediatorLiveData<DashboardUiState> dashboardUiState = new MediatorLiveData<>();
-    private final AppDatabase database;
+    private final TaskRepository repository;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
-        database = AppDatabase.getDatabase(application);
+        repository = new TaskRepository(application);
 
-        // Theo dõi dữ liệu từ Room Database
-        LiveData<List<Task>> tasksFromDb = database.taskDao().getAllTasks();
+        LiveData<List<Task>> tasksFromDb = repository.getAllTasks();
         
         dashboardUiState.addSource(tasksFromDb, tasks -> {
             if (tasks != null) {
                 processTasks(tasks);
             }
         });
+
+        // Đồng bộ dữ liệu
+        repository.syncTasksFromServer();
+    }
+
+    public void updateTaskStatus(int taskId, boolean isCompleted) {
+        // Repository đã có hàm toggle hoặc update, dùng chung để đồng nhất logic
+        repository.toggleTaskCompletion(taskId);
     }
 
     public LiveData<DashboardUiState> getDashboardUiState() {
@@ -45,6 +53,7 @@ public class MainViewModel extends AndroidViewModel {
 
         int todayCount = 0;
         int overdueCount = 0;
+        int highPriorityCount = 0;
         int completedCount = 0;
 
         Calendar cal = Calendar.getInstance();
@@ -56,19 +65,19 @@ public class MainViewModel extends AndroidViewModel {
         long endOfToday = startOfToday + (24 * 60 * 60 * 1000);
 
         for (Task task : tasks) {
-            if (task.isCompleted) completedCount++;
+            if (task.isCompleted) {
+                completedCount++;
+            }
 
             long dueDate = task.dueDate;
-
             boolean isToday = dueDate >= startOfToday && dueDate < endOfToday;
             boolean isOverdue = dueDate < startOfToday && dueDate > 0;
 
-            int priorityLevel = MainTaskItem.PRIORITY_MEDIUM;
-            if (isOverdue) {
-                overdueCount++;
-                priorityLevel = MainTaskItem.PRIORITY_HIGH;
+            if (!task.isCompleted) {
+                if (isToday) todayCount++;
+                if (isOverdue) overdueCount++;
+                if ("high".equalsIgnoreCase(task.priority)) highPriorityCount++;
             }
-            if (isToday) todayCount++;
 
             String dateStr = DateUtils.timestampToString(task.dueDate);
             String categoryOrNote = "";
@@ -94,7 +103,7 @@ public class MainViewModel extends AndroidViewModel {
         }
 
         dashboardUiState.setValue(new DashboardUiState(
-                todayCount, overdueCount, 0, completedCount, todayTasks, upcomingTasks
+                todayCount, overdueCount, highPriorityCount, completedCount, todayTasks, upcomingTasks
         ));
     }
 

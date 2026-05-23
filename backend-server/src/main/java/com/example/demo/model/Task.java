@@ -32,75 +32,22 @@ public class Task {
         this.note = "";
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Long getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(Long dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public Integer getSubjectId() {
-        return subjectId;
-    }
-
-    public void setSubjectId(Integer subjectId) {
-        this.subjectId = subjectId;
-    }
-
-    public boolean isCompleted() {
-        return isCompleted;
-    }
-
-    public void setCompleted(boolean completed) {
-        isCompleted = completed;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getPriority() {
-        return priority;
-    }
-
-    public void setPriority(String priority) {
-        this.priority = priority;
-    }
-
-    public boolean isReminderEnabled() {
-        return isReminderEnabled;
-    }
-
-    public void setReminderEnabled(boolean reminderEnabled) {
-        isReminderEnabled = reminderEnabled;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public Long getDueDate() { return dueDate; }
+    public void setDueDate(Long dueDate) { this.dueDate = dueDate; }
+    public Integer getSubjectId() { return subjectId; }
+    public void setSubjectId(Integer subjectId) { this.subjectId = subjectId; }
+    public boolean isCompleted() { return isCompleted; }
+    public void setCompleted(boolean completed) { isCompleted = completed; }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
+    public String getPriority() { return priority; }
+    public void setPriority(String priority) { this.priority = priority; }
+    public boolean isReminderEnabled() { return isReminderEnabled; }
+    public void setReminderEnabled(boolean reminderEnabled) { isReminderEnabled = reminderEnabled; }
+    public String getNote() { return note; }
+    public void setNote(String note) { this.note = note; }
 }

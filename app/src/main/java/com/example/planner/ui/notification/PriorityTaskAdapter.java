@@ -100,8 +100,12 @@ public class PriorityTaskAdapter extends RecyclerView.Adapter<PriorityTaskAdapte
                 priorityColor = holder.itemView.getContext().getColor(R.color.priority_low);
                 break;
         }
-        holder.viewPriorityStrip.setBackgroundColor(priorityColor);
-        holder.viewPriorityDot.setBackgroundResource(priorityDrawable);
+        if (holder.viewPriorityStrip != null) {
+            holder.viewPriorityStrip.setBackgroundColor(priorityColor);
+        }
+        if (holder.viewPriorityDot != null) {
+            holder.viewPriorityDot.setBackgroundResource(priorityDrawable);
+        }
     }
 
     private String getRemainingTimeText(long dueDate) {

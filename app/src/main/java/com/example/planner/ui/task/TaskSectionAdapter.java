@@ -120,6 +120,18 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 if (listener != null) listener.onTaskLongClick(item);
                 return true;
             });
+
+            // Xử lý Task đã quá hạn
+            boolean isExpired = item.getExpiryTimestamp() > 0 && item.getExpiryTimestamp() <= System.currentTimeMillis();
+            if (isExpired) {
+                cardHolder.tvTitle.setAlpha(0.5f);
+                if (cardHolder.tvStatus != null) {
+                    cardHolder.tvStatus.setText("Đã hết hạn");
+                    cardHolder.tvStatus.setTextColor(holder.itemView.getContext().getColor(R.color.danger));
+                }
+            } else {
+                cardHolder.tvTitle.setAlpha(1.0f);
+            }
             
             // Dấu chấm ưu tiên và Gạch màu
             int priorityDrawable;

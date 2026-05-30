@@ -13,6 +13,7 @@ public class Task {
     private Long dueDate; // Sử dụng Long để lưu timestamp
     private Integer subjectId;
     private boolean isCompleted;
+    private long expiryTimestamp;
     private String priority;
     private boolean isReminderEnabled;
 
@@ -23,6 +24,7 @@ public class Task {
         this.dueDate = dueDate;
         this.subjectId = subjectId;
         this.isCompleted = false;
+        this.expiryTimestamp = 0;
         this.priority = "low";
         this.isReminderEnabled = false;
     }
@@ -37,6 +39,8 @@ public class Task {
     public void setSubjectId(Integer subjectId) { this.subjectId = subjectId; }
     public boolean isCompleted() { return isCompleted; }
     public void setCompleted(boolean completed) { isCompleted = completed; }
+    public long getExpiryTimestamp() { return expiryTimestamp; }
+    public void setExpiryTimestamp(long expiryTimestamp) { this.expiryTimestamp = expiryTimestamp; }
     public String getPriority() { return priority; }
     public void setPriority(String priority) { this.priority = priority; }
     public boolean isReminderEnabled() { return isReminderEnabled; }

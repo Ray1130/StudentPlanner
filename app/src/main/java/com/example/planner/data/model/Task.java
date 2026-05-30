@@ -20,6 +20,9 @@ public class Task {
     @SerializedName("completed")
     public boolean isCompleted; // Trạng thái: Đã làm xong chưa
 
+    @SerializedName("expiryTimestamp")
+    public long expiryTimestamp; // Thời điểm task sẽ tự động biến mất (0 nếu không hết hạn)
+
     public long timestamp; // Thời gian thực hiện
     public String category;
     public String priority; // low, medium, high
@@ -32,6 +35,7 @@ public class Task {
         this.dueDate = dueDate;
         this.subjectId = subjectId;
         this.isCompleted = false; // Mặc định tạo mới là chưa hoàn thành
+        this.expiryTimestamp = 0;
 //        this.priority = "low"; // Mặc định là low
         this.isReminderEnabled = false;
         this.id = null;

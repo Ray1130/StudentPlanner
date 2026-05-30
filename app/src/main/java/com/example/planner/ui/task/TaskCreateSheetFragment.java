@@ -34,6 +34,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     private TextView tvTimeValue;
     private TextView tvSubjectValue;
     private TextView tvPriorityValue;
+    private TextView tvExpiryValue;
     private CheckBox cbCompleted;
     private CheckBox cbReminder;
 
@@ -42,6 +43,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     private Subject selectedSubject;
     private List<Subject> subjects;
     private String selectedPriority = "low";
+    private long selectedExpiryDurationMs = 0; // 0 means no expiry
 
     private TaskUiModel editingTask;
     private ImageView btnDelete;
@@ -69,6 +71,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         tvTimeValue = view.findViewById(R.id.tv_time_value);
         tvSubjectValue = view.findViewById(R.id.tv_subject_value);
         tvPriorityValue = view.findViewById(R.id.tv_priority_value);
+        tvExpiryValue = view.findViewById(R.id.tv_expiry_value);
         cbCompleted = view.findViewById(R.id.cb_completed);
         cbReminder = view.findViewById(R.id.cb_reminder);
         btnDelete = view.findViewById(R.id.btn_delete_task);
@@ -85,6 +88,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         view.findViewById(R.id.row_time).setOnClickListener(v -> toggleReminder());
         view.findViewById(R.id.row_subject).setOnClickListener(v -> showSubjectPicker());
         view.findViewById(R.id.row_priority).setOnClickListener(v -> showPriorityPicker());
+        view.findViewById(R.id.row_expiry).setOnClickListener(v -> showExpiryPicker());
         view.findViewById(R.id.btn_save_task).setOnClickListener(v -> {
             Log.d("TaskCreateSheet", "Nút Lưu Task được nhấn");
             saveTask();
@@ -124,6 +128,19 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         etTaskTitle.setText(editingTask.getTitle());
         tvDeadlineValue.setText(editingTask.getDeadline());
         cbCompleted.setChecked(editingTask.isChecked());
+        
+        long expiry = editingTask.getExpiryTimestamp();
+        if (expiry > 0) {
+            long remaining = expiry - System.currentTimeMillis();
+            if (remaining > 0) {
+                // Hiển thị đơn giản thời gian còn lại
+                tvExpiryValue.setText("Đã hẹn xóa");
+            } else {
+                tvExpiryValue.setText("Đã hết hạn");
+            }
+        } else {
+            tvExpiryValue.setText("Không");
+        }
         
         boolean isReminder = editingTask.isReminderEnabled();
         cbReminder.setChecked(isReminder);
@@ -302,6 +319,28 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
                 }).show();
     }
 
+    private void showExpiryPicker() {
+        String[] options = {"Không", "5 giây", "30 phút", "1 giờ", "6 giờ", "12 giờ", "24 giờ", "2 ngày", "1 tuần"};
+        long[] durations = {
+            0,
+            5 * 1000L,
+            30 * 60 * 1000L,
+            60 * 60 * 1000L,
+            6 * 60 * 60 * 1000L,
+            12 * 60 * 60 * 1000L,
+            24 * 60 * 60 * 1000L,
+            2 * 24 * 60 * 60 * 1000L,
+            7 * 24 * 60 * 60 * 1000L
+        };
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Tự động xóa sau")
+                .setItems(options, (dialog, which) -> {
+                    selectedExpiryDurationMs = durations[which];
+                    tvExpiryValue.setText(options[which]);
+                }).show();
+    }
+
     private void saveTask() {
         String title = etTaskTitle.getText().toString().trim();
         if (title.isEmpty()) {
@@ -321,6 +360,15 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
             );
             task.id = editingTask.getId();
             task.isCompleted = cbCompleted.isChecked();
+            
+            // Nếu có chọn thời gian hết hạn mới, cộng dồn từ hiện tại. 
+            // Nếu không chọn mới (bằng 0), giữ nguyên giá trị cũ.
+            if (selectedExpiryDurationMs > 0) {
+                task.expiryTimestamp = System.currentTimeMillis() + selectedExpiryDurationMs;
+            } else {
+                task.expiryTimestamp = editingTask.getExpiryTimestamp();
+            }
+
             task.priority = selectedPriority;
             task.isReminderEnabled = cbReminder.isChecked();
             task.note = editingTask.getNote();
@@ -345,6 +393,11 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
                 subjectId
             );
             newTask.isCompleted = cbCompleted.isChecked();
+            if (selectedExpiryDurationMs > 0) {
+                newTask.expiryTimestamp = System.currentTimeMillis() + selectedExpiryDurationMs;
+            } else {
+                newTask.expiryTimestamp = 0;
+            }
             newTask.priority = selectedPriority;
             newTask.isReminderEnabled = cbReminder.isChecked();
             newTask.note = ""; // Default empty note

@@ -136,7 +136,7 @@ public class TaskActivity extends BaseActivity {
         }
 
         if (!orphanTasks.isEmpty()) {
-            taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, "Chưa phân loại", "", "", false, "low", 0, false));
+            taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, "Chưa phân loại", "", "", false, "low", 0, false, 0));
             for (Task task : orphanTasks) {
                 addTaskToUiList(task);
             }
@@ -160,7 +160,8 @@ public class TaskActivity extends BaseActivity {
                 task.isCompleted,
                 task.priority != null ? task.priority.toLowerCase() : "low",
                 task.subjectId,
-                task.isReminderEnabled
+                task.isReminderEnabled,
+                task.expiryTimestamp
         ));
     }
 }

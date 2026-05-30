@@ -16,6 +16,7 @@ public class TaskUiModel {
     private String priority; // low, medium, high
     private int subjectId;
     private boolean isReminderEnabled;
+    private long expiryTimestamp;
 
     public TaskUiModel(int viewType, String title, String deadline, String note, boolean checked, String priority) {
         this.viewType = viewType;
@@ -25,9 +26,10 @@ public class TaskUiModel {
         this.checked = checked;
         this.priority = priority;
         this.isReminderEnabled = false;
+        this.expiryTimestamp = 0;
     }
 
-    public TaskUiModel(int id, int viewType, String title, String deadline, String note, boolean checked, String priority, int subjectId, boolean isReminderEnabled) {
+    public TaskUiModel(int id, int viewType, String title, String deadline, String note, boolean checked, String priority, int subjectId, boolean isReminderEnabled, long expiryTimestamp) {
         this.id = id;
         this.viewType = viewType;
         this.title = title;
@@ -37,6 +39,7 @@ public class TaskUiModel {
         this.priority = priority;
         this.subjectId = subjectId;
         this.isReminderEnabled = isReminderEnabled;
+        this.expiryTimestamp = expiryTimestamp;
     }
 
     public int getId() { return id; }
@@ -55,4 +58,6 @@ public class TaskUiModel {
     public void setPriority(String priority) { this.priority = priority; }
     public boolean isReminderEnabled() { return isReminderEnabled; }
     public void setReminderEnabled(boolean reminderEnabled) { isReminderEnabled = reminderEnabled; }
+    public long getExpiryTimestamp() { return expiryTimestamp; }
+    public void setExpiryTimestamp(long expiryTimestamp) { this.expiryTimestamp = expiryTimestamp; }
 }

@@ -25,6 +25,7 @@ import com.example.planner.ui.task.TaskActivity;
 import com.google.android.material.navigation.NavigationView;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -61,6 +62,7 @@ public class MainActivity extends BaseActivity
         setupRecyclerView();
         setupViewModel();
         bindStaticData();
+        setupWeeklyOverview();
         observeUi();
         setupBottomNavigation(R.id.nav_home);
 
@@ -161,6 +163,46 @@ public class MainActivity extends BaseActivity
                 .format(new Date());
         if (tvDate != null) tvDate.setText(capitalizeFirstLetter(dateText));
         if (tvGreeting != null) tvGreeting.setText(getString(R.string.welcome_back));
+    }
+
+    private void setupWeeklyOverview() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setFirstDayOfWeek(Calendar.MONDAY);
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+
+        Calendar today = Calendar.getInstance();
+        int currentDayOfMonth = today.get(Calendar.DAY_OF_MONTH);
+        int currentMonth = today.get(Calendar.MONTH);
+        int currentYear = today.get(Calendar.YEAR);
+
+        int[] dateIds = {R.id.tvDay1Date, R.id.tvDay2Date, R.id.tvDay3Date, R.id.tvDay4Date, R.id.tvDay5Date, R.id.tvDay6Date, R.id.tvDay7Date};
+        int[] cardIds = {R.id.cardDay1, R.id.cardDay2, R.id.cardDay3, R.id.cardDay4, R.id.cardDay5, R.id.cardDay6, R.id.cardDay7};
+
+        for (int i = 0; i < 7; i++) {
+            TextView tvDateValue = findViewById(dateIds[i]);
+            com.google.android.material.card.MaterialCardView card = findViewById(cardIds[i]);
+
+            if (tvDateValue != null) {
+                tvDateValue.setText(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
+            }
+
+            if (card != null) {
+                boolean isToday = calendar.get(Calendar.DAY_OF_MONTH) == currentDayOfMonth &&
+                        calendar.get(Calendar.MONTH) == currentMonth &&
+                        calendar.get(Calendar.YEAR) == currentYear;
+
+                if (isToday) {
+                    card.setStrokeWidth(3);
+                    card.setStrokeColor(getColor(R.color.pastel_indigo));
+                    card.setCardBackgroundColor(getColor(R.color.bottom_nav_selected_bg));
+                } else {
+                    card.setStrokeWidth(2);
+                    card.setStrokeColor(getColor(R.color.card_stroke));
+                    card.setCardBackgroundColor(getColor(R.color.white));
+                }
+            }
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
     }
 
     private void observeUi() {

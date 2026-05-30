@@ -31,6 +31,16 @@ public class TaskRepository {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(ApiService.class);
+        
+        cleanupExpiredTasks();
+    }
+
+    public void cleanupExpiredTasks() {
+        executorService.execute(() -> {
+            long now = System.currentTimeMillis();
+            taskDao.deleteExpiredTasks(now);
+            Log.d("TaskRepository", "Cleaned up expired tasks at " + now);
+        });
     }
 
     public void toggleTaskCompletion(int taskId) {

@@ -26,8 +26,10 @@ public class Task {
     @SerializedName("timestamp")
     public long timestamp;
 
-    @SerializedName("category")
-    @ColumnInfo(name = "category")
+    @SerializedName("expiryTimestamp")
+    public long expiryTimestamp; // Thời điểm task sẽ tự động biến mất (0 nếu không hết hạn)
+
+    public long timestamp; // Thời gian thực hiện
     public String category;
 
     @SerializedName("priority")
@@ -46,7 +48,9 @@ public class Task {
         this.title = title;
         this.dueDate = dueDate;
         this.subjectId = subjectId;
-        this.isCompleted = false;
+        this.isCompleted = false; // Mặc định tạo mới là chưa hoàn thành
+        this.expiryTimestamp = 0;
+//        this.priority = "low"; // Mặc định là low
         this.isReminderEnabled = false;
         this.id = null;
         this.category = "";

@@ -48,6 +48,9 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     private void processTasks(List<Task> tasks) {
+        // Thực hiện dọn dẹp task đã hết hạn khi xử lý dữ liệu
+        repository.cleanupExpiredTasks();
+
         List<MainTaskItem> todayTasks = new ArrayList<>();
         List<MainTaskItem> upcomingTasks = new ArrayList<>();
 
@@ -65,6 +68,12 @@ public class MainViewModel extends AndroidViewModel {
         long endOfToday = startOfToday + (24 * 60 * 60 * 1000);
 
         for (Task task : tasks) {
+            // Chỉ hiển thị task chưa hết hạn trên trang chủ
+            boolean isExpired = task.expiryTimestamp > 0 && task.expiryTimestamp <= System.currentTimeMillis();
+            if (isExpired) {
+                continue;
+            }
+
             if (task.isCompleted) {
                 completedCount++;
             }

@@ -371,16 +371,49 @@
             </LinearLayout>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/btn_save_task"
+        <!-- Auto-delete Row -->
+        <LinearLayout
+            android:id="@+id/row_expiry"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="24dp"
-            android:backgroundTint="@color/white"
-            android:text="Lưu công việc"
-            android:textColor="@color/primary_purple"
-            android:textStyle="bold"
-            app:cornerRadius="12dp" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="12dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_delete_24"
+                app:tint="@color/white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="Tự động xóa sau"
+                android:textColor="#D1C7F7"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_expiry_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="Không"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/cb_expired"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/white"
+            android:visibility="gone" />
+
     </LinearLayout>
 
 </LinearLayout>

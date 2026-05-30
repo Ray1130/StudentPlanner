@@ -57,6 +57,7 @@ public class TaskViewModel extends AndroidViewModel {
     }
 
     public void loadTasks() {
+        repository.cleanupExpiredTasks();
         repository.syncTasksFromServer();
     }
 

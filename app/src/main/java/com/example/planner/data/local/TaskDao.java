@@ -17,6 +17,9 @@ public interface TaskDao {
     @Query("SELECT * FROM tasks")
     LiveData<List<Task>> getAllTasks();
 
+    @Query("DELETE FROM tasks WHERE expiryTimestamp > 0 AND expiryTimestamp <= :currentTime")
+    void deleteExpiredTasks(long currentTime);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Task task);
 

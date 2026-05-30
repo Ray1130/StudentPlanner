@@ -205,11 +205,10 @@ public class TaskActivity extends BaseActivity {
                 }
             }
 
-            for (Map.Entry<String, List<Task>> entry : groupedTasks.entrySet()) {
-                taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, entry.getKey(), "", "", false, "low", 0,
-                        false, entry.getKey(), ""));
-                for (Task task : entry.getValue())
-                    addTaskToUiList(task, null);
+        if (!orphanTasks.isEmpty()) {
+            taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, "Chưa phân loại", "", "", false, "low", 0, false, 0));
+            for (Task task : orphanTasks) {
+                addTaskToUiList(task);
             }
         }
 
@@ -246,7 +245,7 @@ public class TaskActivity extends BaseActivity {
                 task.priority != null ? task.priority.toLowerCase() : "low",
                 task.subjectId,
                 task.isReminderEnabled,
-                task.category != null ? task.category : "",
-                displaySubtitle));
+                task.expiryTimestamp
+        ));
     }
 }

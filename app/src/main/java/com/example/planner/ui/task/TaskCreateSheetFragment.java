@@ -30,20 +30,21 @@ import java.util.Locale;
 
 public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
 
-    private View containerStep1, containerStep2, containerOptional;
-    private RadioGroup rgTaskType;
-    private EditText etTaskTitle, etTaskNote;
-    private TextView tvDeadlineValue, tvTimeValue, tvSubjectValue, tvPriorityValue, tvActivityGroupValue;
-    private View rowSubject, rowActivityGroup, rowDeadline, rowTime, rowPriority, btnToggleOptional;
-    private ImageView ivToggleOptional;
-    private CheckBox cbCompleted, cbReminder;
+    private EditText etTaskTitle;
+    private TextView tvDeadlineValue;
+    private TextView tvTimeValue;
+    private TextView tvSubjectValue;
+    private TextView tvPriorityValue;
+    private TextView tvExpiryValue;
+    private CheckBox cbCompleted;
+    private CheckBox cbReminder;
 
     private TaskViewModel viewModel;
     private Calendar calendar = Calendar.getInstance();
     private Subject selectedSubject;
     private List<Subject> subjects;
     private String selectedPriority = "low";
-    private String selectedActivityGroup = "Cá nhân";
+    private long selectedExpiryDurationMs = 0; // 0 means no expiry
 
     private TaskUiModel editingTask;
     private ImageView btnDelete;
@@ -92,17 +93,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         tvTimeValue = view.findViewById(R.id.tv_time_value);
         tvSubjectValue = view.findViewById(R.id.tv_subject_value);
         tvPriorityValue = view.findViewById(R.id.tv_priority_value);
-        tvActivityGroupValue = view.findViewById(R.id.tv_activity_group_value);
-        
-        rowSubject = view.findViewById(R.id.row_subject);
-        rowActivityGroup = view.findViewById(R.id.row_activity_group);
-        rowDeadline = view.findViewById(R.id.row_deadline);
-        rowTime = view.findViewById(R.id.row_time);
-        rowPriority = view.findViewById(R.id.row_priority);
-        
-        btnToggleOptional = view.findViewById(R.id.btn_toggle_optional);
-        ivToggleOptional = view.findViewById(R.id.iv_toggle_optional);
-        
+        tvExpiryValue = view.findViewById(R.id.tv_expiry_value);
         cbCompleted = view.findViewById(R.id.cb_completed);
         cbReminder = view.findViewById(R.id.cb_reminder);
         btnDelete = view.findViewById(R.id.btn_delete_task);
@@ -111,19 +102,15 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         updateTimeText();
     }
 
-    private void setupListeners(View view) {
-        view.findViewById(R.id.btn_continue).setOnClickListener(v -> handleContinue());
-        
-        rowDeadline.setOnClickListener(v -> showDatePicker());
-        rowTime.setOnClickListener(v -> toggleReminder());
-        rowSubject.setOnClickListener(v -> showSubjectPicker());
-        rowActivityGroup.setOnClickListener(v -> showActivityGroupPicker());
-        rowPriority.setOnClickListener(v -> showPriorityPicker());
-        
-        btnToggleOptional.setOnClickListener(v -> toggleOptionalSection());
-        
-        view.findViewById(R.id.btn_save_task).setOnClickListener(v -> saveTask());
-    }
+        view.findViewById(R.id.row_deadline).setOnClickListener(v -> showDatePicker());
+        view.findViewById(R.id.row_time).setOnClickListener(v -> toggleReminder());
+        view.findViewById(R.id.row_subject).setOnClickListener(v -> showSubjectPicker());
+        view.findViewById(R.id.row_priority).setOnClickListener(v -> showPriorityPicker());
+        view.findViewById(R.id.row_expiry).setOnClickListener(v -> showExpiryPicker());
+        view.findViewById(R.id.btn_save_task).setOnClickListener(v -> {
+            Log.d("TaskCreateSheet", "Nút Lưu Task được nhấn");
+            saveTask();
+        });
 
     private void handleContinue() {
         String title = etTaskTitle.getText().toString().trim();
@@ -167,6 +154,19 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         tvDeadlineValue.setText(editingTask.getDeadline());
         cbCompleted.setChecked(editingTask.isChecked());
         etTaskNote.setText(editingTask.getNote());
+        
+        long expiry = editingTask.getExpiryTimestamp();
+        if (expiry > 0) {
+            long remaining = expiry - System.currentTimeMillis();
+            if (remaining > 0) {
+                // Hiển thị đơn giản thời gian còn lại
+                tvExpiryValue.setText("Đã hẹn xóa");
+            } else {
+                tvExpiryValue.setText("Đã hết hạn");
+            }
+        } else {
+            tvExpiryValue.setText("Không");
+        }
         
         boolean isReminder = editingTask.isReminderEnabled();
         cbReminder.setChecked(isReminder);
@@ -366,24 +366,26 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
                 }).show();
     }
 
-    private void deleteTask() {
+    private void showExpiryPicker() {
+        String[] options = {"Không", "5 giây", "30 phút", "1 giờ", "6 giờ", "12 giờ", "24 giờ", "2 ngày", "1 tuần"};
+        long[] durations = {
+            0,
+            5 * 1000L,
+            30 * 60 * 1000L,
+            60 * 60 * 1000L,
+            6 * 60 * 60 * 1000L,
+            12 * 60 * 60 * 1000L,
+            24 * 60 * 60 * 1000L,
+            2 * 24 * 60 * 60 * 1000L,
+            7 * 24 * 60 * 60 * 1000L
+        };
+
         new AlertDialog.Builder(requireContext())
-                .setTitle("Xóa task")
-                .setMessage("Bạn có chắc chắn muốn xóa task này?")
-                .setPositiveButton("Xóa", (dialog, which) -> {
-                    viewModel.delete(editingTask.getId(), () -> {
-                        if (getActivity() != null) {
-                            getActivity().runOnUiThread(() -> {
-                                dismiss();
-                                if (getActivity() instanceof TaskActivity) {
-                                    ((TaskActivity) getActivity()).fetchTasksFromServer();
-                                }
-                            });
-                        }
-                    });
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
+                .setTitle("Tự động xóa sau")
+                .setItems(options, (dialog, which) -> {
+                    selectedExpiryDurationMs = durations[which];
+                    tvExpiryValue.setText(options[which]);
+                }).show();
     }
 
     private void saveTask() {
@@ -407,19 +409,68 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         task.category = category;
 
         if (editingTask != null) {
-            viewModel.update(task, this::onSaveSuccess);
-        } else {
-            viewModel.saveTask(task, this::onSaveSuccess);
-        }
-    }
+            // Update mode
+            com.example.planner.data.model.Task task = new com.example.planner.data.model.Task(
+                    title,
+                    calendar.getTimeInMillis(),
+                    subjectId
+            );
+            task.id = editingTask.getId();
+            task.isCompleted = cbCompleted.isChecked();
+            
+            // Nếu có chọn thời gian hết hạn mới, cộng dồn từ hiện tại. 
+            // Nếu không chọn mới (bằng 0), giữ nguyên giá trị cũ.
+            if (selectedExpiryDurationMs > 0) {
+                task.expiryTimestamp = System.currentTimeMillis() + selectedExpiryDurationMs;
+            } else {
+                task.expiryTimestamp = editingTask.getExpiryTimestamp();
+            }
 
-    private void onSaveSuccess() {
-        if (getActivity() != null) {
-            getActivity().runOnUiThread(() -> {
-                dismiss();
-                Toast.makeText(getContext(), "Đã lưu thành công", Toast.LENGTH_SHORT).show();
-                if (getActivity() instanceof TaskActivity) {
-                    ((TaskActivity) getActivity()).fetchTasksFromServer();
+            task.priority = selectedPriority;
+            task.isReminderEnabled = cbReminder.isChecked();
+            task.note = editingTask.getNote();
+
+            viewModel.update(task, () -> {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        dismiss();
+                        if (getActivity() instanceof TaskActivity) {
+                            ((TaskActivity) getActivity()).fetchTasksFromServer();
+                        }
+                    });
+                }
+            });
+        } else {
+            // Create mode
+            Log.d("TaskCreateSheet", "Bắt đầu lưu Task: " + title + " | SubjectID: " + subjectId + " | Priority: " + selectedPriority);
+
+            com.example.planner.data.model.Task newTask = new com.example.planner.data.model.Task(
+                title,
+                calendar.getTimeInMillis(),
+                subjectId
+            );
+            newTask.isCompleted = cbCompleted.isChecked();
+            if (selectedExpiryDurationMs > 0) {
+                newTask.expiryTimestamp = System.currentTimeMillis() + selectedExpiryDurationMs;
+            } else {
+                newTask.expiryTimestamp = 0;
+            }
+            newTask.priority = selectedPriority;
+            newTask.isReminderEnabled = cbReminder.isChecked();
+            newTask.note = ""; // Default empty note
+            
+            viewModel.saveTask(newTask, () -> {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        Log.d("TaskCreateSheet", "Callback thành công: Đóng Side Sheet và cập nhật UI");
+                        dismiss();
+                        Toast.makeText(getContext(), "Đã lưu task và đồng bộ server", Toast.LENGTH_SHORT).show();
+                        if (getActivity() instanceof TaskActivity) {
+                            ((TaskActivity) getActivity()).fetchTasksFromServer();
+                        }
+                    });
+                } else {
+                    Log.e("TaskCreateSheet", "Callback thành công nhưng Activity đã bị hủy");
                 }
             });
         }

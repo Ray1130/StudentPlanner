@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -32,28 +34,22 @@ public class UserProfileActivity extends BaseActivity {
 
         setupBottomNavigation(R.id.nav_profile);
 
-        setupOverview();
         observeProfileData();
-
-        setupSettingRow(R.id.settingRingtone, R.drawable.ic_music_note, getString(R.string.setting_ringtone), null);
-        setupSettingRow(R.id.settingDefaultReminder, R.drawable.ic_alarm, getString(R.string.setting_default_reminder), getString(R.string.setting_default_reminder_val));
-        setupSettingRow(R.id.settingPomodoro, R.drawable.ic_timer, getString(R.string.setting_pomodoro), getString(R.string.setting_pomodoro_val));
-        setupSettingRow(R.id.settingFocusSound, R.drawable.ic_library_music, getString(R.string.setting_focus_sound), getString(R.string.setting_focus_sound_val));
-        setupSettingRow(R.id.settingDailyReminder, R.drawable.ic_notifications, getString(R.string.setting_daily_reminder), null);
-        setupSettingRow(R.id.settingLanguage, R.drawable.ic_language, getString(R.string.setting_language), null);
-        setupSettingRow(R.id.settingUserGuide, R.drawable.ic_menu_book, getString(R.string.setting_guide), null);
+        
+        // Setup Auto Delete Spinner
+        Spinner spinnerAutoDelete = findViewById(R.id.spinnerAutoDelete);
+        if (spinnerAutoDelete != null) {
+            String[] autoDeleteOptions = new String[]{"Không tự động xóa", "Sau 1 kỳ học"};
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, autoDeleteOptions);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerAutoDelete.setAdapter(adapter);
+            spinnerAutoDelete.setSelection(0); // Mặc định là "Không tự động xóa"
+        }
 
         ImageView btnBack = findViewById(R.id.btnBack);
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> onBackPressed());
         }
-    }
-
-    private void setupOverview() {
-        TextView tvUserName = findViewById(R.id.tvUserName);
-        SharedPreferences prefs = getSharedPreferences("USER_FILE", MODE_PRIVATE);
-        String username = prefs.getString("username", "admin");
-        if (tvUserName != null) tvUserName.setText(username);
     }
 
     private void observeProfileData() {
@@ -64,11 +60,14 @@ public class UserProfileActivity extends BaseActivity {
         LinearLayout barChartContainer = findViewById(R.id.barChartContainer);
 
         viewModel.getProfileStats().observe(this, stats -> {
-            if (stats == null) return;
+            if (stats == null)
+                return;
 
-            if (tvCompletedCount != null) tvCompletedCount.setText(String.valueOf(stats.getTotalCompleted()));
-            if (tvRemainingCount != null) tvRemainingCount.setText(String.valueOf(stats.getTotalRemaining()));
-            
+            if (tvCompletedCount != null)
+                tvCompletedCount.setText(String.valueOf(stats.getCompletedToday()));
+            if (tvRemainingCount != null)
+                tvRemainingCount.setText(String.valueOf(stats.getRemainingToday()));
+
             int percentage = stats.getTodayPercentage();
             if (progressBar != null) {
                 progressBar.setMax(100);
@@ -78,10 +77,11 @@ public class UserProfileActivity extends BaseActivity {
                 tvPercentage.setText(String.format(Locale.getDefault(), "%d%%", percentage));
             }
 
-            updateBarChart(barChartContainer, stats.getLast7DaysCompleted(), stats.getLast7DaysTotal(), stats.getLast7DaysLabels());
+            updateBarChart(barChartContainer, stats.getLast7DaysCompleted(), stats.getLast7DaysTotal(),
+                    stats.getLast7DaysLabels());
         });
     }
-
+    
     private void updateBarChart(LinearLayout container, int[] completedData, int[] totalData, String[] labels) {
         if (container == null || completedData == null || totalData == null || labels == null) return;
         container.removeAllViews();
@@ -132,33 +132,5 @@ public class UserProfileActivity extends BaseActivity {
 
             container.addView(columnLayout);
         }
-    }
-
-    private void setupSettingRow(int includeId, int iconResId, String title, String value) {
-        View settingView = findViewById(includeId);
-        if (settingView == null) return;
-        ImageView ivSettingIcon = settingView.findViewById(R.id.ivSettingIcon);
-        TextView tvSettingTitle = settingView.findViewById(R.id.tvSettingTitle);
-        TextView tvSettingValue = settingView.findViewById(R.id.tvSettingValue);
-        ImageView ivSettingArrow = settingView.findViewById(R.id.ivSettingArrow);
-
-        if (ivSettingIcon != null) ivSettingIcon.setImageResource(iconResId);
-        if (tvSettingTitle != null) tvSettingTitle.setText(title);
-
-        if (tvSettingValue != null) {
-            if (value != null && !value.isEmpty()) {
-                tvSettingValue.setText(value);
-                tvSettingValue.setVisibility(View.VISIBLE);
-            } else {
-                tvSettingValue.setVisibility(View.GONE);
-            }
-        }
-
-        if (ivSettingArrow != null) {
-            ivSettingArrow.setImageResource(R.drawable.ic_chevron_right_24);
-        }
-
-        settingView.setOnClickListener(v -> {
-        });
     }
 }

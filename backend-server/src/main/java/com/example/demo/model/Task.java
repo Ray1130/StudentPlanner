@@ -16,8 +16,10 @@ public class Task {
     private long expiryTimestamp;
     private String priority;
     private boolean isReminderEnabled;
+    private String note;
 
-    public Task() {}
+    public Task() {
+    }
 
     public Task(String title, Long dueDate, Integer subjectId) {
         this.title = title;
@@ -27,6 +29,7 @@ public class Task {
         this.expiryTimestamp = 0;
         this.priority = "low";
         this.isReminderEnabled = false;
+        this.note = "";
     }
 
     public Long getId() { return id; }
@@ -45,4 +48,6 @@ public class Task {
     public void setPriority(String priority) { this.priority = priority; }
     public boolean isReminderEnabled() { return isReminderEnabled; }
     public void setReminderEnabled(boolean reminderEnabled) { isReminderEnabled = reminderEnabled; }
+    public String getNote() { return note; }
+    public void setNote(String note) { this.note = note; }
 }

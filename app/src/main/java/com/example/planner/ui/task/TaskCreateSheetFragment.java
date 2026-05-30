@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,17 +57,38 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_task_create_side_sheet, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d("TaskCreateSheet", "onViewCreated: Khởi tạo Side Sheet");
         viewModel = new ViewModelProvider(requireActivity()).get(TaskViewModel.class);
 
+        initViews(view);
+        setupListeners(view);
+
+        if (editingTask != null) {
+            setupEditMode();
+        } else {
+            containerStep1.setVisibility(View.VISIBLE);
+            containerStep2.setVisibility(View.GONE);
+        }
+
+        observeSubjects();
+    }
+
+    private void initViews(View view) {
+        containerStep1 = view.findViewById(R.id.container_step_1);
+        containerStep2 = view.findViewById(R.id.container_step_2);
+        containerOptional = view.findViewById(R.id.container_optional);
+        
+        rgTaskType = view.findViewById(R.id.rg_task_type);
         etTaskTitle = view.findViewById(R.id.et_task_title);
+        etTaskNote = view.findViewById(R.id.et_task_note);
+        
         tvDeadlineValue = view.findViewById(R.id.tv_deadline_value);
         tvTimeValue = view.findViewById(R.id.tv_time_value);
         tvSubjectValue = view.findViewById(R.id.tv_subject_value);
@@ -76,13 +98,9 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         cbReminder = view.findViewById(R.id.cb_reminder);
         btnDelete = view.findViewById(R.id.btn_delete_task);
 
-        // Xử lý ngày mặc định từ bundle nếu có
-        if (getArguments() != null && getArguments().containsKey("default_date")) {
-            long defaultTimestamp = getArguments().getLong("default_date");
-            calendar.setTimeInMillis(defaultTimestamp);
-        }
         updateDeadlineText();
         updateTimeText();
+    }
 
         view.findViewById(R.id.row_deadline).setOnClickListener(v -> showDatePicker());
         view.findViewById(R.id.row_time).setOnClickListener(v -> toggleReminder());
@@ -94,40 +112,48 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
             saveTask();
         });
 
-        if (editingTask != null) {
-            setupEditMode();
+    private void handleContinue() {
+        String title = etTaskTitle.getText().toString().trim();
+        if (title.isEmpty()) {
+            Toast.makeText(getContext(), "Vui lòng nhập tên công việc", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        // Nạp dữ liệu môn học ngay khi view được tạo
-        viewModel.getAllSubjects().observe(getViewLifecycleOwner(), subjectsList -> {
-            if (subjectsList != null) {
-                Log.d("TaskCreateSheet", "Đã nhận danh sách môn học: " + subjectsList.size() + " môn");
-                this.subjects = subjectsList;
-                if (editingTask != null) {
-                    updateSelectedSubjectInEditMode();
-                }
-            } else {
-                Log.w("TaskCreateSheet", "Danh sách môn học nhận được là null");
+        containerStep1.setVisibility(View.GONE);
+        containerStep2.setVisibility(View.VISIBLE);
+
+        if (rgTaskType.getCheckedRadioButtonId() == R.id.rb_study) {
+            rowSubject.setVisibility(View.VISIBLE);
+            rowActivityGroup.setVisibility(View.GONE);
+            selectedActivityGroup = "Học tập";
+        } else {
+            rowSubject.setVisibility(View.GONE);
+            rowActivityGroup.setVisibility(View.VISIBLE);
+            if (selectedActivityGroup == null || selectedActivityGroup.equals("Học tập")) {
+                selectedActivityGroup = "Cá nhân";
             }
-        });
+            tvActivityGroupValue.setText(selectedActivityGroup);
+        }
     }
 
-    private void updateSelectedSubjectInEditMode() {
-        if (subjects != null && editingTask != null) {
-            for (Subject s : subjects) {
-                if (s.id == editingTask.getSubjectId()) {
-                    selectedSubject = s;
-                    tvSubjectValue.setText(s.name);
-                    break;
-                }
-            }
+    private void toggleOptionalSection() {
+        if (containerOptional.getVisibility() == View.VISIBLE) {
+            containerOptional.setVisibility(View.GONE);
+            ivToggleOptional.setRotation(0);
+        } else {
+            containerOptional.setVisibility(View.VISIBLE);
+            ivToggleOptional.setRotation(180);
         }
     }
 
     private void setupEditMode() {
+        containerStep1.setVisibility(View.GONE);
+        containerStep2.setVisibility(View.VISIBLE);
+        
         etTaskTitle.setText(editingTask.getTitle());
         tvDeadlineValue.setText(editingTask.getDeadline());
         cbCompleted.setChecked(editingTask.isChecked());
+        etTaskNote.setText(editingTask.getNote());
         
         long expiry = editingTask.getExpiryTimestamp();
         if (expiry > 0) {
@@ -144,26 +170,42 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         
         boolean isReminder = editingTask.isReminderEnabled();
         cbReminder.setChecked(isReminder);
-        
+
         selectedPriority = editingTask.getPriority();
         updatePriorityText(selectedPriority);
-        
+
         btnDelete.setVisibility(View.VISIBLE);
         btnDelete.setOnClickListener(v -> deleteTask());
 
-        // Parse deadline string to calendar
+        // Determine type based on subjectId
+        if (editingTask.getSubjectId() > 0) {
+            rowSubject.setVisibility(View.VISIBLE);
+            rowActivityGroup.setVisibility(View.GONE);
+            rgTaskType.check(R.id.rb_study);
+            selectedActivityGroup = "Học tập";
+        } else {
+            rowSubject.setVisibility(View.GONE);
+            rowActivityGroup.setVisibility(View.VISIBLE);
+            rgTaskType.check(R.id.rb_extra);
+            selectedActivityGroup = editingTask.getCategory();
+            if (selectedActivityGroup == null || selectedActivityGroup.isEmpty() || selectedActivityGroup.equals("Học tập")) {
+                selectedActivityGroup = "Cá nhân";
+            }
+            tvActivityGroupValue.setText(selectedActivityGroup);
+        }
+
+        parseDeadline(editingTask.getDeadline());
+    }
+
+    private void parseDeadline(String deadline) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-            calendar.setTime(sdf.parse(editingTask.getDeadline()));
-            if (isReminder) {
-                updateTimeText();
-            } else {
-                tvTimeValue.setText("Tắt");
-            }
+            calendar.setTime(sdf.parse(deadline));
+            updateTimeText();
         } catch (Exception e) {
             try {
                 SimpleDateFormat sdfDateOnly = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                calendar.setTime(sdfDateOnly.parse(editingTask.getDeadline()));
+                calendar.setTime(sdfDateOnly.parse(deadline));
                 tvTimeValue.setText("Tắt");
             } catch (Exception e2) {
                 Log.e("TaskCreateSheet", "Error parsing deadline", e2);
@@ -171,32 +213,52 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         }
     }
 
-    private void updatePriorityText(String priority) {
-        switch (priority) {
-            case "high": tvPriorityValue.setText("Cao"); break;
-            case "medium": tvPriorityValue.setText("Trung bình"); break;
-            case "low": default: tvPriorityValue.setText("Thấp"); break;
+    private void observeSubjects() {
+        viewModel.getAllSubjects().observe(getViewLifecycleOwner(), subjectsList -> {
+            if (subjectsList != null) {
+                this.subjects = subjectsList;
+                if (editingTask != null) {
+                    updateSelectedSubjectInEditMode();
+                }
+            }
+        });
+    }
+
+    private void updateSelectedSubjectInEditMode() {
+        if (subjects != null && editingTask != null) {
+            for (Subject s : subjects) {
+                if (s.id == editingTask.getSubjectId()) {
+                    selectedSubject = s;
+                    tvSubjectValue.setText(s.name);
+                    break;
+                }
+            }
         }
     }
 
-    private void deleteTask() {
+    private void updatePriorityText(String priority) {
+        switch (priority) {
+            case "high":
+                tvPriorityValue.setText("Cao");
+                break;
+            case "medium":
+                tvPriorityValue.setText("Trung bình");
+                break;
+            case "low":
+            default:
+                tvPriorityValue.setText("Thấp");
+                break;
+        }
+    }
+
+    private void showActivityGroupPicker() {
+        String[] groups = {"CLB", "Tình nguyện", "Hiến máu", "Thể thao", "Cá nhân"};
         new AlertDialog.Builder(requireContext())
-                .setTitle("Xóa task")
-                .setMessage("Bạn có chắc chắn muốn xóa task này?")
-                .setPositiveButton("Xóa", (dialog, which) -> {
-                    viewModel.delete(editingTask.getId(), () -> {
-                        if (getActivity() != null) {
-                            getActivity().runOnUiThread(() -> {
-                                dismiss();
-                                if (getActivity() instanceof TaskActivity) {
-                                    ((TaskActivity) getActivity()).fetchTasksFromServer();
-                                }
-                            });
-                        }
-                    });
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
+                .setTitle("Chọn nhóm hoạt động")
+                .setItems(groups, (dialog, which) -> {
+                    selectedActivityGroup = groups[which];
+                    tvActivityGroupValue.setText(selectedActivityGroup);
+                }).show();
     }
 
     private void showDatePicker() {
@@ -205,7 +267,6 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
             calendar.set(Calendar.MONTH, month);
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
             updateDeadlineText();
-            Log.d("TaskCreateSheet", "Đã chọn ngày: " + tvDeadlineValue.getText());
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 
@@ -215,14 +276,12 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     }
 
     private void showTimePicker() {
-        // Sử dụng style Spinner cho TimePickerDialog
         new android.app.TimePickerDialog(requireContext(), 
-            android.R.style.Theme_Holo_Light_Dialog_NoActionBar, // Style spinner/wheel
+            android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
             (view, hourOfDay, minute) -> {
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 calendar.set(Calendar.MINUTE, minute);
                 calendar.set(Calendar.SECOND, 0);
-                calendar.set(Calendar.MILLISECOND, 0);
                 cbReminder.setChecked(true);
                 updateTimeText();
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true)
@@ -240,20 +299,15 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
 
     private void toggleReminder() {
         if (cbReminder.isChecked()) {
-            // Đang bật -> Tắt đi
             cbReminder.setChecked(false);
             updateTimeText();
         } else {
-            // Đang tắt -> Mở picker để chọn giờ và bật
             showTimePicker();
         }
     }
 
-
     private void showSubjectPicker() {
-        Log.d("TaskCreateSheet", "Mở bộ chọn môn học");
         if (subjects == null) {
-            Log.w("TaskCreateSheet", "Danh sách môn học chưa sẵn sàng (null)");
             Toast.makeText(getContext(), "Đang tải danh sách môn học...", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -268,12 +322,10 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
                 .setTitle("Chọn môn học")
                 .setItems(subjectNames, (dialog, which) -> {
                     if (which == subjects.size()) {
-                        Log.d("TaskCreateSheet", "Chọn: Tạo môn mới");
                         showCreateSubjectDialog();
                     } else {
                         selectedSubject = subjects.get(which);
                         tvSubjectValue.setText(selectedSubject.name);
-                        Log.d("TaskCreateSheet", "Đã chọn môn: " + selectedSubject.name + " (ID: " + selectedSubject.id + ")");
                     }
                 }).show();
     }
@@ -286,18 +338,14 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
             .setPositiveButton("Lưu", (dialog, which) -> {
                 String name = input.getText().toString().trim();
                 if (!name.isEmpty()) {
-                    Log.d("TaskCreateSheet", "Đang yêu cầu tạo môn mới: " + name);
                     Subject newSubject = new Subject("", name);
                     viewModel.insertSubject(newSubject, createdSubject -> {
                         if (createdSubject != null && getActivity() != null) {
                             getActivity().runOnUiThread(() -> {
-                                Log.d("TaskCreateSheet", "Tạo môn mới thành công, ID nhận được: " + createdSubject.id);
                                 selectedSubject = createdSubject; 
                                 tvSubjectValue.setText(createdSubject.name);
                                 Toast.makeText(getContext(), "Đã tạo môn học mới", Toast.LENGTH_SHORT).show();
                             });
-                        } else {
-                            Log.e("TaskCreateSheet", "Thất bại khi tạo môn mới trên Server");
                         }
                     });
                 }
@@ -307,15 +355,14 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     }
 
     private void showPriorityPicker() {
-        String[] priorities = {"Thấp", "Trung bình", "Cao"};
-        String[] priorityValues = {"low", "medium", "high"};
+        String[] priorities = { "Thấp", "Trung bình", "Cao" };
+        String[] priorityValues = { "low", "medium", "high" };
 
         new AlertDialog.Builder(requireContext())
                 .setTitle("Chọn mức độ ưu tiên")
                 .setItems(priorities, (dialog, which) -> {
                     selectedPriority = priorityValues[which];
                     tvPriorityValue.setText(priorities[which]);
-                    Log.d("TaskCreateSheet", "Đã chọn mức độ: " + selectedPriority);
                 }).show();
     }
 
@@ -344,13 +391,23 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     private void saveTask() {
         String title = etTaskTitle.getText().toString().trim();
         if (title.isEmpty()) {
-            Log.w("TaskCreateSheet", "Không thể lưu: Tên task trống");
             Toast.makeText(getContext(), "Vui lòng nhập tên task", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        int subjectId = selectedSubject != null ? selectedSubject.id : 0;
+        boolean isStudy = rowSubject.getVisibility() == View.VISIBLE;
+        int subjectId = isStudy && selectedSubject != null ? selectedSubject.id : 0;
+        String category = isStudy ? "Học tập" : selectedActivityGroup;
+
+        Task task = new Task(title, calendar.getTimeInMillis(), subjectId);
+        if (editingTask != null) task.id = editingTask.getId();
         
+        task.isCompleted = cbCompleted.isChecked();
+        task.priority = selectedPriority;
+        task.isReminderEnabled = cbReminder.isChecked();
+        task.note = etTaskNote.getText().toString().trim();
+        task.category = category;
+
         if (editingTask != null) {
             // Update mode
             com.example.planner.data.model.Task task = new com.example.planner.data.model.Task(

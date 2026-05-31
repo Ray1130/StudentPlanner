@@ -19,6 +19,7 @@ public class TaskUiModel {
     private String category;
     private boolean isReminderEnabled;
     private long expiryTimestamp;
+    private boolean hideTag;
 
     public TaskUiModel(int viewType, String title, String deadline, String note, boolean checked, String priority) {
         this.viewType = viewType;
@@ -125,5 +126,13 @@ public class TaskUiModel {
 
     public void setExpiryTimestamp(long expiryTimestamp) {
         this.expiryTimestamp = expiryTimestamp;
+    }
+
+    public boolean isHideTag() {
+        return hideTag;
+    }
+
+    public void setHideTag(boolean hideTag) {
+        this.hideTag = hideTag;
     }
 }

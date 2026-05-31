@@ -1,5 +1,6 @@
 package com.example.planner.ui.task;
 
+import android.graphics.Paint;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
@@ -63,31 +64,52 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             TaskCardViewHolder cardHolder = (TaskCardViewHolder) holder;
             cardHolder.tvTitle.setText(item.getTitle());
             
-            String subtitle = item.getSubtitle();
-            if (subtitle != null && subtitle.contains(" • ")) {
-                int dotIndex = subtitle.indexOf(" • ");
-                SpannableString spannable = new SpannableString(subtitle);
-                spannable.setSpan(new ForegroundColorSpan(cardHolder.itemView.getContext().getColor(R.color.primary_purple)),
-                        dotIndex + 1, dotIndex + 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                cardHolder.tvSubtitle.setText(spannable);
+            // Handle completed state: strike-through and dimming
+            if (item.isChecked()) {
+                cardHolder.tvTitle.setPaintFlags(cardHolder.tvTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                cardHolder.itemView.setAlpha(0.6f);
             } else {
-                cardHolder.tvSubtitle.setText(subtitle != null ? subtitle : "");
+                cardHolder.tvTitle.setPaintFlags(cardHolder.tvTitle.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                cardHolder.itemView.setAlpha(1.0f);
             }
-            
-            if (cardHolder.tvTag != null) {
-                // Phân loại dựa trên Subject hoặc Category
-                if (item.getSubjectId() > 0) {
-                    cardHolder.tvTag.setText("Học phần");
-                    cardHolder.tvTag.setBackgroundResource(R.drawable.bg_tag_course);
-                    cardHolder.tvTag.setTextColor(cardHolder.itemView.getContext().getColor(R.color.tag_course_text));
-                    if (cardHolder.ivBell != null) cardHolder.ivBell.setVisibility(item.isReminderEnabled() ? View.VISIBLE : View.GONE);
-                    if (cardHolder.ivLocation != null) cardHolder.ivLocation.setVisibility(View.GONE);
+
+            if (item.isHideTag()) {
+                if (cardHolder.tvTag != null) cardHolder.tvTag.setVisibility(View.GONE);
+                cardHolder.tvSubtitle.setVisibility(View.GONE);
+            } else {
+                if (cardHolder.tvTag != null) cardHolder.tvTag.setVisibility(View.VISIBLE);
+                cardHolder.tvSubtitle.setVisibility(View.VISIBLE);
+                
+                String subtitle = item.getSubtitle();
+                if (subtitle != null && subtitle.contains(" • ")) {
+                    int dotIndex = subtitle.indexOf(" • ");
+                    SpannableString spannable = new SpannableString(subtitle);
+                    spannable.setSpan(new ForegroundColorSpan(cardHolder.itemView.getContext().getColor(R.color.primary_purple)),
+                            dotIndex + 1, dotIndex + 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    cardHolder.tvSubtitle.setText(spannable);
                 } else {
-                    cardHolder.tvTag.setText("Ngoại khóa");
-                    cardHolder.tvTag.setBackgroundResource(R.drawable.bg_tag_extracurricular);
-                    cardHolder.tvTag.setTextColor(cardHolder.itemView.getContext().getColor(R.color.tag_extracurricular_text));
-                    if (cardHolder.ivBell != null) cardHolder.ivBell.setVisibility(View.GONE);
-                    if (cardHolder.ivLocation != null) cardHolder.ivLocation.setVisibility(View.VISIBLE);
+                    cardHolder.tvSubtitle.setText(subtitle != null ? subtitle : "");
+                }
+
+                // Phân loại dựa trên Subject hoặc Category
+                if (cardHolder.tvTag != null) {
+                    if (item.getSubjectId() > 0) {
+                        cardHolder.tvTag.setText("Học phần");
+                        cardHolder.tvTag.setBackgroundResource(R.drawable.bg_tag_course);
+                        cardHolder.tvTag.setTextColor(cardHolder.itemView.getContext().getColor(R.color.tag_course_text));
+                        if (cardHolder.ivBell != null)
+                            cardHolder.ivBell.setVisibility(item.isReminderEnabled() ? View.VISIBLE : View.GONE);
+                        if (cardHolder.ivLocation != null)
+                            cardHolder.ivLocation.setVisibility(View.GONE);
+                    } else {
+                        cardHolder.tvTag.setText("Ngoại khóa");
+                        cardHolder.tvTag.setBackgroundResource(R.drawable.bg_tag_extracurricular);
+                        cardHolder.tvTag.setTextColor(cardHolder.itemView.getContext().getColor(R.color.tag_extracurricular_text));
+                        if (cardHolder.ivBell != null)
+                            cardHolder.ivBell.setVisibility(View.GONE);
+                        if (cardHolder.ivLocation != null)
+                            cardHolder.ivLocation.setVisibility(View.VISIBLE);
+                    }
                 }
             }
             

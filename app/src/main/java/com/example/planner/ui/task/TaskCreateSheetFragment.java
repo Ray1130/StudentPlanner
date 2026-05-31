@@ -294,12 +294,31 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         new android.app.TimePickerDialog(requireContext(),
                 android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
                 (view, hourOfDay, minute) -> {
+                    // Validate: Check if selected time is not in the past
+                    Calendar selectedDateTime = Calendar.getInstance();
+                    selectedDateTime.setTimeInMillis(calendar.getTimeInMillis());
+                    selectedDateTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                    selectedDateTime.set(Calendar.MINUTE, minute);
+                    selectedDateTime.set(Calendar.SECOND, 0);
+
+                    long selectedTime = selectedDateTime.getTimeInMillis();
+                    long currentTime = System.currentTimeMillis();
+
+                    if (selectedTime < currentTime) {
+                        // Time is in the past
+                        Toast.makeText(getContext(), " Thời gian nhắc nhở không thể ở quá khứ", Toast.LENGTH_SHORT)
+                                .show();
+                        cbReminder.setChecked(false);
+                        updateTimeText();
+                        return;
+                    }
+
                     calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                     calendar.set(Calendar.MINUTE, minute);
                     calendar.set(Calendar.SECOND, 0);
                     cbReminder.setChecked(true);
                     updateTimeText();
-                }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true)
+                }, 0, 0, true) // Always show 0:00 (00:00)
                 .show();
     }
 
@@ -420,8 +439,8 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
                         if (getActivity() instanceof TaskActivity) {
                             ((TaskActivity) getActivity()).fetchTasksFromServer();
                         } else if (getActivity() instanceof com.example.planner.ui.main.MainActivity) {
-                             // Optional: Trigger refresh for MainActivity if needed, 
-                             // though LiveData should handle it.
+                            // Optional: Trigger refresh for MainActivity if needed,
+                            // though LiveData should handle it.
                         }
                     });
                 }

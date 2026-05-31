@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData;
 import com.example.planner.data.ApiService;
 import com.example.planner.data.local.AppDatabase;
 import com.example.planner.data.local.TaskDao;
+import com.example.planner.data.local.SubjectDao;
 import com.example.planner.data.model.Task;
 import com.example.planner.receiver.ReminderReceiver;
 import java.util.List;
@@ -23,6 +24,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TaskRepository {
     private TaskDao taskDao;
+    private SubjectDao subjectDao;
     private ApiService apiService;
     private ExecutorService executorService;
     private Context context;
@@ -31,6 +33,7 @@ public class TaskRepository {
         this.context = application.getApplicationContext();
         AppDatabase db = AppDatabase.getDatabase(application);
         taskDao = db.taskDao();
+        subjectDao = db.subjectDao();
         executorService = Executors.newSingleThreadExecutor();
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -38,7 +41,7 @@ public class TaskRepository {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(ApiService.class);
-        
+
         cleanupExpiredTasks();
     }
 
@@ -62,7 +65,8 @@ public class TaskRepository {
                     task.expiryTimestamp = 0;
                 }
                 taskDao.update(task);
-                Log.d("TaskRepository", "Toggled task " + taskId + " locally to " + task.isCompleted + " with expiry " + task.expiryTimestamp);
+                Log.d("TaskRepository", "Toggled task " + taskId + " locally to " + task.isCompleted + " with expiry "
+                        + task.expiryTimestamp);
 
                 apiService.updateTask(task).enqueue(new Callback<Task>() {
                     @Override
@@ -94,8 +98,24 @@ public class TaskRepository {
                     List<Task> serverTasks = response.body();
                     executorService.execute(() -> {
                         // Không dùng deleteAll() để tránh mất dữ liệu local chưa kịp sync
-                        for (Task t : serverTasks) {
-                            taskDao.insert(t);
+                        for (Task serverTask : serverTasks) {
+                            // Get existing task from local DB to preserve category
+                            Task localTask = taskDao.getTaskByIdSync(serverTask.id);
+
+                            // Preserve category from local if server doesn't have it
+                            if ((serverTask.category == null || serverTask.category.isEmpty()) &&
+                                    localTask != null && localTask.category != null) {
+                                serverTask.category = localTask.category;
+                                Log.d("TaskRepository",
+                                        "Preserved category '" + serverTask.category + "' for task " + serverTask.id);
+                            }
+
+                            // Use update if task exists, insert if new
+                            if (localTask != null) {
+                                taskDao.update(serverTask);
+                            } else {
+                                taskDao.insert(serverTask);
+                            }
                         }
                     });
                 }
@@ -149,10 +169,12 @@ public class TaskRepository {
     }
 
     private void scheduleReminder(Task task) {
-        if (task.dueDate <= 0) return;
+        if (task.dueDate <= 0)
+            return;
 
         long reminderTime = task.dueDate - (10 * 60 * 1000); // 10 phút trước
-        if (reminderTime <= System.currentTimeMillis()) return;
+        if (reminderTime <= System.currentTimeMillis())
+            return;
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, ReminderReceiver.class);
@@ -202,5 +224,14 @@ public class TaskRepository {
 
     public ApiService getApiService() {
         return apiService;
+    }
+
+    public String getSubjectNameByIdSync(int subjectId) {
+        try {
+            return subjectDao.getSubjectNameById(subjectId);
+        } catch (Exception e) {
+            Log.e("TaskRepository", "Failed to get subject name for ID " + subjectId, e);
+            return null;
+        }
     }
 }

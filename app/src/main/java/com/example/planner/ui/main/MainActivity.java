@@ -136,7 +136,8 @@ public class MainActivity extends BaseActivity
 
             @Override
             public void onTaskClick(int taskId) {
-                showEditSheet(taskId);
+                // Trang chủ không cho phép xem chi tiết/sửa/xóa task
+                // Chức năng này chỉ dành cho màn hình Task và Schedule
             }
         };
 

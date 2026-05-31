@@ -1,7 +1,10 @@
 package com.example.planner.data.model;
+
 import com.google.gson.annotations.SerializedName;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
 @Entity(tableName = "tasks")
 public class Task {
     @PrimaryKey(autoGenerate = true)
@@ -18,16 +21,27 @@ public class Task {
     public int subjectId;
     
     @SerializedName("completed")
-    public boolean isCompleted; // Trạng thái: Đã làm xong chưa
+    public boolean isCompleted;
+
+    @SerializedName("timestamp")
+    public long timestamp;
 
     @SerializedName("expiryTimestamp")
     public long expiryTimestamp; // Thời điểm task sẽ tự động biến mất (0 nếu không hết hạn)
 
     public long timestamp; // Thời gian thực hiện
     public String category;
-    public String priority; // low, medium, high
+
+    @SerializedName("priority")
+    @ColumnInfo(name = "priority")
+    public String priority;
+
     @SerializedName("reminderEnabled")
+    @ColumnInfo(name = "reminderEnabled")
     public boolean isReminderEnabled;
+
+    @SerializedName("note")
+    @ColumnInfo(name = "note")
     public String note;
 
     public Task(String title, long dueDate, int subjectId) {
@@ -39,5 +53,8 @@ public class Task {
 //        this.priority = "low"; // Mặc định là low
         this.isReminderEnabled = false;
         this.id = null;
+        this.category = "";
+        this.note = "";
+        this.priority = "low";
     }
 }

@@ -12,9 +12,11 @@ public class TaskUiModel {
     private String title; // Dùng cho Header, Button, Task name
     private String deadline;
     private String note;
+    private String subtitle;
     private boolean checked;
     private String priority; // low, medium, high
     private int subjectId;
+    private String category;
     private boolean isReminderEnabled;
     private long expiryTimestamp;
 
@@ -26,10 +28,11 @@ public class TaskUiModel {
         this.checked = checked;
         this.priority = priority;
         this.isReminderEnabled = false;
-        this.expiryTimestamp = 0;
+        this.category = "";
+        this.subtitle = "";
     }
 
-    public TaskUiModel(int id, int viewType, String title, String deadline, String note, boolean checked, String priority, int subjectId, boolean isReminderEnabled, long expiryTimestamp) {
+    public TaskUiModel(int id, int viewType, String title, String deadline, String note, boolean checked, String priority, int subjectId, boolean isReminderEnabled, String category, String subtitle) {
         this.id = id;
         this.viewType = viewType;
         this.title = title;
@@ -39,14 +42,29 @@ public class TaskUiModel {
         this.priority = priority;
         this.subjectId = subjectId;
         this.isReminderEnabled = isReminderEnabled;
-        this.expiryTimestamp = expiryTimestamp;
+        this.category = category;
+        this.subtitle = subtitle;
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
 
-    public int getSubjectId() { return subjectId; }
-    public void setSubjectId(int subjectId) { this.subjectId = subjectId; }
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(int subjectId) {
+        this.subjectId = subjectId;
+    }
+
+    public int getViewType() {
+        return viewType;
+    }
 
     public int getViewType() { return viewType; }
     public String getTitle() { return title; }

@@ -48,6 +48,7 @@ public class TaskViewModel extends AndroidViewModel {
                     });
                 }
             }
+
             @Override
             public void onFailure(Call<List<Subject>> call, Throwable t) {
                 Log.e("Sync", "Cannot connect to server, using local data only.");
@@ -75,14 +76,18 @@ public class TaskViewModel extends AndroidViewModel {
                 if (response.isSuccessful() && response.body() != null) {
                     Subject created = response.body();
                     AppDatabase.databaseWriteExecutor.execute(() -> database.subjectDao().insert(created));
-                    if (listener != null) listener.onCreated(created);
+                    if (listener != null)
+                        listener.onCreated(created);
                 } else {
-                    if (listener != null) listener.onCreated(subject);
+                    if (listener != null)
+                        listener.onCreated(subject);
                 }
             }
+
             @Override
             public void onFailure(Call<Subject> call, Throwable t) {
-                if (listener != null) listener.onCreated(subject);
+                if (listener != null)
+                    listener.onCreated(subject);
             }
         });
     }
@@ -103,12 +108,15 @@ public class TaskViewModel extends AndroidViewModel {
                 } else {
                     repository.insertTask(task);
                 }
-                if (onSuccess != null) onSuccess.run();
+                if (onSuccess != null)
+                    onSuccess.run();
             }
+
             @Override
             public void onFailure(Call<Task> call, Throwable t) {
                 repository.insertTask(task);
-                if (onSuccess != null) onSuccess.run();
+                if (onSuccess != null)
+                    onSuccess.run();
             }
         });
     }
@@ -128,15 +136,22 @@ public class TaskViewModel extends AndroidViewModel {
             public void onResponse(Call<Task> call, Response<Task> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Task updatedTask = response.body();
+                    // Preserve category from local task if server didn't return it
+                    if ((updatedTask.category == null || updatedTask.category.isEmpty()) && task.category != null) {
+                        updatedTask.category = task.category;
+                    }
                     AppDatabase.databaseWriteExecutor.execute(() -> {
                         database.taskDao().update(updatedTask);
                     });
                 }
-                if (onSuccess != null) onSuccess.run();
+                if (onSuccess != null)
+                    onSuccess.run();
             }
+
             @Override
             public void onFailure(Call<Task> call, Throwable t) {
-                if (onSuccess != null) onSuccess.run();
+                if (onSuccess != null)
+                    onSuccess.run();
             }
         });
     }
@@ -147,12 +162,15 @@ public class TaskViewModel extends AndroidViewModel {
         repository.getApiService().deleteTask(taskId).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                if (onSuccess != null) onSuccess.run();
+                if (onSuccess != null)
+                    onSuccess.run();
             }
+
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Log.e("TaskViewModel", "Failed to delete task on server: " + t.getMessage());
-                if (onSuccess != null) onSuccess.run();
+                if (onSuccess != null)
+                    onSuccess.run();
             }
         });
     }

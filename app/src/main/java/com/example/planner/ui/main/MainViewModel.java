@@ -89,7 +89,14 @@ public class MainViewModel extends AndroidViewModel {
             }
 
             String dateStr = DateUtils.timestampToString(task.dueDate);
-            String meta = task.note != null && !task.note.isEmpty() ? task.note + " • " + dateStr : dateStr;
+            String categoryOrNote = "";
+            if (task.category != null && !task.category.isEmpty() && !task.category.equalsIgnoreCase("Học tập")) {
+                categoryOrNote = task.category;
+            } else if (task.note != null && !task.note.isEmpty()) {
+                categoryOrNote = task.note;
+            }
+
+            String meta = categoryOrNote.isEmpty() ? dateStr : categoryOrNote + " • " + dateStr;
             
             int uiPriority = MainTaskItem.PRIORITY_LOW;
             if ("high".equalsIgnoreCase(task.priority)) {

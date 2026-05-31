@@ -20,18 +20,22 @@ public class ReminderReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String taskTitle = intent.getStringExtra("task_title");
         int taskId = intent.getIntExtra("task_id", 0);
+        
+        android.util.Log.d("ReminderReceiver", "Received reminder for task: " + taskTitle + " (ID: " + taskId + ")");
 
         createNotificationChannel(context);
 
         Intent activityIntent = new Intent(context, MainActivity.class);
+        activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, taskId, activityIntent, 
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_bell)
+                .setSmallIcon(R.drawable.ic_notification_24) // Sử dụng icon chuyên dụng cho thông báo nếu có
                 .setContentTitle("Nhắc nhở công việc")
                 .setContentText("Công việc \"" + taskTitle + "\" sẽ đến hạn trong 10 phút nữa!")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_REMINDER)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 

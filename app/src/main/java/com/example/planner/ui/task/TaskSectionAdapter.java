@@ -106,16 +106,12 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         cardHolder.tvTag.setTextColor(cardHolder.itemView.getContext().getColor(R.color.tag_course_text));
                         if (cardHolder.ivBell != null)
                             cardHolder.ivBell.setVisibility(item.isReminderEnabled() ? View.VISIBLE : View.GONE);
-                        if (cardHolder.ivLocation != null)
-                            cardHolder.ivLocation.setVisibility(View.GONE);
                     } else {
                         cardHolder.tvTag.setText("Ngoại khóa");
                         cardHolder.tvTag.setBackgroundResource(R.drawable.bg_tag_extracurricular);
                         cardHolder.tvTag.setTextColor(cardHolder.itemView.getContext().getColor(R.color.tag_extracurricular_text));
                         if (cardHolder.ivBell != null)
                             cardHolder.ivBell.setVisibility(View.GONE);
-                        if (cardHolder.ivLocation != null)
-                            cardHolder.ivLocation.setVisibility(View.VISIBLE);
                     }
                 }
             }
@@ -132,10 +128,6 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 }
             }
             
-            if (cardHolder.tvCommentCount != null) {
-                cardHolder.tvCommentCount.setText("0"); // Mặc định 0 vì DB chưa có field này
-            }
-
             updateCheckIcon(cardHolder.ivCheck, item.isChecked());
             cardHolder.ivCheck.setOnClickListener(v -> {
                 // 1. Phản hồi UI ngay lập tức
@@ -222,8 +214,8 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     static class TaskCardViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvSubtitle, tvTag, tvTime, tvCommentCount, tvStatus;
-        ImageView ivCheck, ivBell, ivLocation;
+        TextView tvTitle, tvSubtitle, tvTag, tvTime, tvStatus;
+        ImageView ivCheck, ivBell;
         View viewPriorityStrip;
         TaskCardViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -231,14 +223,12 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             tvSubtitle = itemView.findViewById(R.id.tvTaskSubtitle);
             ivCheck = itemView.findViewById(R.id.ivCheck);
             ivBell = itemView.findViewById(R.id.ivBell);
-            ivLocation = itemView.findViewById(R.id.ivLocation);
             viewPriorityStrip = itemView.findViewById(R.id.viewPriorityStrip);
             tvStatus = itemView.findViewById(R.id.tvStatus);
             
             // UI MOCKUP - DELETE WHEN INTEGRATING REAL LOGIC
             tvTag = itemView.findViewById(R.id.tvTag);
             tvTime = itemView.findViewById(R.id.tvTime);
-            tvCommentCount = itemView.findViewById(R.id.tvCommentCount);
         }
     }
 

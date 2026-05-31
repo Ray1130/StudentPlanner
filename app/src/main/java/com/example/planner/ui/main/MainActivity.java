@@ -66,6 +66,7 @@ public class MainActivity extends BaseActivity
         setupWeeklyOverview();
         observeUi();
         setupBottomNavigation(R.id.nav_home);
+        checkNotificationPermission();
 
         NavigationView navigationView = findViewById(R.id.navigationView);
 
@@ -256,6 +257,25 @@ public class MainActivity extends BaseActivity
                 });
             }
         });
+    }
+
+    private void checkNotificationPermission() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) 
+                    != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                androidx.core.app.ActivityCompat.requestPermissions(this, 
+                        new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 101);
+            }
+        }
+        
+        // Check for exact alarm permission on Android 12+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            android.app.AlarmManager alarmManager = (android.app.AlarmManager) getSystemService(android.content.Context.ALARM_SERVICE);
+            if (alarmManager != null && !alarmManager.canScheduleExactAlarms()) {
+                Intent intent = new Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                startActivity(intent);
+            }
+        }
     }
 
     private String capitalizeFirstLetter(String input) {

@@ -1,13 +1,20 @@
 package com.example.planner.ui.task;
 
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.planner.R;
+
 import java.util.List;
 
 public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -59,9 +66,9 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             String subtitle = item.getSubtitle();
             if (subtitle != null && subtitle.contains(" • ")) {
                 int dotIndex = subtitle.indexOf(" • ");
-                android.text.SpannableString spannable = new android.text.SpannableString(subtitle);
-                spannable.setSpan(new android.text.style.ForegroundColorSpan(cardHolder.itemView.getContext().getColor(R.color.primary_purple)),
-                        dotIndex + 1, dotIndex + 2, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                SpannableString spannable = new SpannableString(subtitle);
+                spannable.setSpan(new ForegroundColorSpan(cardHolder.itemView.getContext().getColor(R.color.primary_purple)),
+                        dotIndex + 1, dotIndex + 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 cardHolder.tvSubtitle.setText(spannable);
             } else {
                 cardHolder.tvSubtitle.setText(subtitle != null ? subtitle : "");
@@ -125,11 +132,15 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (isExpired) {
                 cardHolder.tvTitle.setAlpha(0.5f);
                 if (cardHolder.tvStatus != null) {
+                    cardHolder.tvStatus.setVisibility(View.VISIBLE);
                     cardHolder.tvStatus.setText("Đã hết hạn");
                     cardHolder.tvStatus.setTextColor(holder.itemView.getContext().getColor(R.color.danger));
                 }
             } else {
                 cardHolder.tvTitle.setAlpha(1.0f);
+                if (cardHolder.tvStatus != null) {
+                    cardHolder.tvStatus.setVisibility(View.GONE);
+                }
             }
             
             // Dấu chấm ưu tiên và Gạch màu
@@ -158,7 +169,7 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         int iconRes = isChecked ? R.drawable.ic_check_circle_24 : R.drawable.ic_circle_outline_24;
         imageView.setImageResource(iconRes);
         int tintColor = isChecked ? R.color.success : R.color.text_secondary;
-        imageView.setColorFilter(androidx.core.content.ContextCompat.getColor(imageView.getContext(), tintColor));
+        imageView.setColorFilter(ContextCompat.getColor(imageView.getContext(), tintColor));
     }
 
     @Override
@@ -180,7 +191,7 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     static class TaskCardViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvSubtitle, tvTag, tvTime, tvCommentCount;
+        TextView tvTitle, tvSubtitle, tvTag, tvTime, tvCommentCount, tvStatus;
         ImageView ivCheck, ivBell, ivLocation;
         View viewPriorityStrip;
         TaskCardViewHolder(@NonNull View itemView) {
@@ -191,6 +202,7 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             ivBell = itemView.findViewById(R.id.ivBell);
             ivLocation = itemView.findViewById(R.id.ivLocation);
             viewPriorityStrip = itemView.findViewById(R.id.viewPriorityStrip);
+            tvStatus = itemView.findViewById(R.id.tvStatus);
             
             // UI MOCKUP - DELETE WHEN INTEGRATING REAL LOGIC
             tvTag = itemView.findViewById(R.id.tvTag);

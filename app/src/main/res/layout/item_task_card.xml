@@ -115,10 +115,25 @@
                 android:layout_marginStart="8dp"
                 android:src="@drawable/ic_location_outline"
                 app:layout_constraintBottom_toBottomOf="@id/tvTime"
-                app:layout_constraintStart_toEndOf="@id/tvTime"
+                app:layout_constraintStart_toEndOf="@id/ivBell"
                 app:layout_constraintTop_toTopOf="@id/tvTime"
                 app:tint="@color/text_secondary"
                 android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/danger"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/tvTime"
+                app:layout_constraintStart_toEndOf="@id/ivLocation"
+                app:layout_constraintTop_toTopOf="@id/tvTime"
+                tools:text="Đã hết hạn"
+                tools:visibility="visible" />
 
             <LinearLayout
                 android:id="@+id/llComments"

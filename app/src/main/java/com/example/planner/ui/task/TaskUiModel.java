@@ -32,7 +32,8 @@ public class TaskUiModel {
         this.subtitle = "";
     }
 
-    public TaskUiModel(int id, int viewType, String title, String deadline, String note, boolean checked, String priority, int subjectId, boolean isReminderEnabled, String category, String subtitle) {
+    public TaskUiModel(int id, int viewType, String title, String deadline, String note, boolean checked,
+            String priority, int subjectId, boolean isReminderEnabled, String category, String subtitle) {
         this.id = id;
         this.viewType = viewType;
         this.title = title;
@@ -66,16 +67,63 @@ public class TaskUiModel {
         return viewType;
     }
 
-    public int getViewType() { return viewType; }
-    public String getTitle() { return title; }
-    public String getDeadline() { return deadline; }
-    public String getNote() { return note; }
-    public boolean isChecked() { return checked; }
-    public void setChecked(boolean checked) { this.checked = checked; }
-    public String getPriority() { return priority; }
-    public void setPriority(String priority) { this.priority = priority; }
-    public boolean isReminderEnabled() { return isReminderEnabled; }
-    public void setReminderEnabled(boolean reminderEnabled) { isReminderEnabled = reminderEnabled; }
-    public long getExpiryTimestamp() { return expiryTimestamp; }
-    public void setExpiryTimestamp(long expiryTimestamp) { this.expiryTimestamp = expiryTimestamp; }
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDeadline() {
+        return deadline;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public boolean isReminderEnabled() {
+        return isReminderEnabled;
+    }
+
+    public void setReminderEnabled(boolean reminderEnabled) {
+        isReminderEnabled = reminderEnabled;
+    }
+
+    public long getExpiryTimestamp() {
+        return expiryTimestamp;
+    }
+
+    public void setExpiryTimestamp(long expiryTimestamp) {
+        this.expiryTimestamp = expiryTimestamp;
+    }
 }

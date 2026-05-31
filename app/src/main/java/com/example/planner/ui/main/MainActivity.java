@@ -11,7 +11,8 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.core.graphics.Insets;import androidx.core.view.GravityCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -90,7 +91,8 @@ public class MainActivity extends BaseActivity
         });
 
         findViewById(R.id.btn_nav_reminders).setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, com.example.planner.ui.notification.NotificationActivity.class));
+            startActivity(
+                    new Intent(MainActivity.this, com.example.planner.ui.notification.NotificationActivity.class));
         });
 
         findViewById(R.id.btn_nav_pomodoro).setOnClickListener(v -> {
@@ -117,8 +119,7 @@ public class MainActivity extends BaseActivity
                 this,
                 drawerLayout,
                 R.string.open_drawer,
-                R.string.close_drawer
-        );
+                R.string.close_drawer);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
     }
@@ -161,8 +162,10 @@ public class MainActivity extends BaseActivity
     private void bindStaticData() {
         String dateText = new SimpleDateFormat("EEEE, dd/MM/yyyy", new Locale("vi", "VN"))
                 .format(new Date());
-        if (tvDate != null) tvDate.setText(capitalizeFirstLetter(dateText));
-        if (tvGreeting != null) tvGreeting.setText(getString(R.string.welcome_back));
+        if (tvDate != null)
+            tvDate.setText(capitalizeFirstLetter(dateText));
+        if (tvGreeting != null)
+            tvGreeting.setText(getString(R.string.welcome_back));
     }
 
     private void setupWeeklyOverview() {
@@ -175,8 +178,10 @@ public class MainActivity extends BaseActivity
         int currentMonth = today.get(Calendar.MONTH);
         int currentYear = today.get(Calendar.YEAR);
 
-        int[] dateIds = {R.id.tvDay1Date, R.id.tvDay2Date, R.id.tvDay3Date, R.id.tvDay4Date, R.id.tvDay5Date, R.id.tvDay6Date, R.id.tvDay7Date};
-        int[] cardIds = {R.id.cardDay1, R.id.cardDay2, R.id.cardDay3, R.id.cardDay4, R.id.cardDay5, R.id.cardDay6, R.id.cardDay7};
+        int[] dateIds = { R.id.tvDay1Date, R.id.tvDay2Date, R.id.tvDay3Date, R.id.tvDay4Date, R.id.tvDay5Date,
+                R.id.tvDay6Date, R.id.tvDay7Date };
+        int[] cardIds = { R.id.cardDay1, R.id.cardDay2, R.id.cardDay3, R.id.cardDay4, R.id.cardDay5, R.id.cardDay6,
+                R.id.cardDay7 };
 
         for (int i = 0; i < 7; i++) {
             TextView tvDateValue = findViewById(dateIds[i]);
@@ -198,7 +203,7 @@ public class MainActivity extends BaseActivity
                 } else {
                     card.setStrokeWidth(2);
                     card.setStrokeColor(getColor(R.color.card_stroke));
-                    card.setCardBackgroundColor(getColor(R.color.white));
+                    card.setCardBackgroundColor(getColor(R.color.card_bg_default));
                 }
             }
             calendar.add(Calendar.DAY_OF_MONTH, 1);
@@ -207,20 +212,28 @@ public class MainActivity extends BaseActivity
 
     private void observeUi() {
         viewModel.getDashboardUiState().observe(this, state -> {
-            if (state == null) return;
+            if (state == null)
+                return;
 
-            if (tvTodayCount != null) tvTodayCount.setText(String.valueOf(state.getTodayCount()));
-            if (tvOverdueCount != null) tvOverdueCount.setText(String.valueOf(state.getOverdueCount()));
-            if (tvPriorityCount != null) tvPriorityCount.setText(String.valueOf(state.getHighPriorityCount()));
-            if (tvCompletedCount != null) tvCompletedCount.setText(String.valueOf(state.getCompletedCount()));
+            if (tvTodayCount != null)
+                tvTodayCount.setText(String.valueOf(state.getTodayCount()));
+            if (tvOverdueCount != null)
+                tvOverdueCount.setText(String.valueOf(state.getOverdueCount()));
+            if (tvPriorityCount != null)
+                tvPriorityCount.setText(String.valueOf(state.getHighPriorityCount()));
+            if (tvCompletedCount != null)
+                tvCompletedCount.setText(String.valueOf(state.getCompletedCount()));
 
-            if (todayAdapter != null) todayAdapter.submitList(state.getTodayTasks());
-            if (upcomingAdapter != null) upcomingAdapter.submitList(state.getUpcomingTasks());
+            if (todayAdapter != null)
+                todayAdapter.submitList(state.getTodayTasks());
+            if (upcomingAdapter != null)
+                upcomingAdapter.submitList(state.getUpcomingTasks());
         });
     }
 
     private String capitalizeFirstLetter(String input) {
-        if (input == null || input.isEmpty()) return "";
+        if (input == null || input.isEmpty())
+            return "";
         return input.substring(0, 1).toUpperCase(new Locale("vi", "VN")) + input.substring(1);
     }
 

@@ -131,7 +131,7 @@ public class UserProfileActivity extends BaseActivity {
             TextView tvCount = new TextView(this);
             tvCount.setText(String.valueOf(total));
             tvCount.setTextSize(10);
-            tvCount.setTextColor(Color.GRAY);
+            tvCount.setTextColor(getColor(R.color.text_secondary));
             tvCount.setGravity(Gravity.CENTER);
             columnLayout.addView(tvCount);
 
@@ -144,14 +144,14 @@ public class UserProfileActivity extends BaseActivity {
             LinearLayout.LayoutParams barParams = new LinearLayout.LayoutParams((int) (18 * density), heightPx);
             barParams.setMargins(0, (int) (2 * density), 0, (int) (4 * density));
             bar.setLayoutParams(barParams);
-            bar.setBackgroundColor(Color.parseColor("#5E35B1"));
+            bar.setBackgroundColor(getColor(R.color.user_profile_primary));
             columnLayout.addView(bar);
 
             // Ngày ở dưới bar
             TextView tvLabel = new TextView(this);
             tvLabel.setText(label);
             tvLabel.setTextSize(9);
-            tvLabel.setTextColor(Color.BLACK);
+            tvLabel.setTextColor(getColor(R.color.text_primary));
             tvLabel.setGravity(Gravity.CENTER);
             columnLayout.addView(tvLabel);
 

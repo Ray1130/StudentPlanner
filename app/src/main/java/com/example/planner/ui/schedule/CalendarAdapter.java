@@ -41,7 +41,6 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
         notifyDataSetChanged();
     }
 
-
     @NonNull
     @Override
     public CalendarViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -63,13 +62,13 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
             holder.dotIndicator.setVisibility(View.GONE);
 
             if (date.getMonthValue() != selectedDate.getMonthValue()) {
-                holder.tvDayOfMonth.setTextColor(Color.LTGRAY);
+                holder.tvDayOfMonth.setTextColor(holder.itemView.getContext().getColor(R.color.text_secondary));
             } else {
-                holder.tvDayOfMonth.setTextColor(Color.BLACK);
+                holder.tvDayOfMonth.setTextColor(holder.itemView.getContext().getColor(R.color.text_primary));
 
                 if (date.equals(LocalDate.now())) {
                     holder.tvDayOfMonth.setBackgroundResource(R.drawable.bg_circle_purple);
-                    holder.tvDayOfMonth.setTextColor(Color.WHITE);
+                    holder.tvDayOfMonth.setTextColor(holder.itemView.getContext().getColor(R.color.white));
                 }
             }
 
@@ -78,7 +77,6 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
             }
         }
     }
-
 
     @Override
     public int getItemCount() {

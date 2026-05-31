@@ -4,7 +4,8 @@
     android:layout_height="180dp"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="24dp"
+    android:background="@color/pastel_indigo">
 
     <ImageView
         android:layout_width="56dp"

@@ -25,9 +25,9 @@ public class PomodoroActivity extends BaseActivity {
     private CircularProgressIndicator timerProgress;
     private MaterialButton btnAction;
     private ImageView ivSettings;
-    
+
     private TextView btnModePomodoro, btnModeShortBreak, btnModeLongBreak;
-    
+
     private CountDownTimer countDownTimer;
     private long timeLeftInMillis = 1500000;
     private long initialTimeInMillis = 1500000;
@@ -50,7 +50,7 @@ public class PomodoroActivity extends BaseActivity {
         timerProgress = findViewById(R.id.timerProgress);
         btnAction = findViewById(R.id.btnAction);
         ivSettings = findViewById(R.id.ivSettings);
-        
+
         btnModePomodoro = findViewById(R.id.btnModePomodoro);
         btnModeShortBreak = findViewById(R.id.btnModeShortBreak);
         btnModeLongBreak = findViewById(R.id.btnModeLongBreak);
@@ -86,7 +86,7 @@ public class PomodoroActivity extends BaseActivity {
         resetTabStyle(btnModeShortBreak);
         resetTabStyle(btnModeLongBreak);
         selectedTab.setBackgroundResource(R.drawable.bg_mode_selected);
-        selectedTab.setTextColor(ContextCompat.getColor(this, android.R.color.white));
+        selectedTab.setTextColor(ContextCompat.getColor(this, R.color.white));
         selectedTab.setTypeface(null, android.graphics.Typeface.BOLD);
     }
 

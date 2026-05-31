@@ -13,14 +13,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvTitle"
         app:layout_constraintBottom_toBottomOf="@id/tvTitle"
-        android:backgroundTint="#FF0000"/>
+        android:backgroundTint="@color/priority_high"/>
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Train model KTDL"
         android:textSize="16sp"
-        android:textColor="#000000"
+        android:textColor="@color/text_primary"
         android:layout_marginStart="12dp"
         app:layout_constraintStart_toEndOf="@id/dot"
         app:layout_constraintTop_toTopOf="parent"
@@ -31,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="KTDL"
-        android:textColor="#673AB7"
+        android:textColor="@color/primary_purple"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@id/tvTitle"
         app:layout_constraintTop_toBottomOf="@id/tvTitle" />
@@ -41,7 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="2 thg 4"
-        android:textColor="#757575"
+        android:textColor="@color/text_secondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvTitle" />
 

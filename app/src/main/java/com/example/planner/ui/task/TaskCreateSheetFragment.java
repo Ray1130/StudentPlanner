@@ -134,7 +134,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     private void handleContinue() {
         String title = etTaskTitle.getText().toString().trim();
         if (title.isEmpty()) {
-            Toast.makeText(getContext(), "Vui lòng nhập tên công việc", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Vui lòng nhập tên nhiệm vụ", Toast.LENGTH_SHORT).show();
             return;
         }
 

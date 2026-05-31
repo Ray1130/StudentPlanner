@@ -19,7 +19,7 @@
             android:padding="4dp"
             android:src="@drawable/ic_delete_24"
             android:visibility="gone"
-            app:tint="@color/white" />
+            app:tint="@color/text_primary" />
     </RelativeLayout>
 
     <!-- Task Title (Common) -->
@@ -30,8 +30,8 @@
         android:layout_marginTop="8dp"
         android:background="@null"
         android:hint="Tên công việc"
-        android:textColor="@color/white"
-        android:textColorHint="#BBAAF1"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_hint_light"
         android:textSize="28sp"
         android:textStyle="bold"
         android:inputType="textCapSentences" />
@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="8dp"
-        android:background="#40FFFFFF" />
+        android:background="@color/card_stroke" />
 
     <!-- STEP 1: Type Selection -->
     <LinearLayout
@@ -54,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Chọn loại công việc"
-            android:textColor="#D1C7F7"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 
         <RadioGroup
@@ -72,7 +72,7 @@
                 android:button="@null"
                 android:background="@drawable/bg_type_selector"
                 android:text="📚 Học tập"
-                android:textColor="@color/white"
+                android:textColor="@color/text_primary"
                 android:gravity="center"
                 android:padding="12dp"
                 android:layout_marginEnd="8dp"
@@ -86,7 +86,7 @@
                 android:button="@null"
                 android:background="@drawable/bg_type_selector"
                 android:text="🎯 Ngoại khóa"
-                android:textColor="@color/white"
+                android:textColor="@color/text_primary"
                 android:gravity="center"
                 android:padding="12dp" />
         </RadioGroup>
@@ -96,9 +96,9 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginTop="32dp"
-            android:backgroundTint="@color/white"
+            android:backgroundTint="@color/pastel_indigo"
             android:text="Tiếp tục"
-            android:textColor="@color/primary_purple"
+            android:textColor="@android:color/white"
             android:textStyle="bold"
             app:cornerRadius="12dp" />
     </LinearLayout>
@@ -117,9 +117,9 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/white"
+            android:backgroundTint="@color/pastel_indigo"
             android:text="Lưu công việc"
-            android:textColor="@color/primary_purple"
+            android:textColor="@android:color/white"
             android:textStyle="bold"
             app:cornerRadius="12dp" />
 
@@ -143,13 +143,13 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_sort_24"
-                    app:tint="@color/white" />
+                    app:tint="@color/text_primary" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:text="Môn học"
-                    android:textColor="#D1C7F7"
+                    android:textColor="@color/text_secondary"
                     android:textSize="16sp" />
                 <TextView
                     android:id="@+id/tv_subject_value"
@@ -157,7 +157,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="end"
                     android:text="Chọn môn"
-                    android:textColor="@color/white"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -176,13 +176,13 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_group_24"
-                    app:tint="@color/white" />
+                    app:tint="@color/text_primary" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:text="Nhóm hoạt động"
-                    android:textColor="#D1C7F7"
+                    android:textColor="@color/text_secondary"
                     android:textSize="16sp" />
                 <TextView
                     android:id="@+id/tv_activity_group_value"
@@ -190,7 +190,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="end"
                     android:text="Chọn nhóm"
-                    android:textColor="@color/white"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -208,13 +208,13 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_calendar_24"
-                    app:tint="@color/white" />
+                    app:tint="@color/text_primary" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:text="Hạn chót"
-                    android:textColor="#D1C7F7"
+                    android:textColor="@color/text_secondary"
                     android:textSize="16sp" />
                 <TextView
                     android:id="@+id/tv_deadline_value"
@@ -222,7 +222,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="end"
                     android:text="Trống"
-                    android:textColor="@color/white"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
             </LinearLayout>
         </LinearLayout>
@@ -243,7 +243,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tùy chọn khác"
-                android:textColor="#BBAAF1"
+                android:textColor="@color/pastel_indigo"
                 android:textSize="14sp" />
             <ImageView
                 android:id="@+id/iv_toggle_optional"
@@ -251,7 +251,7 @@
                 android:layout_height="16dp"
                 android:layout_marginStart="4dp"
                 android:src="@drawable/ic_arrow_drop_down_24"
-                app:tint="#BBAAF1" />
+                app:tint="@color/pastel_indigo" />
         </LinearLayout>
 
         <!-- Optional Fields Container -->
@@ -276,13 +276,13 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_priority_24"
-                    app:tint="@color/white" />
+                    app:tint="@color/text_primary" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:text="Ưu tiên"
-                    android:textColor="#D1C7F7"
+                    android:textColor="@color/text_secondary"
                     android:textSize="16sp" />
                 <TextView
                     android:id="@+id/tv_priority_value"
@@ -290,7 +290,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="end"
                     android:text="Thấp"
-                    android:textColor="@color/white"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -308,13 +308,13 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_today_24"
-                    app:tint="@color/white" />
+                    app:tint="@color/text_primary" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:text="Nhắc nhở"
-                    android:textColor="#D1C7F7"
+                    android:textColor="@color/text_secondary"
                     android:textSize="16sp" />
                 <TextView
                     android:id="@+id/tv_time_value"
@@ -322,7 +322,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="end"
                     android:text="Tắt"
-                    android:textColor="@color/white"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
                 <CheckBox
                     android:id="@+id/cb_reminder"
@@ -341,7 +341,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_note_24"
-                    app:tint="@color/white" />
+                    app:tint="@color/text_primary" />
                 <EditText
                     android:id="@+id/et_task_note"
                     android:layout_width="match_parent"
@@ -349,8 +349,8 @@
                     android:layout_marginStart="12dp"
                     android:background="@null"
                     android:hint="Ghi chú thêm..."
-                    android:textColor="@color/white"
-                    android:textColorHint="#40FFFFFF"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_hint_light"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -365,20 +365,20 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_check_circle_24"
-                    app:tint="@color/white" />
+                    app:tint="@color/text_primary" />
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_weight="1"
                     android:text="Đã hoàn tất"
-                    android:textColor="#D1C7F7"
+                    android:textColor="@color/text_secondary"
                     android:textSize="16sp" />
                 <CheckBox
                     android:id="@+id/cb_completed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:buttonTint="@color/white" />
+                    android:buttonTint="@color/pastel_indigo" />
             </LinearLayout>
         </LinearLayout>
 
@@ -398,14 +398,14 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_delete_24"
-                app:tint="@color/white" />
+                app:tint="@color/text_primary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:text="Tự động xóa sau"
-                android:textColor="#D1C7F7"
+                android:textColor="@color/text_secondary"
                 android:textSize="16sp" />
 
             <TextView
@@ -414,7 +414,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:text="Không"
-                android:textColor="@color/white"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp" />
         </LinearLayout>
 
@@ -422,7 +422,7 @@
             android:id="@+id/cb_expired"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:buttonTint="@color/white"
+            android:buttonTint="@color/pastel_indigo"
             android:visibility="gone" />
 
     </LinearLayout>

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@color/card_bg_default">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -32,7 +32,7 @@
                     android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:padding="4dp"
                     android:src="@android:drawable/ic_menu_revert"
-                    app:tint="@color/black" />
+                    app:tint="@color/text_primary" />
             </FrameLayout>
 
             <!-- Task Overview Section -->
@@ -47,7 +47,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Tổng quan công việc"
-                    android:textColor="#5E35B1"
+                    android:textColor="@color/user_profile_primary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -55,7 +55,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    app:cardBackgroundColor="#EAEAFF"
+                    app:cardBackgroundColor="@color/user_profile_card_bg"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="0dp">
 
@@ -69,7 +69,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Nhiệm vụ trọng tâm hôm nay"
-                            android:textColor="@color/black"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold" />
 
@@ -101,7 +101,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
                                     android:text="0%"
-                                    android:textColor="@color/black"
+                                    android:textColor="@color/text_primary"
                                     android:textSize="16sp"
                                     android:textStyle="bold" />
                             </FrameLayout>
@@ -122,7 +122,7 @@
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
                                         android:text="Nhiệm vụ đã hoàn thành:"
-                                        android:textColor="@color/black"
+                                        android:textColor="@color/text_primary"
                                         android:textSize="14sp" />
 
                                     <TextView
@@ -131,7 +131,7 @@
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="8dp"
                                         android:text="0"
-                                        android:textColor="#4CAF50"
+                                        android:textColor="@color/task_completed"
                                         android:textSize="16sp"
                                         android:textStyle="bold" />
                                 </LinearLayout>
@@ -147,7 +147,7 @@
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
                                         android:text="Nhiệm vụ còn lại:"
-                                        android:textColor="@color/black"
+                                        android:textColor="@color/text_primary"
                                         android:textSize="14sp" />
 
                                     <TextView
@@ -156,7 +156,7 @@
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="8dp"
                                         android:text="0"
-                                        android:textColor="#FF9800"
+                                        android:textColor="@color/task_remaining"
                                         android:textSize="16sp"
                                         android:textStyle="bold" />
                                 </LinearLayout>
@@ -178,7 +178,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Nhiệm vụ trong 7 ngày qua"
-                    android:textColor="@color/black"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -188,7 +188,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
                     android:layout_marginTop="16dp"
-                    android:background="#FAFAFA"
+                    android:background="@color/bar_chart_bg"
                     android:orientation="horizontal"
                     android:gravity="bottom"
                     android:paddingHorizontal="10dp"
@@ -207,7 +207,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Tự động xóa nhiệm vụ"
-                    android:textColor="#5E35B1"
+                    android:textColor="@color/user_profile_primary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -215,7 +215,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    app:cardBackgroundColor="#EAEAFF"
+                    app:cardBackgroundColor="@color/user_profile_card_bg"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="0dp">
 
@@ -231,7 +231,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Xóa nhiệm vụ sau"
-                            android:textColor="@color/black"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp" />
 
                         <Spinner

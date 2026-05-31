@@ -26,15 +26,36 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@id/tvDate"/>
 
-    <TextView
-        android:id="@+id/tvSubtitle"
+    <LinearLayout
+        android:id="@+id/llMeta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="KTDL"
-        android:textColor="@color/primary_purple"
-        android:textSize="14sp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         app:layout_constraintStart_toStartOf="@id/tvTitle"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+        app:layout_constraintTop_toBottomOf="@id/tvTitle">
+
+        <TextView
+            android:id="@+id/tvTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_tag_course"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="1dp"
+            android:text="Học phần"
+            android:textColor="@color/tag_course_text"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="KTDL"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvDate"

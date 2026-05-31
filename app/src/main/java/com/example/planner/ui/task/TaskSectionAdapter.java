@@ -59,7 +59,11 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         TaskUiModel item = items.get(position);
         if (holder instanceof HeaderViewHolder) {
-            ((HeaderViewHolder) holder).tvGroupName.setText(item.getTitle());
+            HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
+            headerHolder.tvGroupName.setText(item.getTitle());
+            if (headerHolder.ivHeaderAdd != null) {
+                headerHolder.ivHeaderAdd.setVisibility(View.GONE);
+            }
         } else if (holder instanceof TaskCardViewHolder) {
             TaskCardViewHolder cardHolder = (TaskCardViewHolder) holder;
             cardHolder.tvTitle.setText(item.getTitle());
@@ -75,7 +79,10 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             if (item.isHideTag()) {
                 if (cardHolder.tvTag != null) cardHolder.tvTag.setVisibility(View.GONE);
-                cardHolder.tvSubtitle.setVisibility(View.GONE);
+                cardHolder.tvSubtitle.setVisibility(View.VISIBLE);
+                
+                String subtitle = item.getSubtitle();
+                cardHolder.tvSubtitle.setText(subtitle != null ? subtitle : "");
             } else {
                 if (cardHolder.tvTag != null) cardHolder.tvTag.setVisibility(View.VISIBLE);
                 cardHolder.tvSubtitle.setVisibility(View.VISIBLE);
@@ -206,9 +213,11 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     static class HeaderViewHolder extends RecyclerView.ViewHolder {
         TextView tvGroupName;
+        ImageView ivHeaderAdd;
         HeaderViewHolder(@NonNull View itemView) { 
             super(itemView); 
             tvGroupName = itemView.findViewById(R.id.tvHeaderName);
+            ivHeaderAdd = itemView.findViewById(R.id.ivHeaderAdd);
         }
     }
 

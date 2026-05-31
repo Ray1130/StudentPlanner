@@ -66,6 +66,7 @@ public class MainViewModel extends AndroidViewModel {
         cal.set(Calendar.MILLISECOND, 0);
         long startOfToday = cal.getTimeInMillis();
         long endOfToday = startOfToday + (24 * 60 * 60 * 1000);
+        long endOfUpcoming = endOfToday + (3 * 24 * 60 * 60 * 1000L);
 
         for (Task task : tasks) {
             // Chỉ hiển thị task chưa hết hạn trên trang chủ
@@ -81,6 +82,7 @@ public class MainViewModel extends AndroidViewModel {
             long dueDate = task.dueDate;
             boolean isToday = dueDate >= startOfToday && dueDate < endOfToday;
             boolean isOverdue = dueDate < startOfToday && dueDate > 0;
+            boolean isUpcoming = dueDate >= endOfToday && dueDate < endOfUpcoming;
 
             if (!task.isCompleted) {
                 if (isToday) todayCount++;
@@ -89,14 +91,19 @@ public class MainViewModel extends AndroidViewModel {
             }
 
             String dateStr = DateUtils.timestampToString(task.dueDate);
-            String categoryOrNote = "";
-            if (task.category != null && !task.category.isEmpty() && !task.category.equalsIgnoreCase("Học tập")) {
-                categoryOrNote = task.category;
+            String displaySubtitle = "";
+            
+            if (task.category != null && !task.category.isEmpty() && !task.category.equals("Học tập")) {
+                displaySubtitle = task.category;
+            } else if (task.subjectId > 0) {
+                displaySubtitle = "Học phần";
             } else if (task.note != null && !task.note.isEmpty()) {
-                categoryOrNote = task.note;
+                displaySubtitle = task.note;
+            } else {
+                displaySubtitle = "Cá nhân";
             }
 
-            String meta = categoryOrNote.isEmpty() ? dateStr : categoryOrNote + " • " + dateStr;
+            String meta = displaySubtitle.isEmpty() ? dateStr : displaySubtitle + " • " + dateStr;
             
             int uiPriority = MainTaskItem.PRIORITY_LOW;
             if ("high".equalsIgnoreCase(task.priority)) {
@@ -105,10 +112,11 @@ public class MainViewModel extends AndroidViewModel {
                 uiPriority = MainTaskItem.PRIORITY_MEDIUM;
             }
 
-            MainTaskItem item = new MainTaskItem(task.id, task.title, meta, uiPriority, task.isCompleted, task.isReminderEnabled);
+            boolean isCourse = (task.subjectId > 0);
+            MainTaskItem item = new MainTaskItem(task.id, task.title, meta, uiPriority, task.isCompleted, task.isReminderEnabled, isCourse);
 
-            if (isToday || isOverdue) todayTasks.add(item);
-            else upcomingTasks.add(item);
+            if (isToday) todayTasks.add(item);
+            else if (isUpcoming) upcomingTasks.add(item);
         }
 
         dashboardUiState.setValue(new DashboardUiState(

@@ -136,7 +136,7 @@ public class MainActivity extends BaseActivity
 
             @Override
             public void onTaskClick(int taskId) {
-                startActivity(new Intent(MainActivity.this, TaskActivity.class));
+                showEditSheet(taskId);
             }
         };
 
@@ -228,6 +228,32 @@ public class MainActivity extends BaseActivity
                 todayAdapter.submitList(state.getTodayTasks());
             if (upcomingAdapter != null)
                 upcomingAdapter.submitList(state.getUpcomingTasks());
+        });
+    }
+
+    private void showEditSheet(int taskId) {
+        com.example.planner.data.local.AppDatabase db = com.example.planner.data.local.AppDatabase.getDatabase(this);
+        com.example.planner.data.local.AppDatabase.databaseWriteExecutor.execute(() -> {
+            com.example.planner.data.model.Task task = db.taskDao().getTaskByIdSync(taskId);
+            if (task != null) {
+                runOnUiThread(() -> {
+                    com.example.planner.ui.task.TaskUiModel uiModel = new com.example.planner.ui.task.TaskUiModel(
+                            task.id,
+                            com.example.planner.ui.task.TaskUiModel.TYPE_TABLE_ROW,
+                            task.title,
+                            com.example.planner.utils.DateUtils.timestampToFormattedString(task.dueDate, task.isReminderEnabled),
+                            task.note,
+                            task.isCompleted,
+                            task.priority != null ? task.priority.toLowerCase() : "low",
+                            task.subjectId,
+                            task.isReminderEnabled,
+                            task.category,
+                            ""
+                    );
+                    com.example.planner.ui.task.TaskCreateSheetFragment sheet = com.example.planner.ui.task.TaskCreateSheetFragment.newInstance(uiModel);
+                    sheet.show(getSupportFragmentManager(), "TaskEditSheet");
+                });
+            }
         });
     }
 

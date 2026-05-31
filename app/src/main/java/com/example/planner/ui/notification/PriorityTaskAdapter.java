@@ -11,6 +11,7 @@ import com.example.planner.R;
 import com.example.planner.data.model.Subject;
 import com.example.planner.data.model.Task;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,11 +60,32 @@ public class PriorityTaskAdapter extends RecyclerView.Adapter<PriorityTaskAdapte
         String subjectName = subjectMap.get(task.subjectId);
         String remainingText = getRemainingTimeText(task.dueDate);
         
-        if (subjectName != null && !subjectName.isEmpty()) {
-            holder.tvSubtitle.setText(subjectName + " • " + remainingText);
-        } else {
-            holder.tvSubtitle.setText(remainingText);
+        TextView tvTag = holder.itemView.findViewById(R.id.tvTag);
+        if (tvTag != null) {
+            if (task.subjectId > 0) {
+                tvTag.setText("Học phần");
+                tvTag.setBackgroundResource(R.drawable.bg_tag_course);
+                tvTag.setTextColor(holder.itemView.getContext().getColor(R.color.tag_course_text));
+            } else {
+                tvTag.setText("Ngoại khóa");
+                tvTag.setBackgroundResource(R.drawable.bg_tag_extracurricular);
+                tvTag.setTextColor(holder.itemView.getContext().getColor(R.color.tag_extracurricular_text));
+            }
         }
+
+        String displaySubtitle = "";
+        if (subjectName != null && !subjectName.isEmpty()) {
+            displaySubtitle = subjectName;
+        } else {
+            if (task.category != null && !task.category.isEmpty()) {
+                displaySubtitle = task.category;
+            } else if (task.note != null && !task.note.isEmpty()) {
+                displaySubtitle = task.note;
+            } else {
+                displaySubtitle = "Cá nhân";
+            }
+        }
+        holder.tvSubtitle.setText(displaySubtitle + " • " + remainingText);
 
         int iconRes = task.isCompleted ? R.drawable.ic_check_circle_24 : R.drawable.ic_circle_outline_24;
         holder.ivCheck.setImageResource(iconRes);
@@ -72,13 +94,11 @@ public class PriorityTaskAdapter extends RecyclerView.Adapter<PriorityTaskAdapte
         holder.ivCheck.setAlpha(1.0f);
         holder.tvTitle.setAlpha(task.isCompleted ? 0.5f : 1.0f);
 
-        holder.ivCheck.setOnClickListener(v -> {
-            task.isCompleted = !task.isCompleted;
-            notifyItemChanged(position);
-            if (listener != null) {
-                listener.onTaskStatusChanged(task);
-            }
-        });
+        // Remove click listener as per requirement: Notification page is display-only
+        holder.ivCheck.setOnClickListener(null);
+        holder.ivCheck.setClickable(false);
+        holder.itemView.setOnClickListener(null);
+        holder.itemView.setClickable(false);
 
         holder.ivBell.setVisibility(task.isReminderEnabled ? View.VISIBLE : View.GONE);
         
@@ -102,17 +122,29 @@ public class PriorityTaskAdapter extends RecyclerView.Adapter<PriorityTaskAdapte
     private String getRemainingTimeText(long dueDate) {
         if (dueDate <= 0) return "Không có hạn";
         
-        long now = System.currentTimeMillis();
+        Calendar cal = Calendar.getInstance();
+        long now = cal.getTimeInMillis();
+        
+        // Tính toán ranh giới ngày hôm nay
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        long startOfToday = cal.getTimeInMillis();
+        long endOfToday = startOfToday + (24 * 60 * 60 * 1000);
+        
+        if (dueDate < startOfToday) {
+            return "Quá hạn";
+        }
+        
+        if (dueDate >= startOfToday && dueDate < endOfToday) {
+            return "Sắp hết hạn";
+        }
+        
         long diff = dueDate - now;
-        
-        if (diff <= 0) return "Quá hạn";
-        
         long hours = diff / (1000 * 60 * 60);
         if (hours < 24) {
-            if (hours == 0) {
-                long minutes = diff / (1000 * 60);
-                return "Còn " + minutes + " phút";
-            }
+            if (hours <= 0) return "Sắp hết hạn";
             return "Còn " + hours + " giờ";
         } else {
             long days = hours / 24;

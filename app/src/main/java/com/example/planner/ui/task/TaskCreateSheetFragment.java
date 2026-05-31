@@ -83,6 +83,14 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         if (editingTask != null) {
             setupEditMode();
         } else {
+            // Kiểm tra ngày mặc định từ Bundle (nếu tạo từ màn hình Schedule)
+            if (getArguments() != null && getArguments().containsKey("default_date")) {
+                long defaultDate = getArguments().getLong("default_date");
+                if (defaultDate > 0) {
+                    calendar.setTimeInMillis(defaultDate);
+                    updateDeadlineText();
+                }
+            }
             containerStep1.setVisibility(View.VISIBLE);
             containerStep2.setVisibility(View.GONE);
         }
@@ -393,10 +401,9 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
             task.id = editingTask.getId();
             task.isCompleted = cbCompleted.isChecked();
 
-            // Get expiry duration from global settings
-            long expiryDurationMs = SettingsHelper.getExpiryDurationMs(requireContext());
-            if (expiryDurationMs > 0) {
-                task.expiryTimestamp = System.currentTimeMillis() + expiryDurationMs;
+            // Set expiry: 2 days if completed, 0 if not
+            if (task.isCompleted) {
+                task.expiryTimestamp = System.currentTimeMillis() + (2 * 24 * 60 * 60 * 1000L);
             } else {
                 task.expiryTimestamp = 0;
             }
@@ -412,6 +419,9 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
                         dismiss();
                         if (getActivity() instanceof TaskActivity) {
                             ((TaskActivity) getActivity()).fetchTasksFromServer();
+                        } else if (getActivity() instanceof com.example.planner.ui.main.MainActivity) {
+                             // Optional: Trigger refresh for MainActivity if needed, 
+                             // though LiveData should handle it.
                         }
                     });
                 }
@@ -427,10 +437,9 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
                     subjectId);
             newTask.isCompleted = cbCompleted.isChecked();
 
-            // Get expiry duration from global settings
-            long expiryDurationMs = SettingsHelper.getExpiryDurationMs(requireContext());
-            if (expiryDurationMs > 0) {
-                newTask.expiryTimestamp = System.currentTimeMillis() + expiryDurationMs;
+            // Set expiry: 2 days if completed, 0 if not
+            if (newTask.isCompleted) {
+                newTask.expiryTimestamp = System.currentTimeMillis() + (2 * 24 * 60 * 60 * 1000L);
             } else {
                 newTask.expiryTimestamp = 0;
             }
@@ -461,7 +470,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         if (editingTask == null)
             return;
 
-        new AlertDialog.Builder(requireContext())
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
                 .setTitle("Xóa nhiệm vụ")
                 .setMessage("Bạn có chắc chắn muốn xóa nhiệm vụ này?")
                 .setPositiveButton("Xóa", (dialog, which) -> {

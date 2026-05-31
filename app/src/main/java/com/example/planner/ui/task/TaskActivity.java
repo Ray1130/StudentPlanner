@@ -133,11 +133,10 @@ public class TaskActivity extends BaseActivity {
         });
 
         if (currentFilter.equals("ALL")) {
-            // Trang "Tất cả" hiển thị danh sách task liền mạch, không phân nhóm bằng Header
+            // Trang "Tất cả" hiển thị danh sách task liền mạch, có đầy đủ nhãn và thông tin môn học
             for (Task task : activeTaskList) {
                 Subject subject = findSubjectById(subjects, task.subjectId);
-                // Ở chế độ ALL, chúng ta ẩn Tag (Học phần/Ngoại khóa) để giao diện thoáng hơn
-                addTaskToUiList(task, subject, true);
+                addTaskToUiList(task, subject, false);
             }
 
         } else if (currentFilter.equals("COURSE")) {
@@ -159,7 +158,14 @@ public class TaskActivity extends BaseActivity {
             for (Subject subject : subjects) {
                 List<Task> subjectTasks = groupedTasks.get(subject.id);
                 if (subjectTasks != null && !subjectTasks.isEmpty()) {
-                    taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, subject.name, "", "", false, "low",
+                    // Đếm số task chưa hoàn thành để hiển thị ở tiêu đề
+                    int groupPendingCount = 0;
+                    for (Task t : subjectTasks) {
+                        if (!t.isCompleted) groupPendingCount++;
+                    }
+                    
+                    String headerTitle = subject.name + (groupPendingCount > 0 ? " (" + groupPendingCount + ")" : "");
+                    taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, headerTitle, "", "", false, "low",
                             subject.id, false, "Học tập", ""));
                     for (Task task : subjectTasks)
                         addTaskToUiList(task, subject, false);
@@ -167,7 +173,13 @@ public class TaskActivity extends BaseActivity {
             }
 
             if (!nonSubjectStudyTasks.isEmpty()) {
-                taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, "Tự học / Khác", "", "", false, "low", 0,
+                int groupPendingCount = 0;
+                for (Task t : nonSubjectStudyTasks) {
+                    if (!t.isCompleted) groupPendingCount++;
+                }
+                
+                String headerTitle = "Tự học / Khác" + (groupPendingCount > 0 ? " (" + groupPendingCount + ")" : "");
+                taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, headerTitle, "", "", false, "low", 0,
                         false, "Học tập", ""));
                 for (Task task : nonSubjectStudyTasks)
                     addTaskToUiList(task, null, false);
@@ -185,11 +197,19 @@ public class TaskActivity extends BaseActivity {
                 }
             }
             for (Map.Entry<String, List<Task>> entry : groupedTasks.entrySet()) {
-                taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, entry.getKey(), "", "", false, "low", 0,
-                        false,
-                        "Ngoại khóa", ""));
-                for (Task t : entry.getValue())
-                    addTaskToUiList(t, null, false);
+                List<Task> groupTasks = entry.getValue();
+                if (!groupTasks.isEmpty()) {
+                    int groupPendingCount = 0;
+                    for (Task t : groupTasks) {
+                        if (!t.isCompleted) groupPendingCount++;
+                    }
+
+                    String headerTitle = entry.getKey() + (groupPendingCount > 0 ? " (" + groupPendingCount + ")" : "");
+                    taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, headerTitle, "", "", false, "low", 0,
+                            false, "Ngoại khóa", ""));
+                    for (Task t : groupTasks)
+                        addTaskToUiList(t, null, false);
+                }
             }
         } else if (currentFilter.equals("URGENT")) {
             // Show only tasks due in next 7 days and not completed
@@ -252,7 +272,7 @@ public class TaskActivity extends BaseActivity {
                 task.id != null ? task.id : 0,
                 TaskUiModel.TYPE_TABLE_ROW,
                 task.title,
-                DateUtils.timestampToString(task.dueDate),
+                DateUtils.timestampToFormattedString(task.dueDate, task.isReminderEnabled),
                 task.note,
                 task.isCompleted,
                 task.priority != null ? task.priority.toLowerCase() : "low",

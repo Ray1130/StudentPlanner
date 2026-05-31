@@ -29,9 +29,6 @@ public class NotificationActivity extends BaseActivity {
         if (rvPriority != null) {
             rvPriority.setLayoutManager(new LinearLayoutManager(this));
             priorityAdapter = new PriorityTaskAdapter();
-            priorityAdapter.setOnTaskStatusChangeListener(task -> {
-                if (viewModel != null) viewModel.updateTask(task);
-            });
             rvPriority.setAdapter(priorityAdapter);
             rvPriority.setNestedScrollingEnabled(false);
         }
@@ -40,9 +37,6 @@ public class NotificationActivity extends BaseActivity {
         if (rvReminders != null) {
             rvReminders.setLayoutManager(new LinearLayoutManager(this));
             reminderAdapter = new PriorityTaskAdapter();
-            reminderAdapter.setOnTaskStatusChangeListener(task -> {
-                if (viewModel != null) viewModel.updateTask(task);
-            });
             rvReminders.setAdapter(reminderAdapter);
             rvReminders.setNestedScrollingEnabled(false);
         }

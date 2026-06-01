@@ -34,7 +34,7 @@ public class TaskUiModel {
     }
 
     public TaskUiModel(int id, int viewType, String title, String deadline, String note, boolean checked,
-            String priority, int subjectId, boolean isReminderEnabled, String category, String subtitle) {
+            String priority, int subjectId, boolean isReminderEnabled, String category, String subtitle, long expiryTimestamp) {
         this.id = id;
         this.viewType = viewType;
         this.title = title;
@@ -46,6 +46,7 @@ public class TaskUiModel {
         this.isReminderEnabled = isReminderEnabled;
         this.category = category;
         this.subtitle = subtitle;
+        this.expiryTimestamp = expiryTimestamp;
     }
 
     public int getId() {

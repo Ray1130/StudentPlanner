@@ -5,6 +5,8 @@ import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import androidx.lifecycle.LiveData;
 import com.example.planner.data.ApiService;
@@ -28,6 +30,8 @@ public class TaskRepository {
     private ApiService apiService;
     private ExecutorService executorService;
     private Context context;
+    private Handler cleanupHandler = new Handler(Looper.getMainLooper());
+    private Runnable cleanupRunnable;
 
     public TaskRepository(Application application) {
         this.context = application.getApplicationContext();
@@ -42,14 +46,48 @@ public class TaskRepository {
                 .build();
         apiService = retrofit.create(ApiService.class);
 
-        cleanupExpiredTasks();
+        startAutoCleanup();
+    }
+
+    private void startAutoCleanup() {
+        cleanupRunnable = new Runnable() {
+            @Override
+            public void run() {
+                cleanupExpiredTasks();
+                // Chạy lại sau mỗi 5 giây để kiểm tra (có thể điều chỉnh tùy nhu cầu)
+                cleanupHandler.postDelayed(this, 5000);
+            }
+        };
+        cleanupHandler.post(cleanupRunnable);
     }
 
     public void cleanupExpiredTasks() {
         executorService.execute(() -> {
             long now = System.currentTimeMillis();
-            taskDao.deleteExpiredTasks(now);
-            Log.d("TaskRepository", "Cleaned up expired tasks at " + now);
+            List<Task> expiredTasks = taskDao.getExpiredTasksSync(now);
+            if (expiredTasks != null && !expiredTasks.isEmpty()) {
+                for (Task task : expiredTasks) {
+                    if (task.id != null) {
+                        // Delete from server
+                        apiService.deleteTask(task.id).enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                if (response.isSuccessful()) {
+                                    Log.d("TaskRepository", "Deleted expired task " + task.id + " from server");
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                Log.e("TaskRepository", "Failed to delete expired task from server: " + t.getMessage());
+                            }
+                        });
+                    }
+                }
+                // Delete from local
+                taskDao.deleteExpiredTasks(now);
+                Log.d("TaskRepository", "Cleaned up " + expiredTasks.size() + " expired tasks locally at " + now);
+            }
         });
     }
 
@@ -112,6 +150,10 @@ public class TaskRepository {
 
                             // Use update if task exists, insert if new
                             if (localTask != null) {
+                                // Preserve local expiry if server has 0 (server might not have the field yet or error)
+                                if (serverTask.expiryTimestamp <= 0 && localTask.expiryTimestamp > 0) {
+                                    serverTask.expiryTimestamp = localTask.expiryTimestamp;
+                                }
                                 taskDao.update(serverTask);
                             } else {
                                 taskDao.insert(serverTask);

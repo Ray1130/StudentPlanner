@@ -11,7 +11,7 @@ import com.example.planner.data.model.Task;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 
-@Database(entities = {Subject.class, Task.class, PomodoroSession.class}, version = 8, exportSchema = false)
+@Database(entities = {Subject.class, Task.class, PomodoroSession.class}, version = 9, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract TaskDao taskDao();
     public abstract SubjectDao subjectDao();

@@ -1,6 +1,8 @@
 package com.example.planner.ui.task;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.TextView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -30,6 +32,9 @@ public class TaskActivity extends BaseActivity {
     private TextView chipCourse;
     private TextView chipExtracurricular;
     private TextView chipUrgent;
+
+    private Handler refreshHandler = new Handler(Looper.getMainLooper());
+    private Runnable refreshRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +82,31 @@ public class TaskActivity extends BaseActivity {
         viewModel.loadSubjects();
         viewModel.loadTasks(); // Kích hoạt đồng bộ
         setupBottomNavigation(R.id.nav_tasks);
+        startAutoRefresh();
+    }
+
+    private void startAutoRefresh() {
+        refreshRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // Kiểm tra và cập nhật UI nếu có task hết hạn
+                List<Subject> subjects = viewModel.getAllSubjects().getValue();
+                List<Task> tasks = viewModel.getAllTasks().getValue();
+                if (subjects != null && tasks != null) {
+                    processAndDisplayTasks(subjects, tasks);
+                }
+                refreshHandler.postDelayed(this, 5000); // Mỗi 5 giây
+            }
+        };
+        refreshHandler.postDelayed(refreshRunnable, 5000);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (refreshHandler != null && refreshRunnable != null) {
+            refreshHandler.removeCallbacks(refreshRunnable);
+        }
     }
 
     private void showCreateSheet() {
@@ -166,7 +196,7 @@ public class TaskActivity extends BaseActivity {
                     
                     String headerTitle = subject.name + (groupPendingCount > 0 ? " (" + groupPendingCount + ")" : "");
                     taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, headerTitle, "", "", false, "low",
-                            subject.id, false, "Học tập", ""));
+                            subject.id, false, "Học tập", "", 0));
                     for (Task task : subjectTasks)
                         addTaskToUiList(task, subject, false);
                 }
@@ -180,7 +210,7 @@ public class TaskActivity extends BaseActivity {
                 
                 String headerTitle = "Tự học / Khác" + (groupPendingCount > 0 ? " (" + groupPendingCount + ")" : "");
                 taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, headerTitle, "", "", false, "low", 0,
-                        false, "Học tập", ""));
+                        false, "Học tập", "", 0));
                 for (Task task : nonSubjectStudyTasks)
                     addTaskToUiList(task, null, false);
             }
@@ -206,7 +236,7 @@ public class TaskActivity extends BaseActivity {
 
                     String headerTitle = entry.getKey() + (groupPendingCount > 0 ? " (" + groupPendingCount + ")" : "");
                     taskList.add(new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, headerTitle, "", "", false, "low", 0,
-                            false, "Ngoại khóa", ""));
+                            false, "Ngoại khóa", "", 0));
                     for (Task t : groupTasks)
                         addTaskToUiList(t, null, false);
                 }
@@ -229,7 +259,7 @@ public class TaskActivity extends BaseActivity {
             if (!urgentTasks.isEmpty()) {
                 taskList.add(
                         new TaskUiModel(0, TaskUiModel.TYPE_GROUP_HEADER, "Sắp đến hạn", "", "", false, "low", 0, false,
-                                "Sắp đến hạn", ""));
+                                "Sắp đến hạn", "", 0));
                 for (Task task : urgentTasks) {
                     Subject subject = findSubjectById(subjects, task.subjectId);
                     addTaskToUiList(task, subject, false);
@@ -279,7 +309,8 @@ public class TaskActivity extends BaseActivity {
                 task.subjectId,
                 task.isReminderEnabled,
                 task.category,
-                displaySubtitle);
+                displaySubtitle,
+                task.expiryTimestamp);
         model.setHideTag(hideTag);
         taskList.add(model);
     }

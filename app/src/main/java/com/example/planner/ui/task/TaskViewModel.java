@@ -106,6 +106,10 @@ public class TaskViewModel extends AndroidViewModel {
                     if ((serverTask.category == null || serverTask.category.isEmpty()) && task.category != null) {
                         serverTask.category = task.category;
                     }
+                    // Preserve expiry if server returned 0 but we sent a value
+                    if (serverTask.expiryTimestamp <= 0 && task.expiryTimestamp > 0) {
+                        serverTask.expiryTimestamp = task.expiryTimestamp;
+                    }
                     AppDatabase.databaseWriteExecutor.execute(() -> {
                         database.taskDao().insert(serverTask);
                     });
@@ -143,6 +147,10 @@ public class TaskViewModel extends AndroidViewModel {
                     // Preserve category from local task if server didn't return it
                     if ((updatedTask.category == null || updatedTask.category.isEmpty()) && task.category != null) {
                         updatedTask.category = task.category;
+                    }
+                    // Preserve expiry if server returned 0 but we sent a value
+                    if (updatedTask.expiryTimestamp <= 0 && task.expiryTimestamp > 0) {
+                        updatedTask.expiryTimestamp = task.expiryTimestamp;
                     }
                     AppDatabase.databaseWriteExecutor.execute(() -> {
                         database.taskDao().update(updatedTask);

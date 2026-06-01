@@ -10,17 +10,20 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.planner.data.local.AppDatabase;
 import com.example.planner.ui.BaseActivity;
 import com.example.planner.R;
 import com.example.planner.utils.SettingsHelper;
 
+import java.util.Calendar;
 import java.util.Locale;
 
 public class UserProfileActivity extends BaseActivity {
@@ -69,14 +72,50 @@ public class UserProfileActivity extends BaseActivity {
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> onBackPressed());
         }
+
+        ImageView btnMonthHistory = findViewById(R.id.btnMonthHistory);
+        if (btnMonthHistory != null) {
+            btnMonthHistory.setOnClickListener(v -> showMonthlyHistoryDialog());
+        }
+    }
+
+    private void showMonthlyHistoryDialog() {
+        viewModel.getProfileStats().observe(this, stats -> {
+            // This is a bit recursive, better to use the latest tasks from the ViewModel or DAO.
+            // For simplicity, we'll fetch from ViewModel's list if available.
+        });
+        
+        // Actually, let's just trigger a dialog that observes the data once.
+        AppDatabase db = AppDatabase.getDatabase(this);
+        db.taskDao().getAllTasks().observe(this, tasks -> {
+            if (tasks != null) {
+                java.util.List<String> history = viewModel.getMonthlyHistory(tasks);
+                if (history.isEmpty()) {
+                    Toast.makeText(this, "Chưa có dữ liệu hoàn thành tháng nào.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                new AlertDialog.Builder(this)
+                        .setTitle("Lịch sử hoàn thành các tháng")
+                        .setItems(history.toArray(new String[0]), null)
+                        .setPositiveButton("Đóng", null)
+                        .show();
+            }
+        });
     }
 
     private void observeProfileData() {
+        TextView tvFocusTitle = findViewById(R.id.tvFocusTitle);
         TextView tvCompletedCount = findViewById(R.id.tvCompletedTasksCount);
         TextView tvRemainingCount = findViewById(R.id.tvRemainingTasksCount);
-        ProgressBar progressBar = findViewById(R.id.pbTaskProgress);
-        TextView tvPercentage = findViewById(R.id.tvProgressPercentage);
         LinearLayout barChartContainer = findViewById(R.id.barChartContainer);
+
+        // Update dynamic monthly title
+        if (tvFocusTitle != null) {
+            Calendar cal = Calendar.getInstance();
+            int month = cal.get(Calendar.MONTH) + 1;
+            int year = cal.get(Calendar.YEAR);
+            tvFocusTitle.setText(String.format(Locale.getDefault(), "Nhiệm vụ trong tháng %d năm %d", month, year));
+        }
 
         viewModel.getProfileStats().observe(this, stats -> {
             if (stats == null)
@@ -86,15 +125,6 @@ public class UserProfileActivity extends BaseActivity {
                 tvCompletedCount.setText(String.valueOf(stats.getCompletedToday()));
             if (tvRemainingCount != null)
                 tvRemainingCount.setText(String.valueOf(stats.getRemainingToday()));
-
-            int percentage = stats.getTodayPercentage();
-            if (progressBar != null) {
-                progressBar.setMax(100);
-                progressBar.setProgress(percentage);
-            }
-            if (tvPercentage != null) {
-                tvPercentage.setText(String.format(Locale.getDefault(), "%d%%", percentage));
-            }
 
             updateBarChart(barChartContainer, stats.getLast7DaysCompleted(), stats.getLast7DaysTotal(),
                     stats.getLast7DaysLabels());
@@ -150,9 +180,10 @@ public class UserProfileActivity extends BaseActivity {
             // Ngày ở dưới bar
             TextView tvLabel = new TextView(this);
             tvLabel.setText(label);
-            tvLabel.setTextSize(9);
+            tvLabel.setTextSize(8);
             tvLabel.setTextColor(getColor(R.color.text_primary));
             tvLabel.setGravity(Gravity.CENTER);
+            tvLabel.setLineSpacing(0, 0.8f);
             columnLayout.addView(tvLabel);
 
             container.addView(columnLayout);

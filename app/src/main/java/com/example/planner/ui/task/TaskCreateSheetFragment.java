@@ -266,13 +266,49 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     }
 
     private void showActivityGroupPicker() {
-        String[] groups = { "CLB", "Tình nguyện", "Hiến máu", "Thể thao", "Cá nhân" };
+        String[] defaultGroups = { "CLB", "Tình nguyện", "Hiến máu", "Thể thao", "Cá nhân" };
+        String[] items = new String[defaultGroups.length + 1];
+        System.arraycopy(defaultGroups, 0, items, 0, defaultGroups.length);
+        items[defaultGroups.length] = "+ Thêm nhóm mới";
+
         new AlertDialog.Builder(requireContext())
                 .setTitle("Chọn nhóm hoạt động")
-                .setItems(groups, (dialog, which) -> {
-                    selectedActivityGroup = groups[which];
-                    tvActivityGroupValue.setText(selectedActivityGroup);
+                .setItems(items, (dialog, which) -> {
+                    if (which == defaultGroups.length) {
+                        showCreateActivityGroupDialog();
+                    } else {
+                        selectedActivityGroup = items[which];
+                        tvActivityGroupValue.setText(selectedActivityGroup);
+                    }
                 }).show();
+    }
+
+    private void showCreateActivityGroupDialog() {
+        EditText input = new EditText(requireContext());
+        input.setHint("Tên nhóm hoạt động");
+        int padding = (int) (16 * getResources().getDisplayMetrics().density);
+        
+        // Tạo một container để set padding cho EditText trong AlertDialog
+        android.widget.FrameLayout container = new android.widget.FrameLayout(requireContext());
+        android.widget.FrameLayout.LayoutParams params = new android.widget.FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.leftMargin = padding;
+        params.rightMargin = padding;
+        input.setLayoutParams(params);
+        container.addView(input);
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Nhóm hoạt động mới")
+                .setView(container)
+                .setPositiveButton("Xác nhận", (dialog, which) -> {
+                    String name = input.getText().toString().trim();
+                    if (!name.isEmpty()) {
+                        selectedActivityGroup = name;
+                        tvActivityGroupValue.setText(name);
+                    }
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     private void showDatePicker() {

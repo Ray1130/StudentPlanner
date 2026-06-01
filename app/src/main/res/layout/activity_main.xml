@@ -1,349 +1,322 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawerLayout"
+    android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/screen_bg"
     android:fitsSystemWindows="true"
     tools:context=".ui.main.MainActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:background="@color/screen_bg"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation">
 
-        <androidx.core.widget.NestedScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@color/screen_bg"
-            android:fillViewport="true"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/bottomNavigation">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="18dp"
+            android:paddingTop="20dp"
+            android:paddingEnd="18dp"
+            android:paddingBottom="20dp">
 
+            <!-- Header: Logo + Greeting -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingStart="18dp"
-                android:paddingTop="20dp"
-                android:paddingEnd="18dp"
-                android:paddingBottom="20dp">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <!-- Header: Menu + Logo + Greeting -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
                     <ImageView
-                        android:id="@+id/ivMenu"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_marginEnd="12dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:padding="4dp"
-                        android:src="@drawable/ic_menu_24"
-                        app:tint="@color/text_primary" />
+                        android:id="@+id/imgLogo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@string/app_name"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/logo_tick_do" />
+                </com.google.android.material.card.MaterialCardView>
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        app:cardCornerRadius="14dp"
-                        app:cardElevation="0dp"
-                        app:strokeWidth="0dp">
-                        <ImageView
-                            android:id="@+id/imgLogo"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:contentDescription="@string/app_name"
-                            android:scaleType="centerInside"
-                            android:src="@drawable/logo_tick_do" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tvGreeting"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="14dp"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:orientation="vertical">
-                        <TextView
-                            android:id="@+id/tvGreeting"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/welcome_back"
-                            android:textColor="@color/text_primary"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-                        <TextView
-                            android:id="@+id/tvDate"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="@string/sample_date"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="13sp" />
+                        android:text="@string/welcome_back"
+                        android:textColor="@color/text_primary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/tvDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/sample_date"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Stats Grid -->
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:alignmentMode="alignMargins"
+                android:columnCount="2"
+                android:rowCount="2"
+                android:useDefaultMargins="true">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="92dp"
+                    android:layout_columnWeight="1"
+                    app:cardBackgroundColor="@color/card_bg_default"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/card_stroke"
+                    app:strokeWidth="1dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:padding="14dp">
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_horizontal" android:orientation="vertical">
+                            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_today_24" app:tint="@color/pastel_indigo" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/today" android:textColor="@color/text_secondary" android:textSize="11sp" />
+                        </LinearLayout>
+                        <TextView android:id="@+id/tvTodayCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_vertical" android:text="0" android:textColor="@color/text_primary" android:textSize="32sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="92dp"
+                    android:layout_columnWeight="1"
+                    app:cardBackgroundColor="@color/card_bg_default"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/card_stroke"
+                    app:strokeWidth="1dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:padding="14dp">
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_horizontal" android:orientation="vertical">
+                            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_alert_24" app:tint="@color/danger" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/overdue" android:textColor="@color/text_secondary" android:textSize="11sp" />
+                        </LinearLayout>
+                        <TextView android:id="@+id/tvOverdueCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_vertical" android:text="0" android:textColor="@color/text_primary" android:textSize="32sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="92dp"
+                    android:layout_columnWeight="1"
+                    app:cardBackgroundColor="@color/card_bg_default"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/card_stroke"
+                    app:strokeWidth="1dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:padding="14dp">
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_horizontal" android:orientation="vertical">
+                            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_priority_24" app:tint="@color/warning" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/high_priority" android:textColor="@color/text_secondary" android:textSize="11sp" />
+                        </LinearLayout>
+                        <TextView android:id="@+id/tvPriorityCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_vertical" android:text="0" android:textColor="@color/text_primary" android:textSize="32sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="92dp"
+                    android:layout_columnWeight="1"
+                    app:cardBackgroundColor="@color/card_bg_default"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/card_stroke"
+                    app:strokeWidth="1dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:padding="14dp">
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_horizontal" android:orientation="vertical">
+                            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_done_24" app:tint="@color/success" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/completed" android:textColor="@color/text_secondary" android:textSize="11sp" />
+                        </LinearLayout>
+                        <TextView android:id="@+id/tvCompletedCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_vertical" android:text="0" android:textColor="@color/text_primary" android:textSize="32sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </GridLayout>
+
+            <!-- Hôm nay tasks -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                app:cardBackgroundColor="@color/card_bg_default"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/card_stroke"
+                app:strokeWidth="1dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="14dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/today_tasks" android:textColor="@color/text_primary" android:textSize="17sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvViewAllToday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/view_all_short" android:textColor="@color/pastel_indigo" android:textSize="11sp" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" />
+                    </LinearLayout>
+                    <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvTodayTasks" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:nestedScrollingEnabled="false" tools:listitem="@layout/item_main_task" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Sắp tới tasks -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                app:cardBackgroundColor="@color/card_bg_default"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/card_stroke"
+                app:strokeWidth="1dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="14dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/upcoming_tasks" android:textColor="@color/text_primary" android:textSize="17sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/tvViewAllUpcoming" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/view_all_short" android:textColor="@color/pastel_indigo" android:textSize="11sp" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" />
+                    </LinearLayout>
+                    <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvUpcomingTasks" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:nestedScrollingEnabled="false" tools:listitem="@layout/item_main_task" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Tổng quan tuần -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                app:cardBackgroundColor="@color/card_bg_default"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/card_stroke"
+                app:strokeWidth="1dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="14dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/weekly_overview" android:textColor="@color/text_primary" android:textSize="17sp" android:textStyle="bold" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:gravity="center" android:orientation="horizontal" android:weightSum="7">
+                        <com.google.android.material.card.MaterialCardView android:id="@+id/cardDay1" android:layout_width="0dp" android:layout_height="48dp" android:layout_marginEnd="4dp" android:layout_weight="1" app:cardBackgroundColor="@color/task_bg_light_purple" app:cardCornerRadius="10dp" app:cardElevation="0dp"><LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="T2" android:textColor="@color/text_secondary" android:textSize="10sp"/><TextView android:id="@+id/tvDay1Date" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="23" android:textColor="@color/text_primary" android:textSize="11sp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
+                        <com.google.android.material.card.MaterialCardView android:id="@+id/cardDay2" android:layout_width="0dp" android:layout_height="48dp" android:layout_marginHorizontal="4dp" android:layout_weight="1" app:cardBackgroundColor="@color/task_bg_light_purple" app:cardCornerRadius="10dp" app:cardElevation="0dp"><LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="T3" android:textColor="@color/text_secondary" android:textSize="10sp"/><TextView android:id="@+id/tvDay2Date" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="24" android:textColor="@color/text_primary" android:textSize="11sp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
+                        <com.google.android.material.card.MaterialCardView android:id="@+id/cardDay3" android:layout_width="0dp" android:layout_height="48dp" android:layout_marginHorizontal="4dp" android:layout_weight="1" app:cardBackgroundColor="@color/secondary_purple" app:cardCornerRadius="10dp" app:cardElevation="0dp"><LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="T4" android:textColor="@color/text_secondary" android:textSize="10sp"/><TextView android:id="@+id/tvDay3Date" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="25" android:textColor="@color/text_primary" android:textSize="11sp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
+                        <com.google.android.material.card.MaterialCardView android:id="@+id/cardDay4" android:layout_width="0dp" android:layout_height="48dp" android:layout_marginHorizontal="4dp" android:layout_weight="1" app:cardBackgroundColor="@color/task_bg_light_purple" app:cardCornerRadius="10dp" app:cardElevation="0dp"><LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="T5" android:textColor="@color/text_secondary" android:textSize="10sp"/><TextView android:id="@+id/tvDay4Date" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="26" android:textColor="@color/text_primary" android:textSize="11sp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
+                        <com.google.android.material.card.MaterialCardView android:id="@+id/cardDay5" android:layout_width="0dp" android:layout_height="48dp" android:layout_marginHorizontal="4dp" android:layout_weight="1" app:cardBackgroundColor="@color/task_bg_light_purple" app:cardCornerRadius="10dp" app:cardElevation="0dp"><LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="T6" android:textColor="@color/text_secondary" android:textSize="10sp"/><TextView android:id="@+id/tvDay5Date" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="27" android:textColor="@color/text_primary" android:textSize="11sp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
+                        <com.google.android.material.card.MaterialCardView android:id="@+id/cardDay6" android:layout_width="0dp" android:layout_height="48dp" android:layout_marginHorizontal="4dp" android:layout_weight="1" app:cardBackgroundColor="@color/secondary_purple" app:cardCornerRadius="10dp" app:cardElevation="0dp"><LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="T7" android:textColor="@color/text_secondary" android:textSize="10sp"/><TextView android:id="@+id/tvDay6Date" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="28" android:textColor="@color/text_primary" android:textSize="11sp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
+                        <com.google.android.material.card.MaterialCardView android:id="@+id/cardDay7" android:layout_width="0dp" android:layout_height="48dp" android:layout_marginStart="4dp" android:layout_weight="1" app:cardBackgroundColor="@color/primary_purple" app:cardCornerRadius="10dp" app:cardElevation="0dp"><LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CN" android:textColor="@color/text_secondary" android:textSize="10sp"/><TextView android:id="@+id/tvDay7Date" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="29" android:textColor="@color/danger" android:textSize="11sp" android:textStyle="bold"/></LinearLayout></com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <!-- Stats Grid -->
-                <GridLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    android:alignmentMode="alignMargins"
-                    android:columnCount="2"
-                    android:rowCount="2"
-                    android:useDefaultMargins="true">
+            <!-- Quick Actions: Cute Style -->
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:columnCount="2"
+                android:rowCount="2"
+                android:useDefaultMargins="true">
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="92dp"
-                        android:layout_columnWeight="1"
-                        app:cardBackgroundColor="@color/card_bg_default"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/card_stroke"
-                        app:strokeWidth="1dp">
-                        <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:padding="14dp">
-                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_horizontal" android:orientation="vertical">
-                                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_today_24" app:tint="@color/pastel_indigo" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/today" android:textColor="@color/text_secondary" android:textSize="11sp" />
-                            </LinearLayout>
-                            <TextView android:id="@+id/tvTodayCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_vertical" android:text="0" android:textColor="@color/text_primary" android:textSize="32sp" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="92dp"
-                        android:layout_columnWeight="1"
-                        app:cardBackgroundColor="@color/card_bg_default"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/card_stroke"
-                        app:strokeWidth="1dp">
-                        <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:padding="14dp">
-                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_horizontal" android:orientation="vertical">
-                                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_alert_24" app:tint="@color/danger" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/overdue" android:textColor="@color/text_secondary" android:textSize="11sp" />
-                            </LinearLayout>
-                            <TextView android:id="@+id/tvOverdueCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_vertical" android:text="0" android:textColor="@color/text_primary" android:textSize="32sp" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="92dp"
-                        android:layout_columnWeight="1"
-                        app:cardBackgroundColor="@color/card_bg_default"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/card_stroke"
-                        app:strokeWidth="1dp">
-                        <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:padding="14dp">
-                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_horizontal" android:orientation="vertical">
-                                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_priority_24" app:tint="@color/warning" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/high_priority" android:textColor="@color/text_secondary" android:textSize="11sp" />
-                            </LinearLayout>
-                            <TextView android:id="@+id/tvPriorityCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_vertical" android:text="0" android:textColor="@color/text_primary" android:textSize="32sp" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="92dp"
-                        android:layout_columnWeight="1"
-                        app:cardBackgroundColor="@color/card_bg_default"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/card_stroke"
-                        app:strokeWidth="1dp">
-                        <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:padding="14dp">
-                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_horizontal" android:orientation="vertical">
-                                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_done_24" app:tint="@color/success" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/completed" android:textColor="@color/text_secondary" android:textSize="11sp" />
-                            </LinearLayout>
-                            <TextView android:id="@+id/tvCompletedCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_vertical" android:text="0" android:textColor="@color/text_primary" android:textSize="32sp" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-                </GridLayout>
-
-                <!-- Hôm nay tasks -->
+                <!-- Lịch Card -->
                 <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
+                    android:id="@+id/btn_nav_calendar"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    android:layout_columnWeight="1"
                     app:cardBackgroundColor="@color/card_bg_default"
-                    app:cardCornerRadius="18dp"
+                    app:cardCornerRadius="20dp"
                     app:cardElevation="0dp"
                     app:strokeColor="@color/card_stroke"
-                    app:strokeWidth="1dp">
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="14dp">
-                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
-                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/today_tasks" android:textColor="@color/text_primary" android:textSize="17sp" android:textStyle="bold" />
-                            <TextView android:id="@+id/tvViewAllToday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/view_all_short" android:textColor="@color/pastel_indigo" android:textSize="11sp" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" />
-                        </LinearLayout>
-                        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvTodayTasks" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:nestedScrollingEnabled="false" tools:listitem="@layout/item_main_task" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                    app:strokeWidth="1dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="42dp" android:layout_height="42dp" app:cardBackgroundColor="@color/card_bg_default" app:cardCornerRadius="12dp" app:cardElevation="0dp">
+                            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:layout_gravity="center" android:src="@drawable/ic_calendar_24" app:tint="#2196F3" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/calendar" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/view_schedule" android:textColor="@color/pastel_indigo" android:textSize="10sp"/></LinearLayout></LinearLayout></com.google.android.material.card.MaterialCardView>
 
-                <!-- Sắp tới tasks -->
+                <!-- Công việc Card -->
                 <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
+                    android:id="@+id/btn_nav_tasks"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    android:layout_columnWeight="1"
                     app:cardBackgroundColor="@color/card_bg_default"
-                    app:cardCornerRadius="18dp"
+                    app:cardCornerRadius="20dp"
                     app:cardElevation="0dp"
                     app:strokeColor="@color/card_stroke"
-                    app:strokeWidth="1dp">
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="14dp">
-                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
-                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/upcoming_tasks" android:textColor="@color/text_primary" android:textSize="17sp" android:textStyle="bold" />
-                            <TextView android:id="@+id/tvViewAllUpcoming" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/view_all_short" android:textColor="@color/pastel_indigo" android:textSize="11sp" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" />
-                        </LinearLayout>
-                        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvUpcomingTasks" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:nestedScrollingEnabled="false" tools:listitem="@layout/item_main_task" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                    app:strokeWidth="1dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="42dp" android:layout_height="42dp" app:cardBackgroundColor="@color/card_bg_default" app:cardCornerRadius="12dp" app:cardElevation="0dp">
+                            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:layout_gravity="center" android:src="@drawable/ic_task_24" app:tint="#9C27B0" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tasks" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/manage_tasks_short" android:textColor="@color/pastel_indigo" android:textSize="10sp"/></LinearLayout></LinearLayout></com.google.android.material.card.MaterialCardView>
 
-                <!-- Tổng quan tuần -->
+                <!-- Nhắc nhở Card -->
                 <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
+                    android:id="@+id/btn_nav_reminders"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    android:layout_columnWeight="1"
                     app:cardBackgroundColor="@color/card_bg_default"
-                    app:cardCornerRadius="18dp"
+                    app:cardCornerRadius="20dp"
                     app:cardElevation="0dp"
                     app:strokeColor="@color/card_stroke"
-                    app:strokeWidth="1dp">
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="14dp">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/weekly_overview" android:textColor="@color/text_primary" android:textSize="17sp" android:textStyle="bold" />
-                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:gravity="center" android:orientation="horizontal" android:weightSum="7">
-                            <com.google.android.material.card.MaterialCardView android:id="@+id/cardDay1" android:layout_width="0dp" android:layout_height="48dp" android:layout_marginEnd="4dp" android:layout_weight="1" app:cardBackgroundColor="@color/task_bg_light_purple" app:cardCornerRadius="10dp" app:cardElevation="0dp"><LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="T2" android:textColor="@color/text_secondary" android:textSize="10sp"/><TextView android:id="@+id/tvDay1Date" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="23" android:textColor="@color/text_primary" android:textSize="11sp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
-                            <com.google.android.material.card.MaterialCardView android:id="@+id/cardDay2" android:layout_width="0dp" android:layout_height="48dp" android:layout_marginHorizontal="4dp" android:layout_weight="1" app:cardBackgroundColor="@color/task_bg_light_purple" app:cardCornerRadius="10dp" app:cardElevation="0dp"><LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="T3" android:textColor="@color/text_secondary" android:textSize="10sp"/><TextView android:id="@+id/tvDay2Date" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="24" android:textColor="@color/text_primary" android:textSize="11sp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
-                            <com.google.android.material.card.MaterialCardView android:id="@+id/cardDay3" android:layout_width="0dp" android:layout_height="48dp" android:layout_marginHorizontal="4dp" android:layout_weight="1" app:cardBackgroundColor="@color/secondary_purple" app:cardCornerRadius="10dp" app:cardElevation="0dp"><LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="T4" android:textColor="@color/text_secondary" android:textSize="10sp"/><TextView android:id="@+id/tvDay3Date" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="25" android:textColor="@color/text_primary" android:textSize="11sp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
-                            <com.google.android.material.card.MaterialCardView android:id="@+id/cardDay4" android:layout_width="0dp" android:layout_height="48dp" android:layout_marginHorizontal="4dp" android:layout_weight="1" app:cardBackgroundColor="@color/task_bg_light_purple" app:cardCornerRadius="10dp" app:cardElevation="0dp"><LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="T5" android:textColor="@color/text_secondary" android:textSize="10sp"/><TextView android:id="@+id/tvDay4Date" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="26" android:textColor="@color/text_primary" android:textSize="11sp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
-                            <com.google.android.material.card.MaterialCardView android:id="@+id/cardDay5" android:layout_width="0dp" android:layout_height="48dp" android:layout_marginHorizontal="4dp" android:layout_weight="1" app:cardBackgroundColor="@color/task_bg_light_purple" app:cardCornerRadius="10dp" app:cardElevation="0dp"><LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="T6" android:textColor="@color/text_secondary" android:textSize="10sp"/><TextView android:id="@+id/tvDay5Date" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="27" android:textColor="@color/text_primary" android:textSize="11sp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
-                            <com.google.android.material.card.MaterialCardView android:id="@+id/cardDay6" android:layout_width="0dp" android:layout_height="48dp" android:layout_marginHorizontal="4dp" android:layout_weight="1" app:cardBackgroundColor="@color/secondary_purple" app:cardCornerRadius="10dp" app:cardElevation="0dp"><LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="T7" android:textColor="@color/text_secondary" android:textSize="10sp"/><TextView android:id="@+id/tvDay6Date" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="28" android:textColor="@color/text_primary" android:textSize="11sp"/></LinearLayout></com.google.android.material.card.MaterialCardView>
-                            <com.google.android.material.card.MaterialCardView android:id="@+id/cardDay7" android:layout_width="0dp" android:layout_height="48dp" android:layout_marginStart="4dp" android:layout_weight="1" app:cardBackgroundColor="@color/primary_purple" app:cardCornerRadius="10dp" app:cardElevation="0dp"><LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CN" android:textColor="@color/text_secondary" android:textSize="10sp"/><TextView android:id="@+id/tvDay7Date" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="29" android:textColor="@color/danger" android:textSize="11sp" android:textStyle="bold"/></LinearLayout></com.google.android.material.card.MaterialCardView>
-                        </LinearLayout>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                    app:strokeWidth="1dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="42dp" android:layout_height="42dp" app:cardBackgroundColor="@color/card_bg_default" app:cardCornerRadius="12dp" app:cardElevation="0dp">
+                            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:layout_gravity="center" android:src="@drawable/ic_notification_24" app:tint="#FF9800" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/reminders" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/manage_reminders_short" android:textColor="@color/pastel_indigo" android:textSize="10sp"/></LinearLayout></LinearLayout></com.google.android.material.card.MaterialCardView>
 
-                <!-- Quick Actions: Cute Style -->
-                <GridLayout
-                    android:layout_width="match_parent"
+                <!-- Pomodoro Card (Thay thế Sắp xếp) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btn_nav_pomodoro"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:columnCount="2"
-                    android:rowCount="2"
-                    android:useDefaultMargins="true">
+                    android:layout_columnWeight="1"
+                    app:cardBackgroundColor="@color/card_bg_default"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/card_stroke"
+                    app:strokeWidth="1dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+                        <com.google.android.material.card.MaterialCardView android:layout_width="42dp" android:layout_height="42dp" app:cardBackgroundColor="@color/card_bg_default" app:cardCornerRadius="12dp" app:cardElevation="0dp">
+                            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:layout_gravity="center" android:src="@drawable/ic_pomodoro" app:tint="#F44336" />
+                        </com.google.android.material.card.MaterialCardView>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/menu_pomodoro" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tập trung" android:textColor="@color/pastel_indigo" android:textSize="10sp"/></LinearLayout></LinearLayout></com.google.android.material.card.MaterialCardView>
+            </GridLayout>
 
-                    <!-- Lịch Card -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/btn_nav_calendar"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        app:cardBackgroundColor="@color/card_bg_default"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/card_stroke"
-                        app:strokeWidth="1dp"
-                        android:clickable="true"
-                        android:focusable="true">
-                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
-                            <com.google.android.material.card.MaterialCardView android:layout_width="42dp" android:layout_height="42dp" app:cardBackgroundColor="@color/card_bg_default" app:cardCornerRadius="12dp" app:cardElevation="0dp">
-                                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:layout_gravity="center" android:src="@drawable/ic_calendar_24" app:tint="#2196F3" />
-                            </com.google.android.material.card.MaterialCardView>
-                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:orientation="vertical">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/calendar" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/view_schedule" android:textColor="@color/pastel_indigo" android:textSize="10sp"/></LinearLayout></LinearLayout></com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-                    <!-- Công việc Card -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/btn_nav_tasks"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        app:cardBackgroundColor="@color/card_bg_default"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/card_stroke"
-                        app:strokeWidth="1dp"
-                        android:clickable="true"
-                        android:focusable="true">
-                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
-                            <com.google.android.material.card.MaterialCardView android:layout_width="42dp" android:layout_height="42dp" app:cardBackgroundColor="@color/card_bg_default" app:cardCornerRadius="12dp" app:cardElevation="0dp">
-                                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:layout_gravity="center" android:src="@drawable/ic_task_24" app:tint="#9C27B0" />
-                            </com.google.android.material.card.MaterialCardView>
-                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:orientation="vertical">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tasks" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/manage_tasks_short" android:textColor="@color/pastel_indigo" android:textSize="10sp"/></LinearLayout></LinearLayout></com.google.android.material.card.MaterialCardView>
+    <include
+        android:id="@+id/bottomNavigation"
+        layout="@layout/layout_bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-                    <!-- Nhắc nhở Card -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/btn_nav_reminders"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        app:cardBackgroundColor="@color/card_bg_default"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/card_stroke"
-                        app:strokeWidth="1dp"
-                        android:clickable="true"
-                        android:focusable="true">
-                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
-                            <com.google.android.material.card.MaterialCardView android:layout_width="42dp" android:layout_height="42dp" app:cardBackgroundColor="@color/card_bg_default" app:cardCornerRadius="12dp" app:cardElevation="0dp">
-                                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:layout_gravity="center" android:src="@drawable/ic_notification_24" app:tint="#FF9800" />
-                            </com.google.android.material.card.MaterialCardView>
-                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:orientation="vertical">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/reminders" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/manage_reminders_short" android:textColor="@color/pastel_indigo" android:textSize="10sp"/></LinearLayout></LinearLayout></com.google.android.material.card.MaterialCardView>
-
-                    <!-- Pomodoro Card (Thay thế Sắp xếp) -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/btn_nav_pomodoro"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        app:cardBackgroundColor="@color/card_bg_default"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/card_stroke"
-                        app:strokeWidth="1dp"
-                        android:clickable="true"
-                        android:focusable="true">
-                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
-                            <com.google.android.material.card.MaterialCardView android:layout_width="42dp" android:layout_height="42dp" app:cardBackgroundColor="@color/card_bg_default" app:cardCornerRadius="12dp" app:cardElevation="0dp">
-                                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:layout_gravity="center" android:src="@drawable/ic_pomodoro" app:tint="#F44336" />
-                            </com.google.android.material.card.MaterialCardView>
-                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:orientation="vertical">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/menu_pomodoro" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tập trung" android:textColor="@color/pastel_indigo" android:textSize="10sp"/></LinearLayout></LinearLayout></com.google.android.material.card.MaterialCardView>
-                </GridLayout>
-
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
-
-        <include
-            android:id="@+id/bottomNavigation"
-            layout="@layout/layout_bottom_navigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/navigationView"
-        android:layout_width="300dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="@color/card_bg_default"
-        app:headerLayout="@layout/layout_nav_header"
-        app:itemIconTint="@color/text_primary"
-        app:itemTextColor="@color/text_primary"
-        app:menu="@menu/menu_drawer_main" />
-
-</androidx.drawerlayout.widget.DrawerLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

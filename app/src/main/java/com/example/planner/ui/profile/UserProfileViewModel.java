@@ -37,63 +37,93 @@ public class UserProfileViewModel extends AndroidViewModel {
     }
 
     private void calculateStats(List<Task> tasks) {
-        int totalCompleted = 0;
-        int totalRemaining = 0;
-        int completedToday = 0;
-        int remainingToday = 0;
-        
+        int completedThisMonth = 0;
+        int remainingThisMonth = 0;
+
         Calendar cal = Calendar.getInstance();
+
+        // Start of current month
+        cal.set(Calendar.DAY_OF_MONTH, 1);
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        long startOfToday = cal.getTimeInMillis();
-        long endOfToday = startOfToday + (24 * 60 * 60 * 1000);
+        long startOfMonth = cal.getTimeInMillis();
 
-        int[] last7DaysCompleted = new int[7];
-        int[] last7DaysTotal = new int[7];
-        String[] last7DaysLabels = new String[7];
-        long[] dayStarts = new long[7];
-        
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM", Locale.getDefault());
+        // End of current month
+        cal.add(Calendar.MONTH, 1);
+        long startOfNextMonth = cal.getTimeInMillis();
+
+        // Weekly Stats (Current Week - Fixed 7 days Monday to Sunday)
+        int[] weeklyCompleted = new int[7];
+        int[] weeklyTotal = new int[7];
+        String[] dayNames = {"T2", "T3", "T4", "T5", "T6", "T7", "CN"};
+        String[] weeklyLabels = new String[7];
+        long[] weekDayStarts = new long[7];
+
+        Calendar weekCal = Calendar.getInstance();
+        weekCal.setFirstDayOfWeek(Calendar.MONDAY);
+        weekCal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        weekCal.set(Calendar.HOUR_OF_DAY, 0);
+        weekCal.set(Calendar.MINUTE, 0);
+        weekCal.set(Calendar.SECOND, 0);
+        weekCal.set(Calendar.MILLISECOND, 0);
+
+        SimpleDateFormat daySdf = new SimpleDateFormat("dd/MM", Locale.getDefault());
         for (int i = 0; i < 7; i++) {
-            Calendar dayCal = (Calendar) cal.clone();
-            dayCal.add(Calendar.DAY_OF_YEAR, -(6 - i));
-            dayStarts[i] = dayCal.getTimeInMillis();
-            last7DaysLabels[i] = sdf.format(dayCal.getTime());
+            weekDayStarts[i] = weekCal.getTimeInMillis();
+            weeklyLabels[i] = dayNames[i] + "\n" + daySdf.format(weekCal.getTime());
+            weekCal.add(Calendar.DAY_OF_YEAR, 1);
         }
 
         for (Task task : tasks) {
-            // Thống kê tổng quát (tất cả các ngày)
-            if (task.isCompleted) {
-                totalCompleted++;
-            } else {
-                totalRemaining++;
-            }
+            // Chỉ tính task chưa hết hạn HOẶC đã hoàn thành (không tính task hết hạn mà chưa xong)
+            boolean isExpired = task.expiryTimestamp > 0 && task.expiryTimestamp < System.currentTimeMillis();
+            if (isExpired && !task.isCompleted) continue;
 
-            // Thống kê cho hôm nay (Donut Chart)
-            if (task.dueDate >= startOfToday && task.dueDate < endOfToday) {
+            // Monthly Stats
+            if (task.dueDate >= startOfMonth && task.dueDate < startOfNextMonth) {
                 if (task.isCompleted) {
-                    completedToday++;
+                    completedThisMonth++;
                 } else {
-                    remainingToday++;
+                    remainingThisMonth++;
                 }
             }
 
-            // Thống kê 7 ngày qua (Bar Chart)
+            // Weekly Stats
             for (int i = 0; i < 7; i++) {
-                long dStart = dayStarts[i];
+                long dStart = weekDayStarts[i];
                 long dEnd = dStart + 24 * 60 * 60 * 1000;
                 if (task.dueDate >= dStart && task.dueDate < dEnd) {
-                    last7DaysTotal[i]++;
+                    weeklyTotal[i]++;
                     if (task.isCompleted) {
-                        last7DaysCompleted[i]++;
+                        weeklyCompleted[i]++;
                     }
                 }
             }
         }
 
-        profileStats.setValue(new ProfileStats(totalCompleted, totalRemaining, completedToday, remainingToday, last7DaysCompleted, last7DaysTotal, last7DaysLabels));
+        profileStats.setValue(new ProfileStats(0, 0, completedThisMonth, remainingThisMonth, weeklyCompleted, weeklyTotal, weeklyLabels));
+    }
+
+    public List<String> getMonthlyHistory(List<Task> tasks) {
+        java.util.Map<String, Integer> history = new java.util.TreeMap<>(java.util.Collections.reverseOrder());
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/yyyy", Locale.getDefault());
+        Calendar cal = Calendar.getInstance();
+
+        for (Task task : tasks) {
+            if (task.isCompleted) {
+                cal.setTimeInMillis(task.dueDate);
+                String monthKey = sdf.format(cal.getTime());
+                history.put(monthKey, history.getOrDefault(monthKey, 0) + 1);
+            }
+        }
+
+        List<String> historyList = new java.util.ArrayList<>();
+        for (java.util.Map.Entry<String, Integer> entry : history.entrySet()) {
+            historyList.add("Tháng " + entry.getKey() + ": " + entry.getValue() + " nhiệm vụ");
+        }
+        return historyList;
     }
 
     public static class ProfileStats {

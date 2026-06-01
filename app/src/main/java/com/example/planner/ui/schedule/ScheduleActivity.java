@@ -132,7 +132,8 @@ public class ScheduleActivity extends BaseActivity {
                             task.subjectId,
                             task.isReminderEnabled,
                             task.category,
-                            ""
+                            "",
+                            task.expiryTimestamp
                     );
                     com.example.planner.ui.task.TaskCreateSheetFragment sheet = com.example.planner.ui.task.TaskCreateSheetFragment.newInstance(uiModel);
                     sheet.show(getSupportFragmentManager(), "TaskEditSheet");

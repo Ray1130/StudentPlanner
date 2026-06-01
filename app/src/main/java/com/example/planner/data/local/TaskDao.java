@@ -20,6 +20,9 @@ public interface TaskDao {
     @Query("DELETE FROM tasks WHERE expiryTimestamp > 0 AND expiryTimestamp <= :currentTime")
     void deleteExpiredTasks(long currentTime);
 
+    @Query("SELECT * FROM tasks WHERE expiryTimestamp > 0 AND expiryTimestamp <= :currentTime")
+    List<Task> getExpiredTasksSync(long currentTime);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(Task task);
 

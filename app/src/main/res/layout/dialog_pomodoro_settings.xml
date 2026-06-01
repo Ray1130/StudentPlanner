@@ -132,7 +132,7 @@
             android:layout_height="60dp"
             android:text="ÁP DỤNG"
             app:cornerRadius="20dp"
-            android:backgroundTint="@color/white"
+            android:backgroundTint="@color/card_bg_default"
             android:textColor="@color/pastel_indigo"
             android:textSize="16sp"
             android:textStyle="bold" />

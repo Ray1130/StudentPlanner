@@ -1,13 +1,21 @@
 package com.example.planner.ui.task;
 
+import android.graphics.Paint;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.planner.R;
+
 import java.util.List;
 
 public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -51,36 +59,60 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         TaskUiModel item = items.get(position);
         if (holder instanceof HeaderViewHolder) {
-            ((HeaderViewHolder) holder).tvGroupName.setText(item.getTitle());
+            HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
+            headerHolder.tvGroupName.setText(item.getTitle());
+            if (headerHolder.ivHeaderAdd != null) {
+                headerHolder.ivHeaderAdd.setVisibility(View.GONE);
+            }
         } else if (holder instanceof TaskCardViewHolder) {
             TaskCardViewHolder cardHolder = (TaskCardViewHolder) holder;
             cardHolder.tvTitle.setText(item.getTitle());
             
-            String subtitle = item.getSubtitle();
-            if (subtitle != null && subtitle.contains(" • ")) {
-                int dotIndex = subtitle.indexOf(" • ");
-                android.text.SpannableString spannable = new android.text.SpannableString(subtitle);
-                spannable.setSpan(new android.text.style.ForegroundColorSpan(cardHolder.itemView.getContext().getColor(R.color.primary_purple)),
-                        dotIndex + 1, dotIndex + 2, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                cardHolder.tvSubtitle.setText(spannable);
+            // Handle completed state: strike-through and dimming
+            if (item.isChecked()) {
+                cardHolder.tvTitle.setPaintFlags(cardHolder.tvTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                cardHolder.itemView.setAlpha(0.6f);
             } else {
-                cardHolder.tvSubtitle.setText(subtitle != null ? subtitle : "");
+                cardHolder.tvTitle.setPaintFlags(cardHolder.tvTitle.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                cardHolder.itemView.setAlpha(1.0f);
             }
-            
-            if (cardHolder.tvTag != null) {
-                // Phân loại dựa trên Subject hoặc Category
-                if (item.getSubjectId() > 0) {
-                    cardHolder.tvTag.setText("Học phần");
-                    cardHolder.tvTag.setBackgroundResource(R.drawable.bg_tag_course);
-                    cardHolder.tvTag.setTextColor(cardHolder.itemView.getContext().getColor(R.color.tag_course_text));
-                    if (cardHolder.ivBell != null) cardHolder.ivBell.setVisibility(item.isReminderEnabled() ? View.VISIBLE : View.GONE);
-                    if (cardHolder.ivLocation != null) cardHolder.ivLocation.setVisibility(View.GONE);
+
+            if (item.isHideTag()) {
+                if (cardHolder.tvTag != null) cardHolder.tvTag.setVisibility(View.GONE);
+                cardHolder.tvSubtitle.setVisibility(View.VISIBLE);
+                
+                String subtitle = item.getSubtitle();
+                cardHolder.tvSubtitle.setText(subtitle != null ? subtitle : "");
+            } else {
+                if (cardHolder.tvTag != null) cardHolder.tvTag.setVisibility(View.VISIBLE);
+                cardHolder.tvSubtitle.setVisibility(View.VISIBLE);
+                
+                String subtitle = item.getSubtitle();
+                if (subtitle != null && subtitle.contains(" • ")) {
+                    int dotIndex = subtitle.indexOf(" • ");
+                    SpannableString spannable = new SpannableString(subtitle);
+                    spannable.setSpan(new ForegroundColorSpan(cardHolder.itemView.getContext().getColor(R.color.primary_purple)),
+                            dotIndex + 1, dotIndex + 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    cardHolder.tvSubtitle.setText(spannable);
                 } else {
-                    cardHolder.tvTag.setText("Ngoại khóa");
-                    cardHolder.tvTag.setBackgroundResource(R.drawable.bg_tag_extracurricular);
-                    cardHolder.tvTag.setTextColor(cardHolder.itemView.getContext().getColor(R.color.tag_extracurricular_text));
-                    if (cardHolder.ivBell != null) cardHolder.ivBell.setVisibility(View.GONE);
-                    if (cardHolder.ivLocation != null) cardHolder.ivLocation.setVisibility(View.VISIBLE);
+                    cardHolder.tvSubtitle.setText(subtitle != null ? subtitle : "");
+                }
+
+                // Phân loại dựa trên Subject hoặc Category
+                if (cardHolder.tvTag != null) {
+                    if (item.getSubjectId() > 0) {
+                        cardHolder.tvTag.setText("Học phần");
+                        cardHolder.tvTag.setBackgroundResource(R.drawable.bg_tag_course);
+                        cardHolder.tvTag.setTextColor(cardHolder.itemView.getContext().getColor(R.color.tag_course_text));
+                        if (cardHolder.ivBell != null)
+                            cardHolder.ivBell.setVisibility(item.isReminderEnabled() ? View.VISIBLE : View.GONE);
+                    } else {
+                        cardHolder.tvTag.setText("Ngoại khóa");
+                        cardHolder.tvTag.setBackgroundResource(R.drawable.bg_tag_extracurricular);
+                        cardHolder.tvTag.setTextColor(cardHolder.itemView.getContext().getColor(R.color.tag_extracurricular_text));
+                        if (cardHolder.ivBell != null)
+                            cardHolder.ivBell.setVisibility(View.GONE);
+                    }
                 }
             }
             
@@ -96,10 +128,6 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 }
             }
             
-            if (cardHolder.tvCommentCount != null) {
-                cardHolder.tvCommentCount.setText("0"); // Mặc định 0 vì DB chưa có field này
-            }
-
             updateCheckIcon(cardHolder.ivCheck, item.isChecked());
             cardHolder.ivCheck.setOnClickListener(v -> {
                 // 1. Phản hồi UI ngay lập tức
@@ -125,11 +153,15 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (isExpired) {
                 cardHolder.tvTitle.setAlpha(0.5f);
                 if (cardHolder.tvStatus != null) {
+                    cardHolder.tvStatus.setVisibility(View.VISIBLE);
                     cardHolder.tvStatus.setText("Đã hết hạn");
                     cardHolder.tvStatus.setTextColor(holder.itemView.getContext().getColor(R.color.danger));
                 }
             } else {
                 cardHolder.tvTitle.setAlpha(1.0f);
+                if (cardHolder.tvStatus != null) {
+                    cardHolder.tvStatus.setVisibility(View.GONE);
+                }
             }
             
             // Dấu chấm ưu tiên và Gạch màu
@@ -158,7 +190,7 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         int iconRes = isChecked ? R.drawable.ic_check_circle_24 : R.drawable.ic_circle_outline_24;
         imageView.setImageResource(iconRes);
         int tintColor = isChecked ? R.color.success : R.color.text_secondary;
-        imageView.setColorFilter(androidx.core.content.ContextCompat.getColor(imageView.getContext(), tintColor));
+        imageView.setColorFilter(ContextCompat.getColor(imageView.getContext(), tintColor));
     }
 
     @Override
@@ -173,15 +205,17 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     static class HeaderViewHolder extends RecyclerView.ViewHolder {
         TextView tvGroupName;
+        ImageView ivHeaderAdd;
         HeaderViewHolder(@NonNull View itemView) { 
             super(itemView); 
             tvGroupName = itemView.findViewById(R.id.tvHeaderName);
+            ivHeaderAdd = itemView.findViewById(R.id.ivHeaderAdd);
         }
     }
 
     static class TaskCardViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvSubtitle, tvTag, tvTime, tvCommentCount;
-        ImageView ivCheck, ivBell, ivLocation;
+        TextView tvTitle, tvSubtitle, tvTag, tvTime, tvStatus;
+        ImageView ivCheck, ivBell;
         View viewPriorityStrip;
         TaskCardViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -189,13 +223,12 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             tvSubtitle = itemView.findViewById(R.id.tvTaskSubtitle);
             ivCheck = itemView.findViewById(R.id.ivCheck);
             ivBell = itemView.findViewById(R.id.ivBell);
-            ivLocation = itemView.findViewById(R.id.ivLocation);
             viewPriorityStrip = itemView.findViewById(R.id.viewPriorityStrip);
+            tvStatus = itemView.findViewById(R.id.tvStatus);
             
             // UI MOCKUP - DELETE WHEN INTEGRATING REAL LOGIC
             tvTag = itemView.findViewById(R.id.tvTag);
             tvTime = itemView.findViewById(R.id.tvTime);
-            tvCommentCount = itemView.findViewById(R.id.tvCommentCount);
         }
     }
 

@@ -46,13 +46,28 @@ public class ScheduleViewModel extends AndroidViewModel {
                 Map<Integer, String> subjects = subjectsMap.getValue();
                 
                 for (Task task : tasks) {
+                    // Filter out expired tasks (completed > 2 days)
+                    boolean isExpired = task.expiryTimestamp > 0 && task.expiryTimestamp <= System.currentTimeMillis();
+                    if (isExpired) continue;
+
                     String subjectName = subjects != null && subjects.containsKey(task.subjectId) 
-                            ? subjects.get(task.subjectId) : "Nhiệm vụ";
+                            ? subjects.get(task.subjectId) : null;
                     
-                    String meta = subjectName + " • " + DateUtils.timestampToString(task.dueDate);
-                    if (task.note != null && !task.note.isEmpty()) {
-                        meta = task.note + " • " + meta;
+                    String displaySubtitle = "";
+                    if (subjectName != null) {
+                        displaySubtitle = subjectName;
+                    } else {
+                        if (task.category != null && !task.category.isEmpty()) {
+                            displaySubtitle = task.category;
+                        } else if (task.note != null && !task.note.isEmpty()) {
+                            displaySubtitle = task.note;
+                        } else {
+                            displaySubtitle = "Cá nhân";
+                        }
                     }
+
+                    String formattedDate = DateUtils.timestampToFormattedString(task.dueDate, task.isReminderEnabled);
+                    String meta = displaySubtitle + " • " + formattedDate;
                     
                     int uiPriority = MainTaskItem.PRIORITY_LOW;
                     if ("high".equalsIgnoreCase(task.priority)) {
@@ -61,7 +76,8 @@ public class ScheduleViewModel extends AndroidViewModel {
                         uiPriority = MainTaskItem.PRIORITY_MEDIUM;
                     }
                     
-                    items.add(new MainTaskItem(task.id, task.title, meta, uiPriority, task.isCompleted, task.isReminderEnabled));
+                    boolean isCourse = (task.subjectId > 0);
+                    items.add(new MainTaskItem(task.id, task.title, meta, uiPriority, task.isCompleted, task.isReminderEnabled, isCourse));
                 }
                 return items;
             });
@@ -97,6 +113,10 @@ public class ScheduleViewModel extends AndroidViewModel {
             List<Task> tasks = database.taskDao().getTasksByDateSync(start, end);
             Map<LocalDate, List<Task>> tasksByDate = new HashMap<>();
             for (Task t : tasks) {
+                // Lọc task đã hết hạn (ẩn sau 2 ngày hoàn thành)
+                boolean isExpired = t.expiryTimestamp > 0 && t.expiryTimestamp <= System.currentTimeMillis();
+                if (isExpired) continue;
+
                 LocalDate d = Instant.ofEpochMilli(t.dueDate).atZone(ZoneId.systemDefault()).toLocalDate();
                 tasksByDate.computeIfAbsent(d, k -> new ArrayList<>()).add(t);
             }

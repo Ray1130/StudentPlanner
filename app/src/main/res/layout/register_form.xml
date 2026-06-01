@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/screen_bg"
     android:fillViewport="true"> <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:text="UNIPLAN"
-        android:textColor="#523A95"
+        android:textColor="@color/pastel_indigo"
         android:textSize="22sp"
         android:textStyle="bold" />
 
@@ -35,7 +35,7 @@
         android:layout_marginBottom="24dp"
         android:gravity="center"
         android:text="Đăng nhập để tiếp tục"
-        android:textColor="#6B7280" />
+        android:textColor="@color/text_secondary" />
 
     <EditText
         android:id="@+id/edtName"
@@ -52,7 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="6dp"
         android:text="Tên tài khoản"
-        android:textColor="#374151" />
+        android:textColor="@color/text_primary" />
 
     <EditText
         android:id="@+id/edtEmail"
@@ -69,7 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="6dp"
         android:text="Mật khẩu"
-        android:textColor="#374151" />
+        android:textColor="@color/text_primary" />
 
     <EditText
         android:id="@+id/edtPassword"
@@ -99,7 +99,7 @@
         android:layout_gravity="end"
         android:layout_marginBottom="20dp"
         android:text="Quên mật khẩu?"
-        android:textColor="#6A0DAD" />
+        android:textColor="@color/pastel_indigo" />
 
     <Button
         android:id="@+id/btnSubmit"
@@ -107,7 +107,7 @@
         android:layout_height="50dp"
         android:background="@drawable/bg_button"
         android:text="Đăng nhập"
-        android:textColor="#FFFFFF"
+        android:textColor="@android:color/white"
         android:textStyle="bold" />
 
     <TextView
@@ -116,7 +116,7 @@
         android:layout_marginVertical="16dp"
         android:gravity="center"
         android:text="Hoặc"
-        android:textColor="#9CA3AF" />
+        android:textColor="@color/text_secondary" />
 
     <TextView
         android:id="@+id/txtToggle"
@@ -125,7 +125,7 @@
         android:layout_marginTop="20dp"
         android:gravity="center"
         android:text="Chưa có tài khoản? Đăng ký ngay"
-        android:textColor="#6A0DAD" />
+        android:textColor="@color/pastel_indigo" />
 
 </LinearLayout>
 

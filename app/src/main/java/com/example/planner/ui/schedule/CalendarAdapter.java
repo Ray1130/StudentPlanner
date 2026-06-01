@@ -41,7 +41,6 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
         notifyDataSetChanged();
     }
 
-
     @NonNull
     @Override
     public CalendarViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -62,15 +61,24 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
             holder.tvDayOfMonth.setBackground(null);
             holder.dotIndicator.setVisibility(View.GONE);
 
+            // Xác định màu chữ mặc định dựa trên tháng
+            int textColor;
             if (date.getMonthValue() != selectedDate.getMonthValue()) {
-                holder.tvDayOfMonth.setTextColor(Color.LTGRAY);
+                textColor = holder.itemView.getContext().getColor(R.color.text_secondary);
             } else {
-                holder.tvDayOfMonth.setTextColor(Color.BLACK);
+                textColor = holder.itemView.getContext().getColor(R.color.text_primary);
+            }
 
-                if (date.equals(LocalDate.now())) {
-                    holder.tvDayOfMonth.setBackgroundResource(R.drawable.bg_circle_purple);
-                    holder.tvDayOfMonth.setTextColor(Color.WHITE);
-                }
+            // Hiển thị trạng thái
+            if (date.equals(selectedDate)) {
+                // Ngày được chọn: Vòng tròn tím, chữ trắng
+                holder.tvDayOfMonth.setBackgroundResource(R.drawable.bg_circle_purple);
+                holder.tvDayOfMonth.setTextColor(holder.itemView.getContext().getColor(R.color.white));
+            } else if (date.equals(LocalDate.now())) {
+                // Ngày hôm nay (nhưng không được chọn): Chữ màu tím để nhận diện
+                holder.tvDayOfMonth.setTextColor(holder.itemView.getContext().getColor(R.color.primary_purple));
+            } else {
+                holder.tvDayOfMonth.setTextColor(textColor);
             }
 
             if (taskData != null && taskData.containsKey(date)) {
@@ -78,7 +86,6 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
             }
         }
     }
-
 
     @Override
     public int getItemCount() {

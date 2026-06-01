@@ -29,7 +29,7 @@ public class TaskViewModel extends AndroidViewModel {
         super(application);
         repository = new TaskRepository(application);
         database = AppDatabase.getDatabase(application);
-        
+
         allTasks = repository.getAllTasks();
         allSubjects = database.subjectDao().getAllSubjectsLiveData();
     }
@@ -102,6 +102,10 @@ public class TaskViewModel extends AndroidViewModel {
             public void onResponse(Call<Task> call, Response<Task> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Task serverTask = response.body();
+                    // Preserve category from local task if server didn't return it
+                    if ((serverTask.category == null || serverTask.category.isEmpty()) && task.category != null) {
+                        serverTask.category = task.category;
+                    }
                     AppDatabase.databaseWriteExecutor.execute(() -> {
                         database.taskDao().insert(serverTask);
                     });

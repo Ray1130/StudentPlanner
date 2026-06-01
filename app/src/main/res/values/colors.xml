@@ -4,6 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="pastel_indigo">#5A4CB7</color>
     <color name="screen_bg">#F8F6FC</color>
+    <color name="card_bg_default">#FFFFFFFF</color>
     <color name="text_primary">#1F1F2D</color>
     <color name="text_secondary">#7B7696</color>
     <color name="card_stroke">#E8E2F3</color>
@@ -25,7 +26,7 @@
     
     <color name="chip_selected_bg">#644EE4</color>
     <color name="chip_selected_text">#FFFFFF</color>
-    <color name="chip_unselected_bg">#FFFFFF</color>
+    <color name="chip_unselected_bg">@color/card_bg_default</color>
     <color name="chip_unselected_stroke">#E5E7EB</color>
     <color name="chip_unselected_text">#6B7280</color>
     <color name="bottom_nav_selected_bg">#E5DBFA</color>
@@ -48,4 +49,13 @@
     <color name="task_completed">#4CAF50</color>
     <color name="task_remaining">#FF9800</color>
     <color name="bar_chart_bg">#FAFAFA</color>
+    
+    <!-- Additional Layout Colors -->
+    <color name="bg_light_neutral">#F8F9FA</color>
+    <color name="text_hint_light">#757575</color>
+    <color name="text_dark_neutral">#000000</color>
+    <color name="hint_light">#D1C7F7</color>
+    <color name="hint_medium">#BBAAF1</color>
+    <color name="text_medium_gray">#888888</color>
+    <color name="bg_semi_white">#40FFFFFF</color>
 </resources>

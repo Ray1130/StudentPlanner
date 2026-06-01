@@ -60,6 +60,7 @@ public class MainTaskAdapter extends RecyclerView.Adapter<MainTaskAdapter.TaskVi
         private final ImageView imgReminder;
         private final TextView tvTaskTitle;
         private final TextView tvTaskMeta;
+        private final TextView tvTaskTag;
         private final View viewPriorityStrip;
         private final OnTaskStatusChangeListener listener;
 
@@ -70,12 +71,25 @@ public class MainTaskAdapter extends RecyclerView.Adapter<MainTaskAdapter.TaskVi
             imgReminder = itemView.findViewById(R.id.imgReminder);
             tvTaskTitle = itemView.findViewById(R.id.tvTaskTitle);
             tvTaskMeta = itemView.findViewById(R.id.tvTaskMeta);
+            tvTaskTag = itemView.findViewById(R.id.tvTaskTag);
             viewPriorityStrip = itemView.findViewById(R.id.viewPriorityStrip);
         }
 
         void bind(MainTaskItem item) {
             tvTaskTitle.setText(item.getTitle());
             tvTaskMeta.setText(item.getMeta());
+
+            if (tvTaskTag != null) {
+                if (item.isCourse()) {
+                    tvTaskTag.setText("Học phần");
+                    tvTaskTag.setBackgroundResource(R.drawable.bg_tag_course);
+                    tvTaskTag.setTextColor(itemView.getContext().getColor(R.color.tag_course_text));
+                } else {
+                    tvTaskTag.setText("Ngoại khóa");
+                    tvTaskTag.setBackgroundResource(R.drawable.bg_tag_extracurricular);
+                    tvTaskTag.setTextColor(itemView.getContext().getColor(R.color.tag_extracurricular_text));
+                }
+            }
 
             if (imgReminder != null) {
                 imgReminder.setVisibility(item.isReminderEnabled() ? View.VISIBLE : View.GONE);

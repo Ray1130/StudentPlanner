@@ -1,36 +1,48 @@
 package com.example.planner.ui.main;
 
 import android.app.Application;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.planner.data.local.AppDatabase;
+import com.example.planner.data.model.Subject;
 import com.example.planner.data.model.Task;
 import com.example.planner.data.repository.TaskRepository;
 import com.example.planner.utils.DateUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainViewModel extends AndroidViewModel {
 
     private final MediatorLiveData<DashboardUiState> dashboardUiState = new MediatorLiveData<>();
     private final TaskRepository repository;
+    private final MutableLiveData<Map<Integer, String>> subjectsMap = new MutableLiveData<>(new HashMap<>());
+    private final LiveData<List<Task>> tasksFromDb;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
         repository = new TaskRepository(application);
-
-        LiveData<List<Task>> tasksFromDb = repository.getAllTasks();
+        tasksFromDb = repository.getAllTasks();
         
+        loadSubjects();
+
         dashboardUiState.addSource(tasksFromDb, tasks -> {
             if (tasks != null) {
-                processTasks(tasks);
+                processTasks(tasks, subjectsMap.getValue());
+            }
+        });
+
+        dashboardUiState.addSource(subjectsMap, map -> {
+            List<Task> tasks = tasksFromDb.getValue();
+            if (tasks != null) {
+                processTasks(tasks, map);
             }
         });
 
@@ -38,8 +50,18 @@ public class MainViewModel extends AndroidViewModel {
         repository.syncTasksFromServer();
     }
 
+    private void loadSubjects() {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            List<Subject> subjects = AppDatabase.getDatabase(getApplication()).subjectDao().getAllSubjects();
+            Map<Integer, String> map = new HashMap<>();
+            for (Subject s : subjects) {
+                map.put(s.id, s.name);
+            }
+            subjectsMap.postValue(map);
+        });
+    }
+
     public void updateTaskStatus(int taskId, boolean isCompleted) {
-        // Repository đã có hàm toggle hoặc update, dùng chung để đồng nhất logic
         repository.toggleTaskCompletion(taskId);
     }
 
@@ -47,7 +69,7 @@ public class MainViewModel extends AndroidViewModel {
         return dashboardUiState;
     }
 
-    private void processTasks(List<Task> tasks) {
+    private void processTasks(List<Task> tasks, Map<Integer, String> subjects) {
         // Thực hiện dọn dẹp task đã hết hạn khi xử lý dữ liệu
         repository.cleanupExpiredTasks();
 
@@ -66,49 +88,61 @@ public class MainViewModel extends AndroidViewModel {
         cal.set(Calendar.MILLISECOND, 0);
         long startOfToday = cal.getTimeInMillis();
         long endOfToday = startOfToday + (24 * 60 * 60 * 1000);
+        long endOfUpcoming = endOfToday + (3 * 24 * 60 * 60 * 1000L);
 
-        for (Task task : tasks) {
-            // Chỉ hiển thị task chưa hết hạn trên trang chủ
-            boolean isExpired = task.expiryTimestamp > 0 && task.expiryTimestamp <= System.currentTimeMillis();
-            if (isExpired) {
-                continue;
+        if (tasks != null) {
+            for (Task task : tasks) {
+                // Chỉ hiển thị task chưa hết hạn trên trang chủ
+                boolean isExpired = task.expiryTimestamp > 0 && task.expiryTimestamp <= System.currentTimeMillis();
+                if (isExpired) {
+                    continue;
+                }
+
+                if (task.isCompleted) {
+                    completedCount++;
+                }
+
+                long dueDate = task.dueDate;
+                boolean isToday = dueDate >= startOfToday && dueDate < endOfToday;
+                boolean isOverdue = dueDate < startOfToday && dueDate > 0;
+                boolean isUpcoming = dueDate >= endOfToday && dueDate < endOfUpcoming;
+
+                if (!task.isCompleted) {
+                    if (isToday) todayCount++;
+                    if (isOverdue) overdueCount++;
+                    if ("high".equalsIgnoreCase(task.priority)) highPriorityCount++;
+                }
+
+                String dateStr = DateUtils.timestampToString(task.dueDate);
+                String displaySubtitle = "";
+                
+                // Prioritize Subject Name for course tasks to show "tên môn" instead of "học phần"
+                if (task.subjectId > 0) {
+                    String subjectName = subjects != null ? subjects.get(task.subjectId) : null;
+                    displaySubtitle = (subjectName != null && !subjectName.isEmpty()) ? subjectName : "Học phần";
+                } else if (task.category != null && !task.category.isEmpty() && !task.category.equals("Học tập")) {
+                    displaySubtitle = task.category;
+                } else if (task.note != null && !task.note.isEmpty()) {
+                    displaySubtitle = task.note;
+                } else {
+                    displaySubtitle = "Cá nhân";
+                }
+
+                String meta = displaySubtitle.isEmpty() ? dateStr : displaySubtitle + " • " + dateStr;
+                
+                int uiPriority = MainTaskItem.PRIORITY_LOW;
+                if ("high".equalsIgnoreCase(task.priority)) {
+                    uiPriority = MainTaskItem.PRIORITY_HIGH;
+                } else if ("medium".equalsIgnoreCase(task.priority)) {
+                    uiPriority = MainTaskItem.PRIORITY_MEDIUM;
+                }
+
+                boolean isCourse = (task.subjectId > 0);
+                MainTaskItem item = new MainTaskItem(task.id, task.title, meta, uiPriority, task.isCompleted, task.isReminderEnabled, isCourse);
+
+                if (isToday) todayTasks.add(item);
+                else if (isUpcoming) upcomingTasks.add(item);
             }
-
-            if (task.isCompleted) {
-                completedCount++;
-            }
-
-            long dueDate = task.dueDate;
-            boolean isToday = dueDate >= startOfToday && dueDate < endOfToday;
-            boolean isOverdue = dueDate < startOfToday && dueDate > 0;
-
-            if (!task.isCompleted) {
-                if (isToday) todayCount++;
-                if (isOverdue) overdueCount++;
-                if ("high".equalsIgnoreCase(task.priority)) highPriorityCount++;
-            }
-
-            String dateStr = DateUtils.timestampToString(task.dueDate);
-            String categoryOrNote = "";
-            if (task.category != null && !task.category.isEmpty() && !task.category.equalsIgnoreCase("Học tập")) {
-                categoryOrNote = task.category;
-            } else if (task.note != null && !task.note.isEmpty()) {
-                categoryOrNote = task.note;
-            }
-
-            String meta = categoryOrNote.isEmpty() ? dateStr : categoryOrNote + " • " + dateStr;
-            
-            int uiPriority = MainTaskItem.PRIORITY_LOW;
-            if ("high".equalsIgnoreCase(task.priority)) {
-                uiPriority = MainTaskItem.PRIORITY_HIGH;
-            } else if ("medium".equalsIgnoreCase(task.priority)) {
-                uiPriority = MainTaskItem.PRIORITY_MEDIUM;
-            }
-
-            MainTaskItem item = new MainTaskItem(task.id, task.title, meta, uiPriority, task.isCompleted, task.isReminderEnabled);
-
-            if (isToday || isOverdue) todayTasks.add(item);
-            else upcomingTasks.add(item);
         }
 
         dashboardUiState.setValue(new DashboardUiState(

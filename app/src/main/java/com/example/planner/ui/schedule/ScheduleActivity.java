@@ -87,6 +87,19 @@ public class ScheduleActivity extends BaseActivity {
         viewModel.getTasksForSelectedDate().observe(this, tasks -> {
             if (taskAdapter == null) {
                 taskAdapter = new MainTaskAdapter();
+                taskAdapter.setOnTaskStatusChangeListener(new MainTaskAdapter.OnTaskStatusChangeListener() {
+                    @Override
+                    public void onStatusChanged(int taskId, boolean isCompleted) {
+                        // Gọi repo hoặc viewmodel để update nhanh
+                        com.example.planner.data.repository.TaskRepository repo = new com.example.planner.data.repository.TaskRepository(getApplication());
+                        repo.toggleTaskCompletion(taskId);
+                    }
+
+                    @Override
+                    public void onTaskClick(int taskId) {
+                        showEditSheet(taskId);
+                    }
+                });
                 rvTasks.setLayoutManager(new LinearLayoutManager(this));
                 rvTasks.setAdapter(taskAdapter);
             }
@@ -97,6 +110,33 @@ public class ScheduleActivity extends BaseActivity {
         viewModel.getMonthTaskData().observe(this, data -> {
             if (adapter != null) {
                 adapter.setTaskData(data);
+            }
+        });
+    }
+
+    private void showEditSheet(int taskId) {
+        // Fetch task details to create TaskUiModel
+        com.example.planner.data.local.AppDatabase db = com.example.planner.data.local.AppDatabase.getDatabase(this);
+        com.example.planner.data.local.AppDatabase.databaseWriteExecutor.execute(() -> {
+            com.example.planner.data.model.Task task = db.taskDao().getTaskByIdSync(taskId);
+            if (task != null) {
+                runOnUiThread(() -> {
+                    com.example.planner.ui.task.TaskUiModel uiModel = new com.example.planner.ui.task.TaskUiModel(
+                            task.id,
+                            com.example.planner.ui.task.TaskUiModel.TYPE_TABLE_ROW,
+                            task.title,
+                            com.example.planner.utils.DateUtils.timestampToFormattedString(task.dueDate, task.isReminderEnabled),
+                            task.note,
+                            task.isCompleted,
+                            task.priority != null ? task.priority.toLowerCase() : "low",
+                            task.subjectId,
+                            task.isReminderEnabled,
+                            task.category,
+                            ""
+                    );
+                    com.example.planner.ui.task.TaskCreateSheetFragment sheet = com.example.planner.ui.task.TaskCreateSheetFragment.newInstance(uiModel);
+                    sheet.show(getSupportFragmentManager(), "TaskEditSheet");
+                });
             }
         });
     }

@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.planner.R;
 import com.example.planner.data.model.Subject;
 import com.example.planner.data.model.Task;
+import com.example.planner.utils.SettingsHelper;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.text.SimpleDateFormat;
@@ -35,16 +36,25 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     private TextView tvTimeValue;
     private TextView tvSubjectValue;
     private TextView tvPriorityValue;
-    private TextView tvExpiryValue;
     private CheckBox cbCompleted;
     private CheckBox cbReminder;
+    private ViewGroup containerStep1;
+    private ViewGroup containerStep2;
+    private ViewGroup containerOptional;
+    private RadioGroup rgTaskType;
+    private ViewGroup rowSubject;
+    private ViewGroup rowActivityGroup;
+    private ViewGroup rowOptional;
+    private EditText etTaskNote;
+    private TextView tvActivityGroupValue;
+    private ImageView ivToggleOptional;
 
     private TaskViewModel viewModel;
     private Calendar calendar = Calendar.getInstance();
     private Subject selectedSubject;
     private List<Subject> subjects;
     private String selectedPriority = "low";
-    private long selectedExpiryDurationMs = 0; // 0 means no expiry
+    private String selectedActivityGroup = "Cá nhân";
 
     private TaskUiModel editingTask;
     private ImageView btnDelete;
@@ -73,6 +83,14 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         if (editingTask != null) {
             setupEditMode();
         } else {
+            // Kiểm tra ngày mặc định từ Bundle (nếu tạo từ màn hình Schedule)
+            if (getArguments() != null && getArguments().containsKey("default_date")) {
+                long defaultDate = getArguments().getLong("default_date");
+                if (defaultDate > 0) {
+                    calendar.setTimeInMillis(defaultDate);
+                    updateDeadlineText();
+                }
+            }
             containerStep1.setVisibility(View.VISIBLE);
             containerStep2.setVisibility(View.GONE);
         }
@@ -84,38 +102,47 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         containerStep1 = view.findViewById(R.id.container_step_1);
         containerStep2 = view.findViewById(R.id.container_step_2);
         containerOptional = view.findViewById(R.id.container_optional);
-        
+
         rgTaskType = view.findViewById(R.id.rg_task_type);
         etTaskTitle = view.findViewById(R.id.et_task_title);
         etTaskNote = view.findViewById(R.id.et_task_note);
-        
+
         tvDeadlineValue = view.findViewById(R.id.tv_deadline_value);
         tvTimeValue = view.findViewById(R.id.tv_time_value);
         tvSubjectValue = view.findViewById(R.id.tv_subject_value);
         tvPriorityValue = view.findViewById(R.id.tv_priority_value);
-        tvExpiryValue = view.findViewById(R.id.tv_expiry_value);
         cbCompleted = view.findViewById(R.id.cb_completed);
         cbReminder = view.findViewById(R.id.cb_reminder);
         btnDelete = view.findViewById(R.id.btn_delete_task);
+
+        rowSubject = view.findViewById(R.id.row_subject);
+        rowActivityGroup = view.findViewById(R.id.row_activity_group);
+        rowOptional = view.findViewById(R.id.row_optional);
+        tvActivityGroupValue = view.findViewById(R.id.tv_activity_group_value);
+        ivToggleOptional = view.findViewById(R.id.iv_toggle_optional);
 
         updateDeadlineText();
         updateTimeText();
     }
 
+    private void setupListeners(View view) {
         view.findViewById(R.id.row_deadline).setOnClickListener(v -> showDatePicker());
         view.findViewById(R.id.row_time).setOnClickListener(v -> toggleReminder());
         view.findViewById(R.id.row_subject).setOnClickListener(v -> showSubjectPicker());
         view.findViewById(R.id.row_priority).setOnClickListener(v -> showPriorityPicker());
-        view.findViewById(R.id.row_expiry).setOnClickListener(v -> showExpiryPicker());
+        view.findViewById(R.id.row_activity_group).setOnClickListener(v -> showActivityGroupPicker());
+        view.findViewById(R.id.row_optional).setOnClickListener(v -> toggleOptionalSection());
+        view.findViewById(R.id.btn_continue).setOnClickListener(v -> handleContinue());
         view.findViewById(R.id.btn_save_task).setOnClickListener(v -> {
             Log.d("TaskCreateSheet", "Nút Lưu Task được nhấn");
             saveTask();
         });
+    }
 
     private void handleContinue() {
         String title = etTaskTitle.getText().toString().trim();
         if (title.isEmpty()) {
-            Toast.makeText(getContext(), "Vui lòng nhập tên công việc", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Vui lòng nhập tên nhiệm vụ", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -149,25 +176,12 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     private void setupEditMode() {
         containerStep1.setVisibility(View.GONE);
         containerStep2.setVisibility(View.VISIBLE);
-        
+
         etTaskTitle.setText(editingTask.getTitle());
         tvDeadlineValue.setText(editingTask.getDeadline());
         cbCompleted.setChecked(editingTask.isChecked());
         etTaskNote.setText(editingTask.getNote());
-        
-        long expiry = editingTask.getExpiryTimestamp();
-        if (expiry > 0) {
-            long remaining = expiry - System.currentTimeMillis();
-            if (remaining > 0) {
-                // Hiển thị đơn giản thời gian còn lại
-                tvExpiryValue.setText("Đã hẹn xóa");
-            } else {
-                tvExpiryValue.setText("Đã hết hạn");
-            }
-        } else {
-            tvExpiryValue.setText("Không");
-        }
-        
+
         boolean isReminder = editingTask.isReminderEnabled();
         cbReminder.setChecked(isReminder);
 
@@ -188,7 +202,8 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
             rowActivityGroup.setVisibility(View.VISIBLE);
             rgTaskType.check(R.id.rb_extra);
             selectedActivityGroup = editingTask.getCategory();
-            if (selectedActivityGroup == null || selectedActivityGroup.isEmpty() || selectedActivityGroup.equals("Học tập")) {
+            if (selectedActivityGroup == null || selectedActivityGroup.isEmpty()
+                    || selectedActivityGroup.equals("Học tập")) {
                 selectedActivityGroup = "Cá nhân";
             }
             tvActivityGroupValue.setText(selectedActivityGroup);
@@ -252,7 +267,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     }
 
     private void showActivityGroupPicker() {
-        String[] groups = {"CLB", "Tình nguyện", "Hiến máu", "Thể thao", "Cá nhân"};
+        String[] groups = { "CLB", "Tình nguyện", "Hiến máu", "Thể thao", "Cá nhân" };
         new AlertDialog.Builder(requireContext())
                 .setTitle("Chọn nhóm hoạt động")
                 .setItems(groups, (dialog, which) -> {
@@ -276,16 +291,35 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     }
 
     private void showTimePicker() {
-        new android.app.TimePickerDialog(requireContext(), 
-            android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
-            (view, hourOfDay, minute) -> {
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                calendar.set(Calendar.MINUTE, minute);
-                calendar.set(Calendar.SECOND, 0);
-                cbReminder.setChecked(true);
-                updateTimeText();
-            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true)
-            .show();
+        new android.app.TimePickerDialog(requireContext(),
+                android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
+                (view, hourOfDay, minute) -> {
+                    // Validate: Check if selected time is not in the past
+                    Calendar selectedDateTime = Calendar.getInstance();
+                    selectedDateTime.setTimeInMillis(calendar.getTimeInMillis());
+                    selectedDateTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                    selectedDateTime.set(Calendar.MINUTE, minute);
+                    selectedDateTime.set(Calendar.SECOND, 0);
+
+                    long selectedTime = selectedDateTime.getTimeInMillis();
+                    long currentTime = System.currentTimeMillis();
+
+                    if (selectedTime < currentTime) {
+                        // Time is in the past
+                        Toast.makeText(getContext(), " Thời gian nhắc nhở không thể ở quá khứ", Toast.LENGTH_SHORT)
+                                .show();
+                        cbReminder.setChecked(false);
+                        updateTimeText();
+                        return;
+                    }
+
+                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                    calendar.set(Calendar.MINUTE, minute);
+                    calendar.set(Calendar.SECOND, 0);
+                    cbReminder.setChecked(true);
+                    updateTimeText();
+                }, 0, 0, true) // Always show 0:00 (00:00)
+                .show();
     }
 
     private void updateTimeText() {
@@ -333,25 +367,25 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     private void showCreateSubjectDialog() {
         EditText input = new EditText(requireContext());
         new AlertDialog.Builder(requireContext())
-            .setTitle("Môn mới")
-            .setView(input)
-            .setPositiveButton("Lưu", (dialog, which) -> {
-                String name = input.getText().toString().trim();
-                if (!name.isEmpty()) {
-                    Subject newSubject = new Subject("", name);
-                    viewModel.insertSubject(newSubject, createdSubject -> {
-                        if (createdSubject != null && getActivity() != null) {
-                            getActivity().runOnUiThread(() -> {
-                                selectedSubject = createdSubject; 
-                                tvSubjectValue.setText(createdSubject.name);
-                                Toast.makeText(getContext(), "Đã tạo môn học mới", Toast.LENGTH_SHORT).show();
-                            });
-                        }
-                    });
-                }
-            })
-            .setNegativeButton("Hủy", null)
-            .show();
+                .setTitle("Môn mới")
+                .setView(input)
+                .setPositiveButton("Lưu", (dialog, which) -> {
+                    String name = input.getText().toString().trim();
+                    if (!name.isEmpty()) {
+                        Subject newSubject = new Subject("", name);
+                        viewModel.insertSubject(newSubject, createdSubject -> {
+                            if (createdSubject != null && getActivity() != null) {
+                                getActivity().runOnUiThread(() -> {
+                                    selectedSubject = createdSubject;
+                                    tvSubjectValue.setText(createdSubject.name);
+                                    Toast.makeText(getContext(), "Đã tạo môn học mới", Toast.LENGTH_SHORT).show();
+                                });
+                            }
+                        });
+                    }
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     private void showPriorityPicker() {
@@ -366,28 +400,6 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
                 }).show();
     }
 
-    private void showExpiryPicker() {
-        String[] options = {"Không", "5 giây", "30 phút", "1 giờ", "6 giờ", "12 giờ", "24 giờ", "2 ngày", "1 tuần"};
-        long[] durations = {
-            0,
-            5 * 1000L,
-            30 * 60 * 1000L,
-            60 * 60 * 1000L,
-            6 * 60 * 60 * 1000L,
-            12 * 60 * 60 * 1000L,
-            24 * 60 * 60 * 1000L,
-            2 * 24 * 60 * 60 * 1000L,
-            7 * 24 * 60 * 60 * 1000L
-        };
-
-        new AlertDialog.Builder(requireContext())
-                .setTitle("Tự động xóa sau")
-                .setItems(options, (dialog, which) -> {
-                    selectedExpiryDurationMs = durations[which];
-                    tvExpiryValue.setText(options[which]);
-                }).show();
-    }
-
     private void saveTask() {
         String title = etTaskTitle.getText().toString().trim();
         if (title.isEmpty()) {
@@ -399,36 +411,26 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         int subjectId = isStudy && selectedSubject != null ? selectedSubject.id : 0;
         String category = isStudy ? "Học tập" : selectedActivityGroup;
 
-        Task task = new Task(title, calendar.getTimeInMillis(), subjectId);
-        if (editingTask != null) task.id = editingTask.getId();
-        
-        task.isCompleted = cbCompleted.isChecked();
-        task.priority = selectedPriority;
-        task.isReminderEnabled = cbReminder.isChecked();
-        task.note = etTaskNote.getText().toString().trim();
-        task.category = category;
-
         if (editingTask != null) {
             // Update mode
             com.example.planner.data.model.Task task = new com.example.planner.data.model.Task(
                     title,
                     calendar.getTimeInMillis(),
-                    subjectId
-            );
+                    subjectId);
             task.id = editingTask.getId();
             task.isCompleted = cbCompleted.isChecked();
-            
-            // Nếu có chọn thời gian hết hạn mới, cộng dồn từ hiện tại. 
-            // Nếu không chọn mới (bằng 0), giữ nguyên giá trị cũ.
-            if (selectedExpiryDurationMs > 0) {
-                task.expiryTimestamp = System.currentTimeMillis() + selectedExpiryDurationMs;
+
+            // Set expiry: 2 days if completed, 0 if not
+            if (task.isCompleted) {
+                task.expiryTimestamp = System.currentTimeMillis() + (2 * 24 * 60 * 60 * 1000L);
             } else {
-                task.expiryTimestamp = editingTask.getExpiryTimestamp();
+                task.expiryTimestamp = 0;
             }
 
             task.priority = selectedPriority;
             task.isReminderEnabled = cbReminder.isChecked();
-            task.note = editingTask.getNote();
+            task.note = etTaskNote.getText().toString().trim();
+            task.category = category;
 
             viewModel.update(task, () -> {
                 if (getActivity() != null) {
@@ -436,29 +438,36 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
                         dismiss();
                         if (getActivity() instanceof TaskActivity) {
                             ((TaskActivity) getActivity()).fetchTasksFromServer();
+                        } else if (getActivity() instanceof com.example.planner.ui.main.MainActivity) {
+                            // Optional: Trigger refresh for MainActivity if needed,
+                            // though LiveData should handle it.
                         }
                     });
                 }
             });
         } else {
             // Create mode
-            Log.d("TaskCreateSheet", "Bắt đầu lưu Task: " + title + " | SubjectID: " + subjectId + " | Priority: " + selectedPriority);
+            Log.d("TaskCreateSheet",
+                    "Bắt đầu lưu Task: " + title + " | SubjectID: " + subjectId + " | Priority: " + selectedPriority);
 
             com.example.planner.data.model.Task newTask = new com.example.planner.data.model.Task(
-                title,
-                calendar.getTimeInMillis(),
-                subjectId
-            );
+                    title,
+                    calendar.getTimeInMillis(),
+                    subjectId);
             newTask.isCompleted = cbCompleted.isChecked();
-            if (selectedExpiryDurationMs > 0) {
-                newTask.expiryTimestamp = System.currentTimeMillis() + selectedExpiryDurationMs;
+
+            // Set expiry: 2 days if completed, 0 if not
+            if (newTask.isCompleted) {
+                newTask.expiryTimestamp = System.currentTimeMillis() + (2 * 24 * 60 * 60 * 1000L);
             } else {
                 newTask.expiryTimestamp = 0;
             }
+
             newTask.priority = selectedPriority;
             newTask.isReminderEnabled = cbReminder.isChecked();
-            newTask.note = ""; // Default empty note
-            
+            newTask.note = etTaskNote.getText().toString().trim();
+            newTask.category = category;
+
             viewModel.saveTask(newTask, () -> {
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
@@ -474,5 +483,29 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
                 }
             });
         }
+    }
+
+    private void deleteTask() {
+        if (editingTask == null)
+            return;
+
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Xóa nhiệm vụ")
+                .setMessage("Bạn có chắc chắn muốn xóa nhiệm vụ này?")
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    viewModel.delete(editingTask.getId(), () -> {
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(() -> {
+                                dismiss();
+                                Toast.makeText(getContext(), "Đã xóa nhiệm vụ", Toast.LENGTH_SHORT).show();
+                                if (getActivity() instanceof TaskActivity) {
+                                    ((TaskActivity) getActivity()).fetchTasksFromServer();
+                                }
+                            });
+                        }
+                    });
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 }

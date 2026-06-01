@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         tools:text="Môn Mobile"
-        android:textColor="@color/black"
+        android:textColor="@color/text_primary"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -31,6 +31,7 @@
         android:layout_width="18dp"
         android:layout_height="18dp"
         android:layout_marginStart="12dp"
-        android:src="@drawable/ic_add_black" />
+        android:src="@drawable/ic_add_black"
+        app:tint="@color/text_primary" />
 
 </LinearLayout>

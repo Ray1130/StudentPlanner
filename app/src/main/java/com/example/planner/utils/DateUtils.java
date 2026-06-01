@@ -9,6 +9,13 @@ public class DateUtils {
         return formatter.format(new Date(timestamp));
     }
 
+    public static String timestampToFormattedString(long timestamp, boolean includeTime) {
+        if (timestamp == 0) return "Chưa có hạn";
+        String pattern = includeTime ? "dd/MM/yyyy HH:mm" : "dd/MM/yyyy";
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern, Locale.getDefault());
+        return formatter.format(new Date(timestamp));
+    }
+
     public static long stringToTimestamp(String dateString) {
         try {
             if (dateString == null || dateString.isEmpty() || dateString.equals("Chưa có hạn")) return 0;

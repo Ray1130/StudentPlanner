@@ -4,7 +4,7 @@
     android:id="@+id/bottomNavigation"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
+    android:background="@color/card_bg_default"
     app:itemIconTint="@color/selector_bottom_nav_color"
     app:itemTextColor="@color/selector_bottom_nav_color"
     app:labelVisibilityMode="labeled"

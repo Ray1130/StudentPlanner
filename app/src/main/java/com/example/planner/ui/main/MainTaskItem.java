@@ -11,14 +11,20 @@ public class MainTaskItem {
     private final int priority;
     private final boolean completed;
     private final boolean reminderEnabled;
+    private final boolean isCourse;
 
     public MainTaskItem(int id, String title, String meta, int priority, boolean completed, boolean reminderEnabled) {
+        this(id, title, meta, priority, completed, reminderEnabled, true);
+    }
+
+    public MainTaskItem(int id, String title, String meta, int priority, boolean completed, boolean reminderEnabled, boolean isCourse) {
         this.id = id;
         this.title = title;
         this.meta = meta;
         this.priority = priority;
         this.completed = completed;
         this.reminderEnabled = reminderEnabled;
+        this.isCourse = isCourse;
     }
 
     public int getId() { return id; }
@@ -27,4 +33,5 @@ public class MainTaskItem {
     public int getPriority() { return priority; }
     public boolean isCompleted() { return completed; }
     public boolean isReminderEnabled() { return reminderEnabled; }
+    public boolean isCourse() { return isCourse; }
 }

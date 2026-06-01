@@ -21,7 +21,7 @@ public interface TaskDao {
     void deleteExpiredTasks(long currentTime);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Task task);
+    long insert(Task task);
 
     @Update
     void update(Task task);

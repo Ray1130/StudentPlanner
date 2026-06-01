@@ -17,6 +17,7 @@ public class Task {
     private String priority;
     private boolean isReminderEnabled;
     private String note;
+    private String category;
 
     public Task() {
     }
@@ -30,6 +31,7 @@ public class Task {
         this.priority = "low";
         this.isReminderEnabled = false;
         this.note = "";
+        this.category = "";
     }
 
     public Long getId() { return id; }
@@ -50,4 +52,6 @@ public class Task {
     public void setReminderEnabled(boolean reminderEnabled) { isReminderEnabled = reminderEnabled; }
     public String getNote() { return note; }
     public void setNote(String note) { this.note = note; }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 }

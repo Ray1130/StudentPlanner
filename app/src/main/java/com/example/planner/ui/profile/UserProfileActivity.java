@@ -21,7 +21,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.planner.data.local.AppDatabase;
 import com.example.planner.ui.BaseActivity;
 import com.example.planner.R;
-import com.example.planner.utils.SettingsHelper;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -40,33 +39,6 @@ public class UserProfileActivity extends BaseActivity {
         setupBottomNavigation(R.id.nav_profile);
 
         observeProfileData();
-
-        // Setup Auto Delete Spinner
-        Spinner spinnerAutoDelete = findViewById(R.id.spinnerAutoDelete);
-        if (spinnerAutoDelete != null) {
-            String[] autoDeleteOptions = new String[] { "Không tự động xóa", "Sau 1 kỳ học" };
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
-                    autoDeleteOptions);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerAutoDelete.setAdapter(adapter);
-
-            // Load saved preference
-            int savedOption = SettingsHelper.getAutoDeleteOption(this);
-            spinnerAutoDelete.setSelection(savedOption);
-
-            // Listen for changes
-            spinnerAutoDelete.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    SettingsHelper.setAutoDeleteOption(UserProfileActivity.this, position);
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                    // Do nothing
-                }
-            });
-        }
 
         ImageView btnBack = findViewById(R.id.btnBack);
         if (btnBack != null) {

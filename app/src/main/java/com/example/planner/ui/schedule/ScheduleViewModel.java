@@ -46,10 +46,6 @@ public class ScheduleViewModel extends AndroidViewModel {
                 Map<Integer, String> subjects = subjectsMap.getValue();
                 
                 for (Task task : tasks) {
-                    // Filter out expired tasks (completed > 2 days)
-                    boolean isExpired = task.expiryTimestamp > 0 && task.expiryTimestamp <= System.currentTimeMillis();
-                    if (isExpired) continue;
-
                     String subjectName = subjects != null && subjects.containsKey(task.subjectId) 
                             ? subjects.get(task.subjectId) : null;
                     
@@ -113,10 +109,6 @@ public class ScheduleViewModel extends AndroidViewModel {
             List<Task> tasks = database.taskDao().getTasksByDateSync(start, end);
             Map<LocalDate, List<Task>> tasksByDate = new HashMap<>();
             for (Task t : tasks) {
-                // Lọc task đã hết hạn (ẩn sau 2 ngày hoàn thành)
-                boolean isExpired = t.expiryTimestamp > 0 && t.expiryTimestamp <= System.currentTimeMillis();
-                if (isExpired) continue;
-
                 LocalDate d = Instant.ofEpochMilli(t.dueDate).atZone(ZoneId.systemDefault()).toLocalDate();
                 tasksByDate.computeIfAbsent(d, k -> new ArrayList<>()).add(t);
             }

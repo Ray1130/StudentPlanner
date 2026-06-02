@@ -15,7 +15,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,8 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity {
 
     private MainViewModel viewModel;
     private MainTaskAdapter todayAdapter;
@@ -43,8 +42,7 @@ public class MainActivity extends BaseActivity
     private TextView tvOverdueCount;
     private TextView tvPriorityCount;
     private TextView tvCompletedCount;
-    private ImageView ivMenu;
-    private DrawerLayout drawerLayout;
+    private ConstraintLayout mainLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,14 +50,14 @@ public class MainActivity extends BaseActivity
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.drawerLayout), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.mainLayout), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
         initViews();
-        setupToolbarDrawer();
+        setupToolbar();
         setupRecyclerView();
         setupViewModel();
         bindStaticData();
@@ -67,10 +65,6 @@ public class MainActivity extends BaseActivity
         observeUi();
         setupBottomNavigation(R.id.nav_home);
         checkNotificationPermission();
-
-        NavigationView navigationView = findViewById(R.id.navigationView);
-
-        navigationView.setNavigationItemSelectedListener(this);
     }
 
     private void initViews() {
@@ -80,8 +74,7 @@ public class MainActivity extends BaseActivity
         tvOverdueCount = findViewById(R.id.tvOverdueCount);
         tvPriorityCount = findViewById(R.id.tvPriorityCount);
         tvCompletedCount = findViewById(R.id.tvCompletedCount);
-        ivMenu = findViewById(R.id.ivMenu);
-        drawerLayout = findViewById(R.id.drawerLayout);
+        mainLayout = findViewById(R.id.mainLayout);
 
         findViewById(R.id.btn_nav_tasks).setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, com.example.planner.ui.task.TaskActivity.class));
@@ -109,20 +102,7 @@ public class MainActivity extends BaseActivity
         });
     }
 
-    private void setupToolbarDrawer() {
-        if (ivMenu != null && drawerLayout != null) {
-            ivMenu.setOnClickListener(v -> {
-                drawerLayout.openDrawer(GravityCompat.START);
-            });
-        }
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this,
-                drawerLayout,
-                R.string.open_drawer,
-                R.string.close_drawer);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+    private void setupToolbar() {
     }
 
     private void setupRecyclerView() {
@@ -283,41 +263,5 @@ public class MainActivity extends BaseActivity
         if (input == null || input.isEmpty())
             return "";
         return input.substring(0, 1).toUpperCase(new Locale("vi", "VN")) + input.substring(1);
-    }
-
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.nav_logout) {
-            SharedPreferences preferences = getSharedPreferences("USER_FILE", MODE_PRIVATE);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.clear();
-            editor.apply();
-
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
-            return true;
-        } else if (id == R.id.nav_home) {
-            drawerLayout.closeDrawers();
-            return true;
-        } else if (id == R.id.nav_calendar) {
-            startActivity(new Intent(MainActivity.this, com.example.planner.ui.schedule.ScheduleActivity.class));
-            drawerLayout.closeDrawers();
-            return true;
-        } else if (id == R.id.nav_tasks) {
-            startActivity(new Intent(MainActivity.this, com.example.planner.ui.task.TaskActivity.class));
-            drawerLayout.closeDrawers();
-            return true;
-        } else if (id == R.id.nav_pomodoro) {
-            startActivity(new Intent(MainActivity.this, com.example.planner.ui.pomodoro.PomodoroActivity.class));
-            drawerLayout.closeDrawers();
-            return true;
-        } else if (id == R.id.nav_profile) {
-            startActivity(new Intent(MainActivity.this, com.example.planner.ui.profile.UserProfileActivity.class));
-            drawerLayout.closeDrawers();
-            return true;
-        }
-        return false;
     }
 }

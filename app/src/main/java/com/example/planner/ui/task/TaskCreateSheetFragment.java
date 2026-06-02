@@ -47,7 +47,6 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     private EditText etTaskNote;
     private TextView tvActivityGroupValue;
     private ImageView ivToggleOptional;
-    private TextView tvExpiryValue;
 
     private TaskViewModel viewModel;
     private Calendar calendar = Calendar.getInstance();
@@ -55,7 +54,6 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     private List<Subject> subjects;
     private String selectedPriority = "low";
     private String selectedActivityGroup = "Cá nhân";
-    private long selectedExpiryDuration = 0;
 
     private TaskUiModel editingTask;
     private ImageView btnDelete;
@@ -83,12 +81,6 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
 
         if (editingTask != null) {
             setupEditMode();
-            long remaining = editingTask.getExpiryTimestamp() > 0 ? editingTask.getExpiryTimestamp() - System.currentTimeMillis() : 0;
-            if (remaining < 0) remaining = 0;
-            
-            // Round to the nearest standard duration for UI display
-            selectedExpiryDuration = roundToStandardDuration(remaining);
-            updateExpiryText();
         } else {
             // Kiểm tra ngày mặc định từ Bundle (nếu tạo từ màn hình Schedule)
             if (getArguments() != null && getArguments().containsKey("default_date")) {
@@ -127,7 +119,6 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         rowOptional = view.findViewById(R.id.row_optional);
         tvActivityGroupValue = view.findViewById(R.id.tv_activity_group_value);
         ivToggleOptional = view.findViewById(R.id.iv_toggle_optional);
-        tvExpiryValue = view.findViewById(R.id.tv_expiry_value);
 
         updateDeadlineText();
         updateTimeText();
@@ -140,7 +131,6 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
         view.findViewById(R.id.row_priority).setOnClickListener(v -> showPriorityPicker());
         view.findViewById(R.id.row_activity_group).setOnClickListener(v -> showActivityGroupPicker());
         view.findViewById(R.id.row_optional).setOnClickListener(v -> toggleOptionalSection());
-        view.findViewById(R.id.row_expiry).setOnClickListener(v -> showExpiryPicker());
         view.findViewById(R.id.btn_continue).setOnClickListener(v -> handleContinue());
         view.findViewById(R.id.btn_save_task).setOnClickListener(v -> {
             Log.d("TaskCreateSheet", "Nút Lưu Task được nhấn");
@@ -276,13 +266,49 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     }
 
     private void showActivityGroupPicker() {
-        String[] groups = { "CLB", "Tình nguyện", "Hiến máu", "Thể thao", "Cá nhân" };
+        String[] defaultGroups = { "CLB", "Tình nguyện", "Hiến máu", "Thể thao", "Cá nhân" };
+        String[] items = new String[defaultGroups.length + 1];
+        System.arraycopy(defaultGroups, 0, items, 0, defaultGroups.length);
+        items[defaultGroups.length] = "+ Thêm nhóm mới";
+
         new AlertDialog.Builder(requireContext())
                 .setTitle("Chọn nhóm hoạt động")
-                .setItems(groups, (dialog, which) -> {
-                    selectedActivityGroup = groups[which];
-                    tvActivityGroupValue.setText(selectedActivityGroup);
+                .setItems(items, (dialog, which) -> {
+                    if (which == defaultGroups.length) {
+                        showCreateActivityGroupDialog();
+                    } else {
+                        selectedActivityGroup = items[which];
+                        tvActivityGroupValue.setText(selectedActivityGroup);
+                    }
                 }).show();
+    }
+
+    private void showCreateActivityGroupDialog() {
+        EditText input = new EditText(requireContext());
+        input.setHint("Tên nhóm hoạt động");
+        int padding = (int) (16 * getResources().getDisplayMetrics().density);
+        
+        // Tạo một container để set padding cho EditText trong AlertDialog
+        android.widget.FrameLayout container = new android.widget.FrameLayout(requireContext());
+        android.widget.FrameLayout.LayoutParams params = new android.widget.FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.leftMargin = padding;
+        params.rightMargin = padding;
+        input.setLayoutParams(params);
+        container.addView(input);
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Nhóm hoạt động mới")
+                .setView(container)
+                .setPositiveButton("Xác nhận", (dialog, which) -> {
+                    String name = input.getText().toString().trim();
+                    if (!name.isEmpty()) {
+                        selectedActivityGroup = name;
+                        tvActivityGroupValue.setText(name);
+                    }
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     private void showDatePicker() {
@@ -409,65 +435,6 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
                 }).show();
     }
 
-    private void showExpiryPicker() {
-        String[] options = { "Không", "5 giây", "30 phút", "1 giờ", "6 giờ", "12 giờ", "24 giờ", "2 ngày", "1 tuần" };
-        long[] durations = {
-                0,
-                5 * 1000L,
-                30 * 60 * 1000L,
-                60 * 60 * 1000L,
-                6 * 60 * 60 * 1000L,
-                12 * 60 * 60 * 1000L,
-                24 * 60 * 60 * 1000L,
-                2 * 24 * 60 * 60 * 1000L,
-                7 * 24 * 60 * 60 * 1000L
-        };
-
-        new AlertDialog.Builder(requireContext())
-                .setTitle("Tự động xóa sau")
-                .setItems(options, (dialog, which) -> {
-                    selectedExpiryDuration = durations[which];
-                    tvExpiryValue.setText(options[which]);
-                }).show();
-    }
-
-    private long roundToStandardDuration(long duration) {
-        if (duration <= 0) return 0;
-        long[] durations = {
-                5 * 1000L,
-                30 * 60 * 1000L,
-                60 * 60 * 1000L,
-                6 * 60 * 60 * 1000L,
-                12 * 60 * 60 * 1000L,
-                24 * 60 * 60 * 1000L,
-                2 * 24 * 60 * 60 * 1000L,
-                7 * 24 * 60 * 60 * 1000L
-        };
-        
-        for (long d : durations) {
-            // If it's within 10 seconds of a standard duration, snap to it
-            if (Math.abs(duration - d) < 10000) return d;
-        }
-        return duration;
-    }
-
-    private void updateExpiryText() {
-        if (selectedExpiryDuration <= 0) {
-            tvExpiryValue.setText("Không");
-            return;
-        }
-
-        if (selectedExpiryDuration == 5 * 1000L) tvExpiryValue.setText("5 giây");
-        else if (selectedExpiryDuration == 30 * 60 * 1000L) tvExpiryValue.setText("30 phút");
-        else if (selectedExpiryDuration == 60 * 60 * 1000L) tvExpiryValue.setText("1 giờ");
-        else if (selectedExpiryDuration == 6 * 60 * 60 * 1000L) tvExpiryValue.setText("6 giờ");
-        else if (selectedExpiryDuration == 12 * 60 * 60 * 1000L) tvExpiryValue.setText("12 giờ");
-        else if (selectedExpiryDuration == 24 * 60 * 60 * 1000L) tvExpiryValue.setText("24 giờ");
-        else if (selectedExpiryDuration == 2 * 24 * 60 * 60 * 1000L) tvExpiryValue.setText("2 ngày");
-        else if (selectedExpiryDuration == 7 * 24 * 60 * 60 * 1000L) tvExpiryValue.setText("1 tuần");
-        else tvExpiryValue.setText("Tùy chỉnh");
-    }
-
     private void saveTask() {
         String title = etTaskTitle.getText().toString().trim();
         if (title.isEmpty()) {
@@ -488,12 +455,11 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
             task.id = editingTask.getId();
             task.isCompleted = cbCompleted.isChecked();
 
-            // Set expiry: 2 days if completed (and no duration selected), or the selected duration
-            if (task.isCompleted && selectedExpiryDuration <= 0) {
+            // Set expiry: 2 days if completed
+            if (task.isCompleted) {
                 task.expiryTimestamp = System.currentTimeMillis() + (2 * 24 * 60 * 60 * 1000L);
             } else {
-                task.expiryTimestamp = selectedExpiryDuration > 0 ? System.currentTimeMillis() + selectedExpiryDuration
-                        : 0;
+                task.expiryTimestamp = 0;
             }
             Log.d("TaskCreateSheet", "Saving updated task with expiry: " + task.expiryTimestamp);
 
@@ -526,12 +492,11 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
                     subjectId);
             newTask.isCompleted = cbCompleted.isChecked();
 
-            // Set expiry: 2 days if completed (and no duration selected), or the selected duration
-            if (newTask.isCompleted && selectedExpiryDuration <= 0) {
+            // Set expiry: 2 days if completed
+            if (newTask.isCompleted) {
                 newTask.expiryTimestamp = System.currentTimeMillis() + (2 * 24 * 60 * 60 * 1000L);
             } else {
-                newTask.expiryTimestamp = selectedExpiryDuration > 0 ? System.currentTimeMillis() + selectedExpiryDuration
-                        : 0;
+                newTask.expiryTimestamp = 0;
             }
             Log.d("TaskCreateSheet", "Saving new task with expiry: " + newTask.expiryTimestamp);
 

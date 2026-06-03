@@ -26,6 +26,8 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void onTaskClick(TaskUiModel task);
         void onTaskStatusChanged(TaskUiModel task);
         void onTaskLongClick(TaskUiModel task);
+        void onHeaderLongClick(TaskUiModel headerItem);
+        void onHeaderEditClick(TaskUiModel headerItem);
     }
 
     private List<TaskUiModel> items;
@@ -61,6 +63,19 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (holder instanceof HeaderViewHolder) {
             HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
             headerHolder.tvGroupName.setText(item.getTitle());
+            
+            if (headerHolder.ivHeaderEdit != null) {
+                headerHolder.ivHeaderEdit.setVisibility(View.VISIBLE);
+                headerHolder.ivHeaderEdit.setOnClickListener(v -> {
+                    if (listener != null) listener.onHeaderEditClick(item);
+                });
+            }
+
+            headerHolder.itemView.setOnLongClickListener(v -> {
+                if (listener != null) listener.onHeaderLongClick(item);
+                return true;
+            });
+
             if (headerHolder.ivHeaderAdd != null) {
                 headerHolder.ivHeaderAdd.setVisibility(View.GONE);
             }
@@ -206,10 +221,12 @@ public class TaskSectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     static class HeaderViewHolder extends RecyclerView.ViewHolder {
         TextView tvGroupName;
         ImageView ivHeaderAdd;
+        ImageView ivHeaderEdit;
         HeaderViewHolder(@NonNull View itemView) { 
             super(itemView); 
             tvGroupName = itemView.findViewById(R.id.tvHeaderName);
             ivHeaderAdd = itemView.findViewById(R.id.ivHeaderAdd);
+            ivHeaderEdit = itemView.findViewById(R.id.ivHeaderEdit);
         }
     }
 

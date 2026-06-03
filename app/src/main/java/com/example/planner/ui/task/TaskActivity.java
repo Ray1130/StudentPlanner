@@ -71,6 +71,16 @@ public class TaskActivity extends BaseActivity {
             public void onTaskLongClick(TaskUiModel task) {
                 showEditSheet(task);
             }
+
+            @Override
+            public void onHeaderLongClick(TaskUiModel headerItem) {
+                showDeleteGroupDialog(headerItem);
+            }
+
+            @Override
+            public void onHeaderEditClick(TaskUiModel headerItem) {
+                showEditGroupDialog(headerItem);
+            }
         });
         rvTasks.setAdapter(adapter);
 
@@ -83,6 +93,78 @@ public class TaskActivity extends BaseActivity {
         viewModel.loadTasks(); // Kích hoạt đồng bộ
         setupBottomNavigation(R.id.nav_tasks);
         startAutoRefresh();
+    }
+
+    private void showDeleteGroupDialog(TaskUiModel headerItem) {
+        String title = "Xóa nhóm";
+        String message = "Bạn có chắc muốn xóa nhóm \"" + headerItem.getTitle() + "\" và tất cả công việc liên quan?";
+        
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    if (headerItem.getSubjectId() > 0) {
+                        // Xóa môn học
+                        Subject subject = findSubjectById(viewModel.getAllSubjects().getValue(), headerItem.getSubjectId());
+                        if (subject != null) {
+                            viewModel.deleteSubject(subject);
+                        }
+                    } else {
+                        // Xóa category ngoại khóa
+                        String cleanCategory = headerItem.getTitle();
+                        // Header title contains count like "CLB (2)", need to strip it
+                        if (cleanCategory.contains(" (")) {
+                            cleanCategory = cleanCategory.substring(0, cleanCategory.lastIndexOf(" ("));
+                        }
+                        viewModel.deleteCategory(cleanCategory);
+                    }
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+
+    private void showEditGroupDialog(TaskUiModel headerItem) {
+        String currentName = headerItem.getTitle();
+        if (currentName.contains(" (")) {
+            currentName = currentName.substring(0, currentName.lastIndexOf(" ("));
+        }
+
+        android.widget.EditText input = new android.widget.EditText(this);
+        input.setText(currentName);
+        input.setSelection(currentName.length());
+        
+        int padding = (int) (20 * getResources().getDisplayMetrics().density);
+        android.widget.FrameLayout container = new android.widget.FrameLayout(this);
+        android.widget.FrameLayout.LayoutParams params = new android.widget.FrameLayout.LayoutParams(
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.leftMargin = padding;
+        params.rightMargin = padding;
+        input.setLayoutParams(params);
+        container.addView(input);
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Đổi tên nhóm")
+                .setView(container)
+                .setPositiveButton("Lưu", (dialog, which) -> {
+                    String newName = input.getText().toString().trim();
+                    if (!newName.isEmpty()) {
+                        if (headerItem.getSubjectId() > 0) {
+                            Subject subject = findSubjectById(viewModel.getAllSubjects().getValue(), headerItem.getSubjectId());
+                            if (subject != null) {
+                                subject.name = newName;
+                                viewModel.updateSubject(subject);
+                            }
+                        } else {
+                            String oldCategory = headerItem.getTitle();
+                            if (oldCategory.contains(" (")) {
+                                oldCategory = oldCategory.substring(0, oldCategory.lastIndexOf(" ("));
+                            }
+                            viewModel.updateCategory(oldCategory, newName);
+                        }
+                    }
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     private void startAutoRefresh() {

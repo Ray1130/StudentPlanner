@@ -92,6 +92,47 @@ public class TaskViewModel extends AndroidViewModel {
         });
     }
 
+    public void updateSubject(Subject subject) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            database.subjectDao().update(subject);
+        });
+    }
+
+    public void deleteSubject(Subject subject) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            // Xóa tất cả task thuộc môn học này
+            List<Task> tasks = database.taskDao().getTasksBySubjectSync(subject.id);
+            for (Task t : tasks) {
+                database.taskDao().delete(t);
+            }
+            database.subjectDao().delete(subject);
+        });
+    }
+
+    public void deleteCategory(String category) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            // Lấy tất cả task thuộc category ngoại khóa
+            List<Task> allTasksList = database.taskDao().getAllTasksSync();
+            for (Task t : allTasksList) {
+                if (category.equals(t.category) && t.subjectId <= 0) {
+                    database.taskDao().delete(t);
+                }
+            }
+        });
+    }
+
+    public void updateCategory(String oldCategory, String newCategory) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            List<Task> allTasksList = database.taskDao().getAllTasksSync();
+            for (Task t : allTasksList) {
+                if (oldCategory.equals(t.category) && t.subjectId <= 0) {
+                    t.category = newCategory;
+                    database.taskDao().update(t);
+                }
+            }
+        });
+    }
+
     public interface OnSubjectCreatedListener {
         void onCreated(Subject subject);
     }
@@ -102,11 +143,9 @@ public class TaskViewModel extends AndroidViewModel {
             public void onResponse(Call<Task> call, Response<Task> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Task serverTask = response.body();
-                    // Preserve category from local task if server didn't return it
                     if ((serverTask.category == null || serverTask.category.isEmpty()) && task.category != null) {
                         serverTask.category = task.category;
                     }
-                    // Preserve expiry if server returned 0 but we sent a value
                     if (serverTask.expiryTimestamp <= 0 && task.expiryTimestamp > 0) {
                         serverTask.expiryTimestamp = task.expiryTimestamp;
                     }

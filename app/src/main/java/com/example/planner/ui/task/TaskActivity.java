@@ -235,12 +235,19 @@ public class TaskActivity extends BaseActivity {
                     pendingCount++;
             }
         }
-
-        // Sort: Uncompleted first, then by due date. Completed tasks go to the bottom.
+        
         activeTaskList.sort((t1, t2) -> {
             if (t1.isCompleted != t2.isCompleted) {
                 return t1.isCompleted ? 1 : -1;
             }
+
+            // Priority (high -> medium -> low)
+            int p1 = getPriorityValue(t1.priority);
+            int p2 = getPriorityValue(t2.priority);
+            if (p1 != p2) {
+                return Integer.compare(p2, p1);
+            }
+
             return Long.compare(t1.dueDate, t2.dueDate);
         });
 
@@ -335,8 +342,15 @@ public class TaskActivity extends BaseActivity {
                 }
             }
 
-            // Sort by due date (already sorted above but filtering might change order if we don't re-sort, though here we want only uncompleted)
-            urgentTasks.sort((t1, t2) -> Long.compare(t1.dueDate, t2.dueDate));
+            // Sort by Priority then Due Date
+            urgentTasks.sort((t1, t2) -> {
+                int p1 = getPriorityValue(t1.priority);
+                int p2 = getPriorityValue(t2.priority);
+                if (p1 != p2) {
+                    return Integer.compare(p2, p1);
+                }
+                return Long.compare(t1.dueDate, t2.dueDate);
+            });
 
             if (!urgentTasks.isEmpty()) {
                 taskList.add(
@@ -423,11 +437,24 @@ public class TaskActivity extends BaseActivity {
         currentFilter = filterType;
         updateFilterChipUI();
 
-        // Trigger data refresh with new filter
         List<Subject> subjects = viewModel.getAllSubjects().getValue();
         List<Task> tasks = viewModel.getAllTasks().getValue();
         if (subjects != null && tasks != null) {
             processAndDisplayTasks(subjects, tasks);
+        }
+    }
+
+    private int getPriorityValue(String priority) {
+        if (priority == null) return 0;
+        switch (priority.toLowerCase()) {
+            case "high":
+                return 3;
+            case "medium":
+                return 2;
+            case "low":
+                return 1;
+            default:
+                return 0;
         }
     }
 

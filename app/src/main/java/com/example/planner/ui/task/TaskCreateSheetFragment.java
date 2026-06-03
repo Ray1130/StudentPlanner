@@ -286,6 +286,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
     private void showCreateActivityGroupDialog() {
         EditText input = new EditText(requireContext());
         input.setHint("Tên nhóm hoạt động");
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         int padding = (int) (16 * getResources().getDisplayMetrics().density);
         
         // Tạo một container để set padding cho EditText trong AlertDialog
@@ -401,9 +402,22 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
 
     private void showCreateSubjectDialog() {
         EditText input = new EditText(requireContext());
+        input.setHint("Tên môn học mới");
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        
+        int padding = (int) (20 * getResources().getDisplayMetrics().density);
+        android.widget.FrameLayout container = new android.widget.FrameLayout(requireContext());
+        android.widget.FrameLayout.LayoutParams params = new android.widget.FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.leftMargin = padding;
+        params.rightMargin = padding;
+        params.topMargin = padding / 2;
+        input.setLayoutParams(params);
+        container.addView(input);
+
         new AlertDialog.Builder(requireContext())
-                .setTitle("Môn mới")
-                .setView(input)
+                .setTitle("Tạo môn học mới")
+                .setView(container)
                 .setPositiveButton("Lưu", (dialog, which) -> {
                     String name = input.getText().toString().trim();
                     if (!name.isEmpty()) {
@@ -413,7 +427,7 @@ public class TaskCreateSheetFragment extends BottomSheetDialogFragment {
                                 getActivity().runOnUiThread(() -> {
                                     selectedSubject = createdSubject;
                                     tvSubjectValue.setText(createdSubject.name);
-                                    Toast.makeText(getContext(), "Đã tạo môn học mới", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), "Đã tạo môn học: " + name, Toast.LENGTH_SHORT).show();
                                 });
                             }
                         });

@@ -249,7 +249,7 @@ public class MainActivity extends BaseActivity {
             }
         }
         
-        // Check for exact alarm permission on Android 12+
+        // Kiem tra thong bao
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
             android.app.AlarmManager alarmManager = (android.app.AlarmManager) getSystemService(android.content.Context.ALARM_SERVICE);
             if (alarmManager != null && !alarmManager.canScheduleExactAlarms()) {

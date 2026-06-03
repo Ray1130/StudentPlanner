@@ -44,6 +44,12 @@ public interface TaskDao {
     @Query("SELECT * FROM tasks WHERE subjectId = :subjectId")
     LiveData<List<Task>> getTasksBySubject(int subjectId);
 
+    @Query("SELECT * FROM tasks WHERE subjectId = :subjectId")
+    List<Task> getTasksBySubjectSync(int subjectId);
+
+    @Query("SELECT * FROM tasks")
+    List<Task> getAllTasksSync();
+
     @Query("SELECT * FROM tasks WHERE isCompleted = 0")
     LiveData<List<Task>> getPendingTasks();
 

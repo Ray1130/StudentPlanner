@@ -28,13 +28,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@null"
         android:hint="Tên công việc"
         android:textColor="@color/text_primary"
         android:textColorHint="@color/text_hint_light"
         android:textSize="28sp"
         android:textStyle="bold"
-        android:inputType="textCapSentences" />
+        android:inputType="textCapSentences"
+        android:background="@android:color/transparent"
+        android:importantForAutofill="no"
+        android:paddingBottom="8dp" />
 
     <View
         android:layout_width="match_parent"
@@ -351,7 +353,8 @@
                     android:hint="Ghi chú thêm..."
                     android:textColor="@color/text_primary"
                     android:textColorHint="@color/text_hint_light"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:inputType="textMultiLine|textCapSentences" />
             </LinearLayout>
 
             <!-- Completed Row -->
